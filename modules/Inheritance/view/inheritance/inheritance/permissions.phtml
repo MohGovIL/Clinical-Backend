@@ -1,0 +1,46 @@
+<?php
+
+$title = xl('Permissions');
+$this->headTitle($title);
+?>
+
+
+<div id="loading" class="row">
+    <div class="col-md-offset-2 col-md-8 loading-box">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <img src="<?=$basePatch?>/images/pouring/hourglass.svg"></div>
+            <div class="col-md-12 text-center"><h3><?php echo $translate->z_xlt('Loading') . '...'?></h3> </div>
+            <div class="loading-message text-center"></div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <div class="popupdarkbackground"></div>
+    <div class="main-content">
+        <input type="hidden" id="clinic_id" value="" />
+        <div class="title">
+            <?= ($this->escapeHtml($title) . ' - ' . $clinic_name)?>
+        </div>
+        <div id="lists">
+
+            <div class="content">
+
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4">
+                <button  name="sync" id="sync" class="col-md-5 btn btn-default pull-right" style="margin-left: 5px"><?php echo $translate->z_xlt('Synchronize') ?></button>
+
+                <button  name="download" id="download" class="col-md-5 btn btn-default pull-left"><?php echo $translate->z_xlt('Back up permissions to roles') ?></button>
+                </div>
+                <div class="col-md-4">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+

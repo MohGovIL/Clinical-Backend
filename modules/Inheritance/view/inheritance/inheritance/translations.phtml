@@ -1,0 +1,35 @@
+<?php
+
+$title = xl('Translations');
+$this->headTitle($title);
+?>
+
+
+<div id="loading" class="row">
+    <div class="col-md-offset-2 col-md-8 loading-box">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <img src="<?=$basePatch?>/images/pouring/hourglass.svg"></div>
+            <div class="col-md-12 text-center"><h3><?php echo $translate->z_xlt('Loading') . '...'?></h3> </div>
+            <div class="loading-message text-center"></div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <div class="popupdarkbackground"></div>
+    <div class="main-content">
+
+        <div class="title">
+            <?= ($this->escapeHtml($title) . ' - ' . $clinic_name)?>
+        </div>
+        <div id="lists">
+
+            <div class="content">
+
+            </div>
+            <button type="button" name="sync" id="sync" class="btn btn-default">סנכרן</button>
+        </div>
+    </div>
+</div>
+

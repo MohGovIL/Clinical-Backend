@@ -1,0 +1,56 @@
+<?php
+/*******
+ Required params -
+    $langDir - (rtl/ltr)
+    $langCode  - (he/en)
+    $facility - facility object (GenericTools/Model/Facility)
+ ******/
+?>
+<footer dir="<?php echo text($langDir); ?>"  lang="<?php echo text($langCode); ?>">
+    <table width="100%" style="border-top: 1px solid #000000; vertical-align: bottom; font-family: arial,serif; color: black;">
+        <tr>
+            <td width="42%">
+                <table lang="<?php echo text($langCode); ?>" style="font-size: 14px">
+                    <tr>
+                        <td colspan="2"><?php echo xlt('Address') .': ' . text($facility->street) . ' ' . text($facility->city) . ' ' . text($facility->postal_code);?></td>
+                    </tr>
+                    <tr>
+                        <td><?php echo xlt('Phone') . ': ' . text($facility->phone);?></td>
+                        <?php if(trim($facility->fax) != "000-000-0000" &&  trim($facility->fax) != "" && !is_null($facility->fax)):?>
+                        <td><?php echo xlt('Fax') . ': ' . text($facility->fax);?></td>
+                        <?php endif;?>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><?php echo xlt('Email') . ': ' . text($facility->email);?></td>
+                    </tr>
+                </table>
+            </td>
+            <td width="16%" align="center">
+                <?php if(is_file($GLOBALS['OE_SITE_DIR'] . '/images/logo_2.png')): ?>
+                    <?php if (isset($type) && $type === 'html'): ?>
+                        <img src="<?php echo $GLOBALS['OE_SITE_WEBROOT'] . '/images/logo_2.png' ?>" width="126px" height="65px"/>
+                    <?php else: ?>
+                        <img src="var:logoFooter" width="126px" height="65px"/>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </td>
+            <td width="42%" dir="ltr" lang="en">
+                <table style="font-size: 12.5px">
+                    <tr>
+                        <td colspan="2"><?php echo text('Address' .': ' . $facility->attn) . ' ' . text($facility->postal_code);?></td>
+                    </tr>
+                    <tr>
+                        <td><?php echo text('Phone') . ': ' . text($facility->phone);?></td>
+                        <?php if(trim($facility->fax) != "000-000-0000" &&  trim($facility->fax) != "" && !is_null($facility->fax)):?>
+                        <td><?php echo text('Fax') . ': ' . text($facility->fax);?></td>
+                        <?php endif;?>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><?php echo text('Email') . ': ' . text($facility->email);?></td>
+                    </tr>
+                </table>
+            </td>
+            </td>
+        </tr>
+    </table>
+</footer>

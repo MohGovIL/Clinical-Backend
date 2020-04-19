@@ -1,0 +1,48 @@
+<?php
+
+$title = xl('Inheritance');
+$this->headTitle($title);
+?>
+
+<div class="wrapper">
+    <div class="popupdarkbackground"></div>
+    <div class="main-content">
+
+        <div class="title">
+            <?= ($this->escapeHtml($title) . ' - ' . $clinic_name)?>
+        </div>
+        <div id="inheritance">
+            <div class="buttons">
+                <button type="button" name="edit" id="edit" class="btn btn-default"><?php echo xlt('Edit') ?></button>
+                <button type="button" name="cancel" id="cancel" class="btn btn-default" style="display: none;"><?php echo xlt('End') ?></button>
+            </div>
+            <div class="content">
+                <div class="basic-style">
+                    <div class="hv-container">
+                        <div class="hv-wrapper">
+                            <div class="chart" id="custom-colored"> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div  id="dialog" >
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+<script>
+    var treesOriginal = <?php echo $trees?>;
+    var treesManipulated = jQuery.extend(true, {}, treesOriginal); // Treant.js manipulates this object which makes it non-reusable
+    new Treant(treesManipulated);
+    //console.log(treesManipulated);
+
+    var dialogText1 = "<?php echo xls('Are you sure you want')?>";
+    var dialogText2 = "<?php echo xls('to inherit from')?>";
+    var cancelDialog = "<?php echo xls('Cancel')?>";
+    var confirmDialog = "<?php echo xls('Confirm')?>";
+
+    var successText = "<?php echo xls('Save successful')?>";
+    var ok = "<?php echo xls('Ok')?>";
+</script>

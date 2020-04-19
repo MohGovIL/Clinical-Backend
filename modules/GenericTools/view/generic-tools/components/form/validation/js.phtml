@@ -1,0 +1,233 @@
+/**
+** This three functions appendError hideErrors validateForms
+**  are responsible for the error constraints of validateJS.
+**/
+
+function appendError(input, id, message) {
+
+
+//bind hide function on focus/select again
+
+
+
+
+if(document.getElementById('error_' + id) == undefined) {
+$(input).each(function(){
+
+var input_type=$(this).attr('type');
+
+if(input_type!='hidden')
+if(input_type!='checkbox' && input_type!='radio' && input_type !== undefined) {
+$(this).after("<span id='error_" + id + "' class='error-message'>" + message + "</span>");
+}
+else{
+if( input_type=='radio'){
+var container=null;
+if ($(this).parent().hasClass("row"))
+{
+//debugger;
+container=$(this).parent().parent();
+}
+else{
+//debugger;
+container=$(this).parent();
+}
+
+
+var elements_in_container=container.find("span[id^=error_]").length;
+
+if (elements_in_container === 0){
+
+container.append("<span id='error_" + id + "' class='error-message'>" + message + "</span>");
+}
+}else{
+$(this).parent().append("<span id='error_" + id + "' class='error-message'>" + message + "</span>");
+}
+
+}
+
+})
+
+}
+else{
+$(document.getElementById('error_' + id)).show();
+$(document.getElementById('error_' + id)).text(message);
+}
+
+$(input).addClass('error-border');
+
+if($(input)[0].type=="select-one"){
+var borderSelect2 = $(input).parent().find("span.select2-selection.select2-selection--single");
+if(typeof  borderSelect2 !="undefined")
+{
+borderSelect2.addClass("error-border");
+}
+}
+//debugger;
+if(input.hasClass("SumoUnder"))
+{
+input.removeClass("error-border")
+input.parent().find(".CaptionCont").addClass("error-border");
+
+}
+if($(document.getElementById('error_' + id)).length == 1) {
+////console.log("scrolling ui_addons");
+$(document.getElementById('error_' + id)).parent().get(0).scrollIntoView();
+}
+
+$(input).on("change select keypress input click", function () {
+hideErrors(this, id);
+});
+
+
+$("input[type='radio']").parent().find(".error-border").each(function () {
+$(this).removeClass("error.border");
+});
+
+
+
+/* $("select.select2-hidden-accessible").closest("div").find("span.error-message").each(function () {
+
+//debugger;
+if ($(this).text() == "") {
+$(this).remove();
+} else {
+var k = $(this);
+$(this).closest("div").append($(this));
+$(this).closest("div").find(".select2-selection").addClass("error-border");
+}
+
+
+});*/
+$("input[type='radio']").parent().find("span.error-message").each(function () {
+
+//debugger;
+if ($(this).text() == "") {
+$(this).remove();
+} else {
+var k = $(this);
+if ($(this).parent().hasClass("row")) {
+$(this).parent().parent().append($(this));
+
+$(this).parent().parent().find("[type=radio]").on("click", function () {
+k.remove();
+});
+} else {
+//debugger;
+$(this).parent().append($(this));
+
+}
+
+}
+
+
+});
+
+}
+function hideErrors(input, id) {
+
+if($(input).hasClass("SumoUnder"))
+{
+$(input).parent().on("change",function(){
+//debugger;
+$(this).find(".error-border").removeClass('error-border');
+})
+}
+
+$(input).on('click change select', function () {
+
+$(input).removeClass('error-border');
+if(input.type=="radio")
+{
+$(input).parent().parent().removeClass('error-border');
+}
+else{
+
+$(input).removeClass('error-border');
+
+}
+
+$(document.getElementById('error_' + id)).remove();
+});
+
+}
+function validateForm( ) {
+
+//debugger;
+
+var form = document.getElementById(currentTab);
+if (!form) {
+alert("Something went wrong");
+}
+var elements = validate.collectFormValues(form);
+////console.log(elements);
+
+//before catch all values - clear filed that in display none, this will enable to fail on this fields.
+for(var key in elements){
+
+//catch th element with the name because the id of select-multiple contain '[]'
+// and jquery throws error in those situation
+element = $('[name="'+ key + '"]');
+if($(element).is('select[multiple]')) {
+
+
+var valueOfElement =$(element).val();
+elements[key]=valueOfElement.join();
+
+
+}
+}
+
+var errors = validate(elements, constraints, {fullMessages: false});
+
+
+
+$(".select2-selection").on("click", function () {
+
+$(this).closest("div").find(".select2-selection").removeClass("error-border");
+$(this).closest("div").find("span.error-message").remove();
+
+});
+
+$(".SumoUnder").on("click  select keypress input  change focus", function () {
+$(this).parent().find(".CaptionCont").removeClass("error-border");
+$(this).closest("div").find("span.error-message").remove();
+});
+
+if (typeof errors !== 'undefined' && errors !== '') {
+//  //console.log(errors);
+var goToFirstPane = false;
+var errorFound = false;
+for (var key in errors) {
+
+if (errors.hasOwnProperty(key)) {
+
+element = $('[name="' + key + '"]');
+
+if (typeof element != "undefined" && element.length > 0) {
+appendError(element, key, errors[key][0]);
+errorFound = true;
+
+}
+
+//  $("#" + $(element).closest(".tab-pane").attr("id") + "_group").trigger("click");
+}
+
+
+}
+
+
+
+
+
+}
+
+if (errors) {
+$('#save').attr('disabled', false);
+return false
+} else {
+$('#save').attr('disabled', false);
+return true;
+}
+
+}

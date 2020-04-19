@@ -1,0 +1,24 @@
+<?php
+
+$title = xl('List');
+$this->headTitle($title);
+?>
+
+    <div class="container-fluid" style="padding-right: 0">
+    <form method='post' name='theform' id='theform' action='<?=$this->basePath()?>/Inheritance/list'>
+        <h1><?php echo $this->escapeHtml($title); ?></h1>
+                <select name='list_id' id="list_id">
+                    <?=$parentOption?>
+
+                </select>
+    </form>
+    <form method='post' name='theform' id='theform' action='<?=$this->basePath()?>/Inheritance/sync'>
+        <input name="list_id" type="hidden" value="<?=$list_id?>">
+        <p class="pull-right">Edit Enable</p>
+        <select name="networking[]" class="lists" multiple="multiple">
+            <?=$networkingmultiselecttree?>
+        </select>
+        <br />
+        <input type="submit" value="סכרן" class="btn">
+    </form>
+    </div>

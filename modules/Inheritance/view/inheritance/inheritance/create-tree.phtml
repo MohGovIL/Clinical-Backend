@@ -1,0 +1,133 @@
+<main dir="ltr">
+
+    <?php
+
+    $basic_form="<ul class=\"form-style-1\">
+                <li>
+                    <label>clinic_name<span class=\"required\">*</span></label>
+                    <input id=\"clinic_name\" type=\"text\" value=\"\" name=\"clinic_name\" required class=\"field-divided\" />
+
+                </li>
+                <li>
+                    <label>clinic_id<span class=\"required\">*</span></label>
+                    <input type=\"text\" value=\"\" name=\"clinic_id\"  class=\"field-divided\"  />
+
+                </li>
+                <li>
+                    <label>valid</label>
+                    <input type=\"checkbox\" value=\"1\" checked name=\"valid\"  class=\"field-divided\"  />
+                </li>
+                <li>
+                    <label>visible</label>
+                    <input type=\"checkbox\" value=\"1\" checked name=\"visible\"  class=\"field-divided\" />
+                </li>
+                <li>
+                    <label>url</label>
+                    <input type=\"text\" value=\"\" name=\"url\"  class=\"field-divided\"/>
+
+                </li>
+                <li>
+                    <label>server IP</label>
+                    <input type=\"text\" value=\"\" name=\"server_ip\"  class=\"field-divided\" />
+
+                </li>
+                <li>
+                    <label>files location</label>
+                    <input type=\"text\" value=\"\" name=\"files_location\" required class=\"field-divided\" />
+
+                </li>
+                <li>
+                    <label>version</label>
+                    <input type=\"text\" value=\"\" name=\"version\"  class=\"field-divided\" />
+
+                </li>
+                <li>
+                    <label>Username<span class=\"required\">*</span></label>
+                    <input type=\"text\" value=\"\" name=\"username\" required class=\"field-divided\" />
+
+                </li>
+                <li>
+                    <label>Database name</label>
+                    <input type=\"text\" value=\"\" name=\"dbname\" required class=\"field-divided\"/>
+                </li>
+                <li>
+                    <label>Password<span class=\"required\">*</span></label>
+                    <input type=\"password\"  name=\"password\" class=\"field-divided\" placeholder=\" ***** \" />
+                </li>
+                <li>
+                    <label>host</label>
+                    <input type=\"text\" value=\"\" name=\"host\" required class=\"field-divided\"  />
+                </li>
+                <li>
+                    <label>Port</label>
+                    <input type=\"text\" value=\"3306\" name=\"port\" required class=\"field-divided\" />
+                </li>
+                <li>
+                    <input type=\"button\" name=\"back\" value=\"Back\" onclick=\" window.location.href = window.history.back(1);\" />
+                    <input type=\"submit\" value=\"Save\" />
+                </li>
+            </ul>"
+
+    ?>
+
+    <?php if(!$zeroConnected) : ?>
+        <h2>Create new networking - Insert new zero for vertical</h2>
+        <form id="saveParentZero"  method="POST">
+            <input type="hidden" name="method_type" value="parent_zero">
+            <?php echo $basic_form;?>
+        </form>
+
+
+    <?php else : ?>
+
+        <section class="basic-style">
+            <div class="hv-container">
+                <div class="hv-wrapper" dir="rtl">
+
+                    <?php echo $inheritance?>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal -->
+        <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="select-type">
+                            <p>Select your action</p>
+                            <button id="editZero">Edit</button>
+                            <button id="createChild">Create Child</button>
+                        </div>
+                        <div id="connection-form">
+                            <button style="float:right" id="delete-clinic" >Delete</button>
+                            <form id="save"  method="POST">
+                                <input type="hidden" name="method_type" value="create_child">
+                                <input type="hidden" name="id" value="0">
+                                <input type="hidden" name="networking_db_id" value="0">
+                                <input type="hidden" name="parent" value='0'>
+                                <div id="net_type">
+                                    <label for="zero">Zero</label>
+                                    <input id="zero" type="radio" value="zero" name="type" required class="field-divided"/>
+                                    <label for="clinic">Clinic</label>
+                                    <input id="clinic" type="radio" value="1" name="type" required class="field-divided"/>
+                                </div>
+
+                                <?php echo $basic_form;?>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <?php endif; ?>
+
+</main>
+

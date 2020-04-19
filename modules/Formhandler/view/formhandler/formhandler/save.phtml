@@ -1,0 +1,29 @@
+<?php
+use OpenEMR\Core\Header;
+?>
+
+<?php if(is_null($feedback)): ?>
+<script language='Javascript'>top.restoreSession();if(typeof(top.frames['RBot'])!='undefined'){top.frames['RBot'].location.href='<?php echo text($address);?>'}else{window.parent.parent.location='<?php echo text($address);?>';};</script>
+<?php else: ?>
+    <?php Header::setupHeader(); ?>
+    <div class="modal fade" id="feedback" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <h3><?php echo xlt($feedback) ?></h3>
+                </div>
+                <div class="modal-footer text-center">
+                    <button type="button"  class="btn btn-default" data-dismiss="modal"><?php echo xlt('Close');?></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        $('#feedback').modal('show');
+        $('#feedback').on('hide.bs.modal', function (e) {
+        top.restoreSession();
+        if(typeof(top.frames['RBot'])!='undefined'){top.frames['RBot'].location.href='<?php echo text($address);?>'}else{window.parent.parent.location='<?php echo text($address);?>';};
+        })
+    </script>
+<?php endif; ?>

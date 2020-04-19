@@ -1,0 +1,42 @@
+{
+    "resourceType": "ValueSet",
+    "id": "apptstat",
+    "name": "apptstat",
+    "title": "Appointment statuses",
+    "status": "active",
+    "date": "2019-07-19",
+    "description": "List of appointment statuses base on codeSystem apptstat",
+    "compose": {
+        "include": [
+            {
+                "system": "CodeSystem/apptstat",
+                "concept": [
+                    {
+                        "code": "pending",
+                        "display": "Pending"
+                    },
+                    {
+                        "code": "booked",
+                        "display": "Booked"
+                    },
+                    {
+                        "code": "arrived",
+                        "display": "Arrived"
+                    },
+                    {
+                        "code": "cancelled",
+                        "display": "Cancelled"
+                    },
+                    {
+                        "code": "noshow",
+                        "display": "No Show"
+                    },
+                    {
+                        "code": "waitlist",
+                        "display": "Waitlisted"
+                    }
+                ]
+            }
+        ]
+    }
+}

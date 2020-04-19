@@ -1,0 +1,147 @@
+
+<?php
+use OpenEMR\Core\Header;
+
+echo $this->doctype(); ?>
+
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+
+    <?php  Header::setupHeader(['datetime-picker','jquery-ui', 'jquery-ui-base']); ?>
+
+    <?php $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0');
+     echo $this->headMeta();
+    ?>
+
+
+    <!-- css files -->
+    <?php foreach($this->cssFiles as $file){
+
+        $this->headLink()->appendStylesheet($GLOBALS['assets_static_relative'] . $this->cssBasePath . $file);
+    }
+
+    if(isset($this->FormhandleCSSFiles)) {
+        foreach ($this->FormhandleCSSFiles as $file) {
+
+            $this->headLink()->appendStylesheet($file);
+        }
+    }
+
+
+    echo $this->headLink();
+    ?>
+
+   <!-- Scripts -->
+    <?php
+    foreach($this->jsFiles as $file){
+
+      $this->headScript()->appendFile($GLOBALS['assets_static_relative'] . $this->jsBasePath . $file);
+    }
+    echo $this->headLink();
+    ?>
+    <?php
+    if(isset($this->FormhandleJSFiles)) {
+        foreach ($this->FormhandleJSFiles as $file) {
+
+            $this->headScript()->appendFile($file);
+        }
+    }
+
+
+
+    echo  $this->headScript() ;
+    ?>
+
+    <script src="<?php echo $GLOBALS['webroot'] . "/library/dialog.js" ?>"></script>
+
+
+<style>
+
+    tr.vaccines-table-info{
+        background: #64967a;
+    }
+
+    tr.tests-table-info{
+        background: #719696;
+    }
+
+    tr.tub-table-info{
+        background: #8e7272;
+    }
+
+     tr.MedicalIssues-table-info{
+        background: #7f8e41;
+    }
+
+</style>
+
+</head>
+<body class="body_top" dir="<?php echo $language_direction ?>" >
+
+
+
+
+<div class="container-fluid <?php echo $language_direction?>">
+
+
+        <div class="col-md-12">
+            <nav class="navbar fh-navbar navbar-default navbar-static-top">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#"><?php echo ($this->navBarHeader)?$this->navBarHeader:'';?></a>
+
+
+                </div>
+                <div class="container-fluid tabsAreHere">
+                    <ul class="nav  navbar-nav">
+
+                     <?php if ($this->navBars):?>
+                         <ul class="nav navbar-nav">
+
+                                <?php foreach($this->navBars as $li):?>
+                                        <li><?php echo $li;?></li>
+                                <?php endforeach;?>
+
+                         </ul>
+                     <?php endif;?>
+
+                    </ul>
+                </div>
+            </nav>
+
+    </div>
+        <div class='col-md-12'>
+            <?php echo $this->content; ?>
+        </div>
+    </div>
+    <footer>
+
+    </footer>
+</div> <!-- /container -->
+
+<!-- js constraints for Validate.js library-->
+<script>
+
+    var BASE_PATH = '<?php echo $this->basePath(); ?>';
+    var JS_BASE_PATH = '<?php echo $jsBasePath; ?>';
+    var JS_VARS = '<?php echo $jsVariables; ?>';
+
+    <?php if(isset($validateJs)): ?>
+
+    var constraints = <?php echo $validateJs; ?>;
+    var allConstraints = <?php echo $constraintsJs; ?>;
+    var formButton = '<?php echo $submitButtonId; ?>';
+    var formId = '<?php echo $formId; ?>'
+
+    <?php endif; ?>
+
+    <?php if(is_null($status)): ?>
+    var form_status = null;
+    <?php else: ?>
+    var form_status = '<?php echo $status; ?>';
+    <?php endif; ?>
+</script>
+
+</body>
+</html>

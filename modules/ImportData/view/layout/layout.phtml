@@ -1,0 +1,92 @@
+
+<?php
+use OpenEMR\Core\Header;
+echo $this->doctype();
+?>
+
+<html lang="<?php echo $language?>">
+<head>
+    <?php Header::setupHeader(['jquery','bootstrap','main-theme', 'fontawesome','bootstrap-filestyle.min.js','bootstrap-rtl.min.css','dataTables.jqueryui.min.css']); ?>
+
+    <meta charset="utf-8">
+
+    <?php $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0');
+    echo $this->headMeta();
+    ?>
+
+    <!-- css files -->
+    <?php foreach($this->cssFiles as $file){
+
+        switch ($file[0]){
+            case 'a':
+                $this->headLink()->appendStylesheet($GLOBALS['assets_static_relative']  . $file[1]);
+                break;
+            case 'b':
+                $this->headLink()->appendStylesheet($this->basePath() . $this->cssBasePath . $file[1], isset($file[2]) ? $file[2] : 'screen');
+                break;
+        }
+    }
+    echo $this->headLink();
+    ?>
+
+    <?php
+    foreach($this->jsFiles as $file){
+        switch ($file[0]){
+            case 'a':
+                $this->headScript()->appendFile($GLOBALS['assets_static_relative']  . $file[1]);
+                break;
+            case 'b':
+                $this->headScript()->appendFile($this->basePath() . $this->jsBasePath . $file[1]);
+                break;
+        }
+    }
+    echo  $this->headScript() ;
+    ?>
+
+</head>
+<body class="body_top" dir="<?php echo $language_direction ?>" >
+
+<div class="container-fluid <?php echo $language_direction?>">
+    <div id="header" class="row">
+        <div class="col-md-12">
+            <nav class="navbar navbar-default navbar-static-top">
+                <div class="container-fluid">
+                    <ul id="header-links" class="nav navbar-nav col-md-12">
+                        <?php if(!empty($menuBar)): ?>
+                            <?php foreach($menuBar as $link): ?>
+                                <li role="presentation" id="<?php echo $link['id'] ?>"><a href="<?php echo $this->basePath() .  $link['url'] ?>"><?php echo $link['name'] ?></a></li>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class="col-md-12">
+            <?php echo $this->content; ?>
+        </div>
+    </div>
+    <footer>
+
+    </footer>
+</div> <!-- /container -->
+
+<!-- js constraints for Validate.js library-->
+<script>
+
+    var BASE_PATH = '<?php echo $this->basePath(); ?>';
+    var JS_BASE_PATH = '<?php echo $jsBasePath; ?>';
+    var JS_VARS = <?php echo $jsVariables; ?>;
+
+    $('body').on('focus','.datepicker', function(){
+        $(this).datepicker({
+            dateFormat: 'yy-mm-dd'
+        })
+    })
+
+</script>
+
+</body>
+</html>

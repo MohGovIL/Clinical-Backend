@@ -1,0 +1,1007 @@
+{
+    "resourceType": "Bundle",
+    "type": "searchset",
+    "timestamp": "2020-01-20T11:51:46.000Z",
+    "total": 24,
+    "entry": [
+        {
+            "resource": {
+                "id": 2,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-07T00:00:00.000Z",
+                "end": "2020-01-07T24:00:00.000Z",
+                "minutesDuration": "1440",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 0,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-08T12:30:00.000Z",
+                "end": "2020-01-08T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-09T12:30:00.000Z",
+                "end": "2020-01-09T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-12T12:30:00.000Z",
+                "end": "2020-01-12T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-13T12:30:00.000Z",
+                "end": "2020-01-13T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-15T12:30:00.000Z",
+                "end": "2020-01-15T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-16T12:30:00.000Z",
+                "end": "2020-01-16T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-19T12:30:00.000Z",
+                "end": "2020-01-19T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-20T12:30:00.000Z",
+                "end": "2020-01-20T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-22T12:30:00.000Z",
+                "end": "2020-01-22T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-23T12:30:00.000Z",
+                "end": "2020-01-23T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-26T12:30:00.000Z",
+                "end": "2020-01-26T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-27T12:30:00.000Z",
+                "end": "2020-01-27T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-29T12:30:00.000Z",
+                "end": "2020-01-29T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-30T12:30:00.000Z",
+                "end": "2020-01-30T12:45:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me 2",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 7,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-14T08:15:00.000Z",
+                "end": "2020-01-14T08:30:00.000Z",
+                "minutesDuration": "15",
+                "comment": "find me i am single",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 6,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-14T11:45:00.000Z",
+                "end": "2020-01-14T12:45:00.000Z",
+                "minutesDuration": "60",
+                "comment": "ffffffff",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 8,
+                "resourceType": "Appointment",
+                "status": "pending",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-15T11:00:00.000Z",
+                "end": "2020-01-15T12:00:00.000Z",
+                "minutesDuration": "60",
+                "comment": "יש לי מה להגיד",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/2",
+                            "display": "Idan Gigi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 3,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-21T10:15:00.000Z",
+                "end": "2020-01-21T10:30:00.000Z",
+                "minutesDuration": "15",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 3,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-27T10:15:00.000Z",
+                "end": "2020-01-27T10:30:00.000Z",
+                "minutesDuration": "15",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 4,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "זה תיאור מגניב",
+                "start": "2020-01-28T09:15:00.000Z",
+                "end": "2020-01-28T09:30:00.000Z",
+                "minutesDuration": "15",
+                "comment": "66666666666",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 5,
+                "resourceType": "Appointment",
+                "status": "noshow",
+                "serviceType": [
+                    {
+                        "coding": [
+                            {
+                                "code": "17"
+                            }
+                        ],
+                        "text": "ביקור שגרתי - רופא"
+                    }
+                ],
+                "priority": 1,
+                "description": "ביקור שגרתי - רופא",
+                "start": "2020-01-28T12:00:00.000Z",
+                "end": "2020-01-28T12:15:00.000Z",
+                "minutesDuration": "15",
+                "participant": [
+                    {
+                        "actor": {
+                            "reference": "Patient/1",
+                            "display": "Yosi the lion Levi"
+                        }
+                    },
+                    {
+                        "actor": {
+                            "reference": "HealthcareService/24",
+                            "display": "Cardiology"
+                        },
+                        "required": "required",
+                        "status": "accepted"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "match"
+            }
+        },
+        {
+            "resource": {
+                "id": 1,
+                "resourceType": "Patient",
+                "identifier": [
+                    {
+                        "value": "23423423542"
+                    }
+                ],
+                "name": [
+                    {
+                        "family": "Levi",
+                        "given": [
+                            "Yosi",
+                            "the lion"
+                        ]
+                    }
+                ],
+                "telecom": [
+                    {
+                        "system": "email",
+                        "value": "eyalvo@matrix.co.il"
+                    },
+                    {
+                        "system": "phone",
+                        "value": "036495774",
+                        "use": "home"
+                    },
+                    {
+                        "system": "phone",
+                        "value": "0544808806",
+                        "use": "mobile"
+                    }
+                ],
+                "gender": "female",
+                "birthDate": "2007-01-01",
+                "deceasedBoolean": 0,
+                "address": [
+                    {
+                        "use": "both",
+                        "line": [
+                            "201",
+                            "33333"
+                        ],
+                        "city": "city_5000",
+                        "postalCode": "5454455",
+                        "country": "country_64"
+                    }
+                ]
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "resource": {
+                "id": 2,
+                "resourceType": "Patient",
+                "identifier": [
+                    {
+                        "value": "25432525"
+                    }
+                ],
+                "name": [
+                    {
+                        "family": "Gigi",
+                        "given": [
+                            "Idan"
+                        ]
+                    }
+                ],
+                "gender": "male",
+                "birthDate": "2008-01-08",
+                "deceasedBoolean": 0
+            },
+            "search": {
+                "mode": "include"
+            }
+        }
+    ]
+}

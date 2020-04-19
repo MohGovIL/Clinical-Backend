@@ -1,0 +1,7 @@
+
+$('#<?php echo $elem_html_id ?>').SumoSelect({
+    <?php echo $placeholder ?'placeholder: "'.xls($placeholder).'",' : 'placeholder: "'. xls("Choose"). '",';?>
+    <?php echo $multiselect ?'selectAll:true,':'';?>
+    csvDispCount: 0
+});
+

@@ -1,0 +1,1277 @@
+
+<head>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <script src="//mpryvkin.github.io/jquery-datatables-row-reordering/1.2.2/jquery.dataTables.rowReordering.js"></script>
+
+
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+    <script type="text/javascript" src="//cdn.datatables.net/plug-ins/e9421181788/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+
+
+
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/plug-ins/e9421181788/integration/bootstrap/3/dataTables.bootstrap.css">
+
+
+
+
+    <style>
+        #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+        #sortable li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; height: 1.5em; }
+        html>body #sortable li { height: 1.5em; line-height: 1.2em; }
+        .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
+
+
+    </style>
+
+
+
+
+</head>
+<style>
+    ul {
+        list-style-type: none;
+    }
+    .input-group{
+        width:300px;
+    }
+    select{
+        width:300px;
+    }
+
+</style>
+<body>
+
+
+
+<div class="col-md-10">
+    <div class="row">
+        <div class="btn-group" id="menu_buttons">
+
+
+            <button id='logTable' type="button" class="btn btn-primary">
+                log row
+            </button>
+            <!-- Trigger the modal with a button -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Create Group</button>
+
+            <button id='deleteGroup' type="button" class="btn btn-primary">
+                Delete group
+            </button>
+
+
+            <!--button type="button" id="showPreview" class="btn btn-primary" data-toggle="modal" data-target="#preview">Preview Form</button-->
+
+
+
+            <button id='saveDraftForm' type="button" class="btn btn-primary">
+               Save a copy in couchDB
+            </button>
+
+            <button id='renderForm' type="button" class="btn btn-primary">
+                Render Form
+            </button>
+
+            <button type="button" class="btn btn-primary alert-danger" id="fetch_couch_documents"  data-toggle="modal" data-target="#load_form_from_couchdb">
+                Load From Couch
+
+            </button>
+
+            <button type="button" class="btn btn-success" id='showPreview'  >Show Preview</button>
+
+            <button type="button" class="btn btn-warning" id='clearAllGroups'  >Clear All Groups</button>
+
+        </div>
+
+        </div>
+
+
+    <div class="form-group"><label for="form_id">Enter form id</label><textarea name="form_id" class="form-control" rows="2" id="form_id"></textarea></div>
+
+
+
+
+    <br/>
+    <div class="row">
+        <div id="groups">
+
+        </div>
+    </div>
+
+
+</div>
+
+<div class="col-md-2" style='position: fixed;left:78%'>  <div style='top:100px;' id="showIframeHere"></div></div>
+
+
+
+<div id="preSubmit">
+
+
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="new_element_panel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Add elemnt</h4>
+            </div>
+            <div class="modal-body">
+                <div class="modal-content" id="new_element">
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="new_element_save" data-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade bd-example-modal-lg" id="load_form_from_couchdb" tabindex="-1" role="dialog" aria-labelledby="load_form_from_couchdb_panel_title" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="load_form_from_couchdb_panel_title">Load From Couch DB</h4>
+            </div>
+            <div class="modal-body">
+                <div class=" form-inline" id="load_file">
+
+
+
+
+
+
+                        <select class="form-control  " id="allCouchDbDocuments"></select>
+
+
+
+                </form>
+
+
+            </div>
+            <div class="modal-footer" style="margin-top:10px;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button  class="btn btn-danger" data-dismiss="modal" pull-right" id="form_load" >
+                Load DOC From CouchDB
+
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<script>
+    var groupIdsArray=[];
+    var preDefinedElements=[];
+    $(document).ready(function() {
+
+
+
+
+
+        var counter=1;
+        var counterAttributeSelect = 1;
+        var counterOptionSelect = 1;
+        var counterConditional = 1;
+        var counterGroup = 1;
+        $("#menu_buttons").append(CreateNewGroup());
+        $("#submit_group").on("click",function(){
+            var groupName=$("#group_name").val();
+
+
+            var id=groupName.trim().replace(/\s/g,"_") ;
+
+            if($.inArray(id,groupIdsArray)>-1)
+            {
+                alert ("A Group with this name already exists.");
+                return;
+            }
+
+            var new_group=createGroup(groupName);
+
+
+            groupIdsArray.push(id);
+            $("#groups").append(RenderNewEmptyGroup(groupName.trim(),new_group));
+            $("#groups").css("font-size","8px");
+            var table_id='#'+groupName.trim().replace(/\s/g,"_");
+            var t = $(table_id).DataTable({ "bPaginate" : false ,"scrollX": true,'createdRow': function(row, data, dataIndex){
+                $(row).attr('id', 'row-' + dataIndex);
+            } } );
+            $('#addRow_'+id).on( 'click', function () {
+                t.row.add( [
+                    counter,
+                    '<input name="name" class="form-control" /></div>',
+
+                    createInputSelect(counter),
+                    createModal("attribute",counterAttributeSelect),
+                    createModal("option",counterOptionSelect),
+                    createModal("condition",counterConditional),
+                    '<div class="form-group"><label for="comment">Java  script / jquery addon</label><textarea name="JSAddon" class="form-control" rows="2" id=""></textarea></div>',
+                    '<div class="form-group"><label for="comment">Write calls to helpers orany php code</label><textarea name="PHPAddons" class="form-control" rows="2" id=""></textarea></div>',
+
+                    "<input name='table_name' class='form-control' placeholder='table name'/>"
+
+                ] ).draw( false );
+
+                $("#select_"+counter).on('change',function(){
+
+                    value=$(this).val();
+
+                    var obj = getPreDefinedElementValues(value);
+                    var CounterRow=$(this).closest('tr').find('td')[0].innerHTML;
+                    $("#attribute_group_new_"+CounterRow).html("");
+                    $("#option_group_new_"+CounterRow).html("");
+
+
+                    $.each(obj.attributes,function(name,value){
+                        $("#attribute_group_new_"+CounterRow).append(createInputNameValueAttribute(name,CounterRow,value));
+                    });
+                    $.each(obj.options,function(name,value){
+                        $("#option_group_new_"+CounterRow).append(createInputNameValueOption(name,CounterRow,value));
+                    });
+
+                    obj.name
+
+                })
+                counterAttributeSelect++;
+                counterOptionSelect++;
+                counterConditional++;
+                counter++;
+
+
+            } );
+            $('#button_'+id).on("click", function () {
+
+                var r = confirm("Are you sure you want to delete these rows?");
+                if (r == true) {
+                    table.rows('.selected')
+                        .remove()
+                        .draw();
+                }
+            } );
+
+            var table = $(table_id).DataTable(   );
+            table.rowReordering();
+
+
+         /*   $(table_id+' tbody').on( 'click', 'tr', function () {
+                if ( $(this).hasClass('selected') ) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+            } );
+*/
+
+
+            $(table_id+' tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected');
+            } );
+
+
+
+
+
+
+            // Automatically add a first row of data
+            $('#addRow_'+id).click();
+
+        });
+        // createPreDefinedElementsValues();
+    } );
+
+
+    function RenderNewEmptyGroup(name,table){
+        return `<div class="panel panel-default">
+  <div class="panel-heading"><h3>`+name+`</h3></div>
+  <div class="panel-body">`+table+`</div>
+  </div>`
+
+    }
+    function createGroup(name){
+
+        var id=name.replace(/\s/g,"_") ;
+
+
+        var table=`    <div class="btn-group" id="menu_buttons"><div class='row'>  <button id='addRow_`+id+`' type="button" class="btn btn-primary">
+                add row
+            </button>
+             <button id='button_`+id+`' type="button" class="btn btn-primary">
+                delete row
+            </button></div></div>
+            <div class='row'><table id=`+id +` class="display" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>name</th>
+        <th>Input type</th>
+        <th>Attribute</th>
+        <th>Options</th>
+        <th>Conditional</th>
+        <th>JSAddons</th>
+        <th>PHPAddons</th>
+        <th>Table name</th>
+
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+        <th>id</th>
+        <th>name</th>
+        <th>Input type</th>
+        <th>Attribute</th>
+        <th>Options</th>
+        <th>Conditional</th>
+        <th>JSAddons</th>
+        <th>PHPAddons</th>
+        <th>Table name</th>
+
+    </tr>
+    </tfoot>
+    </table>   </div>`;
+        return table;
+    }
+    function createConditionsIfSelect(){
+
+        var select = "<select name='condition_type' class='form-control '>";
+        select+="<option value='showIf'>show</option>";
+        select+="<option value='hideIf'>hide</option>";
+        select+="</select>";
+        return select;
+    }
+
+    function createConditionsSelect(){
+
+        var select = "<select  name='condition' class='form-control '>";
+        select+="<option value='eq'>equal</option>";
+        select+="<option value='ne'>not equal</option>";
+        select+="<option value='se'>selected</option>";
+        select+="<option value='ns'>not selected</option>";
+        select+="</select>";
+        return select;
+    }
+
+    function createOptionElement(name){
+        return "<option>"+name+"</option>"
+    }
+    function createInputSelect(counter){
+
+        var select = "<select name='type' id='select_"+counter+"' class='form-control selectpicker'>";
+        var arr=<?php echo $formElementsTypes;?>//['optionsRadios',"optionsRadios","multicheckbox","static1","static",'multiple_select','select','multiCheckboxNoInline','checkbox','textarea','text','submit','checkbox','file','password','email','date','button'];
+            arr.push("button");
+            arr.push("date");
+        $.each(arr,function(key,value){
+
+            select+=createOptionElement(value);
+        });
+
+        select+="</select>";
+        return select;
+    }
+    function createAttributeInputSelect(name,counter){
+
+
+        var id=name+"_"+counter;
+
+
+        var button="<button class='btn btn-primary center' id='attribute_add_"+counter+"' onclick=\"addElementToField('"+id+"',"+counter+")\">create new field</button>"
+        var button='<button class="btn btn-primary" data-toggle="modal" data-target="#new_element_panel" onclick=\'createNewElement("'+counter+'","'+name+'")\'>Create new element</button>';
+        var ul="<div id='attribute_group_new_"+counter+"'><br/>";
+        ul+=createInputGroup('name',counter);
+        ul+="<br/>";
+        ul+=createInputGroup('type',counter);
+        ul+="<br/>";
+        ul+=createInputGroup('placeholder',counter);
+        ul+="<br/>";
+        ul+=createInputGroup('id',counter);
+        ul+="<br/>";
+        ul+=createInputGroup('required',counter);
+        ul+="<br/>";
+        ul+=createInputGroup('value',counter);
+        ul+="<br/>";
+        ul+=createInputGroup('class',counter);
+        ul+="<br/>";
+        ul+=createInputGroup('validators',counter);
+        ul+="<br/>";
+        ul+="<div id='"+name+"_group_new_"+counter+"'></div>";
+
+
+        return button+ul+"<br/><br/><div id=''>";
+
+    }
+    function createGroupElement()
+    {
+
+        var div= '<div class="form-group">';
+        div+='<label for="group_name">Group name:</label>';
+        div+='<input type="text" class="form-control" id="group_name">';
+        div+='</div>';
+        div+='<div class="form-group">';
+
+        '</div>';
+        return div;
+
+
+
+    }
+    function CreateNewGroup(counter){
+
+
+
+        var div= '<!-- Modal -->';
+        div+='<div id="myModal" class="modal fade" role="dialog">';
+        div+='<div class="modal-dialog">';
+        div+='<!-- Modal content-->';
+        div+='<div class="modal-content">';
+        div+='<div class="modal-header">';
+        div+='<button type="button" class="close" data-dismiss="modal">&times;</button>';
+        div+='<h4 class="modal-title">Create new group</h4>';
+        div+='</div>';
+        div+='<div class="modal-body">';
+        div+='<p>'+    createGroupElement()+'</p>';
+        div+='</div>';
+        div+='<div class="modal-footer">';
+        div+='<button type="submit" class="btn btn-success pull-left" id="submit_group" data-dismiss="modal">Create</button>';
+        div+='<button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>';
+
+
+        div+='</div>';
+        div+='</div>';
+        div+='</div>';
+        div+='</div>';
+
+
+        return div;
+    }
+
+
+    function createInputNameValueAttribute(name,counter,value){
+        var div= '<div class=\"input-group\"> <span class=\"input-group-addon\" id=\"basic-addon';
+        div+=counter;
+        div+='\">';
+        div+=name;
+
+        div += '</span><input value="'+value+'" type=\"text\"  name="'+name+'" class=\"form-control\" placeholder=\"' + name + '\" aria-describedby=\"basic-addon';
+
+
+        div+=counter;
+        div+='\"></div>';
+        return div;
+
+
+    }
+
+    function createInputNameValueOption(name,counter,value){
+        var div= '<div class=\"input-group\"> <span class=\"input-group-addon\" id=\"basic-addon';
+        div+=counter;
+        div+='\">';
+        div+=name;
+
+        div += '</span><input value="'+value+'" type=\"text\"  name="'+name+'" class=\"form-control\" placeholder=\"' + name + '\" aria-describedby=\"basic-addon';
+
+
+        div+=counter;
+        div+='\"></div>';
+        return div;
+
+
+    }
+
+
+    function createInputGroup(name,counter){
+        var div= '<div class=\"input-group\"> <span class=\"input-group-addon\" id=\"basic-addon';
+        div+=counter;
+        div+='\">';
+        div+=name;
+        if(name!="label_attributes") {
+            div += '</span><input type=\"text\" class=\"form-control\" name="'+name+'" placeholder=\"' + name + '\" aria-describedby=\"basic-addon';
+        }
+        else{
+            div += '</span><input value="'+'{class:form-control}'+'" name="'+name+'"  type=\"text\" class=\"form-control\" placeholder=\"' + name + '\" aria-describedby=\"basic-addon';
+        }
+        div+=counter;
+        div+='\"></div>';
+        return div;
+
+
+    }
+
+    function createEmptyConditionalGroup(counter){
+
+        var div= '<br/><div class=\"input-group\">';
+
+        div+=createConditionsIfSelect();
+        div+= '<input type=\"text\" class=\"form-control\" placeholder=\"value\" aria-describedby=\"basic-addon';
+        div+=counter;
+        div+='\">';
+
+        div+='<span class="input-group-addon" id="Conditional-addon'+counter+'"> IF </span>';
+        div+=createConditionsSelect();
+        div+= '<input type=\"text\" class=\"form-control\" placeholder=\"value\" aria-describedby=\"basic-addon';
+        div+=counter;
+        div+='\">';
+        div+='</div>';
+
+
+        return div;
+
+
+    }
+
+
+    function createNewElement(counter,divId){
+
+
+
+
+        div= `<center><div class="center input-group" id="empty_'+counter+'">
+          <input type="text"   class="form-control"  placeholder="required" aria-describedby="basic-addon3" id="name_addon_`+counter+`">
+          <span class="input-group-addon" >:</span>
+           <input type="text"   class="form-control"  placeholder="required" aria-describedby="basic-addon3" id="basic_addon_`+counter+`">
+            </div></center>
+
+         </div>`;
+
+
+        $("#new_element_save").on("click",function(e){
+
+e.stopPropagation();
+            element='<div class="input-group"> <span class="input-group-addon" id="basic-addon_'+counter+'">'+$("#name_addon_"+counter).val()+'</span><input type="text" class="form-control" value="'+$("#basic_addon_"+counter).val()+'" name="'+$("#empty_"+counter).val()+'" placeholder="" aria-describedby="basic-addon-1"></div>';
+
+
+
+            $("#"+divId+"_group_new_"+counter).append(element);
+
+
+
+        });
+
+        $("#new_element").html(div);
+
+
+
+
+    }
+    function createEmptyInputGroup(counter,divId){
+
+        var div= '<br/><div class=\"input-group\">';
+        div+='<input type=\"text\" class=\"form-control\" placeholder=\"name\" aria-describedby=\"basic-addon';
+        div+=counter;
+        div+='\"><span class="input-group-addon" id="basic-addon'+counter+'"> : </span><input  name="group" type=\"text\" class=\"form-control\" placeholder=\"value\" aria-describedby=\"basic-addon';
+        div+=counter;
+        div+='\"></div>';
+        return div;
+
+    }
+
+    function createOptionInputSelect(name,counter){
+
+
+
+        var id=name+"_"+counter;
+
+
+        var button="<button class='btn btn-primary center' id='options_add_"+counter+"' onclick=\"addElementToField('"+id+"',"+counter+")\">create new field</button>"
+        var button='<button class="btn btn-primary" data-toggle="modal" data-target="#new_element_panel" onclick=\'createNewElement("'+counter+'","'+name+'")\'>Create new option</button>';
+        var ul="<div id='option_group_"+counter+"'><br/>";
+        ul+=createInputGroup('label',counter);
+        ul+="<br/>";
+        ul+=createInputGroup('help-block',counter);
+        ul+="<br/>";
+      //  ul+=createInputGroup('column-size',counter);
+      //  ul+="<br/>";
+        ul+=createInputGroup('class',counter);
+        ul+="<br/>";
+
+        ul+="<div id='option_group_new_"+counter+"'>";
+
+        ul+="</div>";
+        ul+="<br/>";
+
+        return button+ul+"<br/><br/>";
+
+    }
+    function addElementToField(divId,counter){
+        var div=createEmptyInputGroup(counter,divId.split("_")[0]);
+
+        $("#"+divId+" .modal-body").append(div);
+
+
+
+    }
+    function addConditionToField(divId,counter) {
+
+        var div=createEmptyConditionalGroup(counter);
+        $("#"+divId +" .modal-body").append(div);
+    }
+    function createModal(name,counter){
+
+        var id=name+"_"+counter;
+
+
+        var button='<button type="button" class="btn btn-success" data-toggle="modal" data-target="#'+id+'">View '+name+'</button>';
+
+        var ul = '<!-- Trigger the modal with a button -->';
+        ul+='<!-- Modal -->';
+        ul+='<div id="'+id+'" class="modal fade" role="dialog">';
+        ul+=' <div class="modal-dialog">';
+
+
+        ul+= '   <!-- Modal content-->';
+        ul+=  '  <div class="modal-content">';
+        ul+='   <div class="modal-header">';
+        ul+=    '    <button type="button" class="close" data-dismiss="modal">&times;</button>';
+        ul+='   <h4 class="modal-title">'+name+'s</h4>';
+        ul+='      </div>';
+        ul+='     <div class="modal-body">';
+
+        switch(name){
+            case 'condition':
+                ul+=    createConditional(name,counter);
+                break;
+            case 'attribute':
+                ul+=    createAttributeInputSelect(name,counter);
+                break;
+            case 'option':
+                ul+=    createOptionInputSelect(name,counter);
+                break;
+
+        }
+
+        ul+='   </div>';
+        ul+='   <div class="modal-footer">';
+        ul+='   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
+        ul+='   </div>';
+        ul+='   </div>';
+
+        ul+='</div>';
+        ul+='</div>';
+
+        return  button+ul;
+    }
+    function createConditional(name,counter){
+
+
+        var button="<button class='btn btn-primary center' id='options_add_"+counter+"' onclick=\"addConditionToField('"+name+"_"+counter+"',"+counter+")\">create new field</button>"
+
+
+        var ul=button;
+        ul+=createEmptyConditionalGroup(counter);
+
+        ul+="</div></div>";
+        return ul;
+    }
+
+
+    $("#logTable").on("click",function(){
+
+        var elements=$("#example").find("select,input");
+
+        $.each(elements,function(key,value){
+
+            if(value.closest("span")!=null) {
+                console.log(value.parentNode.children[0].innerText + ":" + value.value);
+            }
+            else{
+                console.log( value.value);
+            }
+
+        });
+    });
+
+
+    // initPreDefinedElementsarrar(array('emailElement','passwordElement','fileElement','checkboxElement','submitElement','textElement','textareaElement'));
+
+    function getPreDefinedElementValues(val){
+
+
+        var elements=<?php echo(json_encode($formElementsObjects));?>;
+        elements['date']={
+            'name': '',
+            'attributes': {
+                'type': 'text',
+                'placeholder': 'Enter Date',
+                'id': ''
+            }
+            ,
+            'options': {'label': 'Date'}
+        };
+        elements['button']={
+            "name": "",
+            "type": "button",
+            "attributes": {
+                "type": "button",
+                "id": "",
+                "value": ""
+            },
+            "options": {
+            }
+        };
+        elements['submit']= {
+            "name": "submit_button",
+            "type": "button",
+            "attributes": {
+                "id": "button_submit",
+                "type": "submit"
+            },
+            "options": {
+                "label": "save",
+                "column-size": "sm-6  pull-right",
+                "button-group": "group-1"
+            }
+        };
+
+        return elements[val];
+
+
+        switch (val){
+            case 'email':
+                return emailElement;
+                break;
+            case 'password':
+                return passwordElement;
+                break;
+            case 'file':
+                return fileElement;
+                break;
+            case 'checkbox':
+                return checkboxElement;
+                break;
+            case 'submit':
+                return submitElement;
+                break;
+            case 'text':
+                return textElement;
+                break;
+            case 'textarea':
+                return textareaElement;
+                break;
+
+            case 'optionsRadios':
+                return optionsRadiosElement;
+                break;
+
+            case 'multipleSelect':
+                return multipleSelectElement;
+                break;
+            case 'select':
+                return selectElement;
+                break;
+            case 'multiCheckboxNoInline':
+                return multiCheckboxNoInlineElement;
+                break;
+            case 'date':
+            {
+                return dateElement;
+                break;
+            }
+            case 'button':
+            {
+                return buttonElement;
+                break;
+            }
+        }
+    }
+    /*function createPreDefinedElementsValues(val){
+     switch val{
+     case 'emailElement':
+     preDefinedElements.push(emailElement)
+     break;
+     case 'passwordElement':
+     preDefinedElements.push(passwordElement)
+     break;
+     case 'fileElement':
+     preDefinedElements.push(fileElement)
+     break;
+     case 'checkboxElement':
+     preDefinedElements.push(checkboxElement)
+     break;
+     case 'submitElement':
+     preDefinedElements.push(submitElement)
+     break;
+     case 'textElement':
+     preDefinedElements.push(textElement)
+     break;
+     case 'textareaElement':
+     preDefinedElements.push(textareaElement)
+     break;
+     }
+     }*/
+
+
+    var dateElement = {
+        'name': '',
+        'attributes': {
+            'type': 'text',
+            'placeholder': 'Enter Date',
+            'id': ''
+        }
+        ,
+        'options': {'label': 'Date'}
+    };
+    var buttonElement ={
+        "name": "",
+        "type": "button",
+        "attributes": {
+            "type": "button",
+            "id": "",
+            "value": ""
+        },
+        "options": {
+        }
+    };
+
+    var emailElement = {
+        'name': '',
+        'attributes': {
+            'type': 'email',
+            'placeholder': 'Enter address',
+            'id': ''
+
+        }
+        ,
+        'options': {'label': 'Email address'}
+    };
+
+
+
+    var passwordElement = {
+        'name' : 'input-password',
+        'attributes' :{'type':'password',
+            'placeholder':'Password',
+            'id':'exampleInputPassword1'},
+        'options' :{'label' : 'Password'},
+
+    };
+
+    var fileElement = {
+        'name': 'input-file',
+        'attributes': {
+            'type': 'file',
+            'id': 'exampleInputFile'
+        },
+        'options': {
+            'label': 'File input',
+            'help-block': 'Example block-level help text here.'
+        }
+    };
+
+    var checkboxElement = {
+
+        'name': 'input-checkbox',
+        'type': 'checkbox',
+        'options': {'label' : 'Check me out'}
+    };
+
+
+    var submitElement = {
+        "name": "button-submit",
+        "type": "button",
+        "attributes": {
+            "id": "button_submit",
+            "type": "submit"
+
+        },
+        "options": {
+            "label": "save",
+            "column-size": "sm-6  pull-right",
+            "button-group": "group-1"
+        }
+    };
+
+    var textElement =  {"name":"input-text","attributes":{"type":"text","placeholder":"Text input"}};
+
+    var textareaElement =  {"name":"input-text-area","type":"textarea","attributes":{"row":3}};
+
+
+    var checkboxElement = {"name":"input-checkbox","type":"checkbox","options":{"label":"Option one is this and that-be sure to include why it's great"}};
+
+
+    var multiCheckboxElement =  {"name":"optionsRadios","type":"MultiCheckbox","options":{"value_options":[{"label":"1","value":"option1","attributes":{"id":"inlineCheckbox1"}},{"label":"2","value":"option2","attributes":{"id":"inlineCheckbox2"}},{"label":"3","value":"option3","attributes":{"id":"inlineCheckbox3"}}]}}
+    var multiCheckboxNoInlineElement =   {"name":"optionsRadiosNoInline","type":"MultiCheckbox","options":{"value_options":[{"label":"1","value":"option1","attributes":{"id":"noInlineCheckbox1"}},{"label":"2","value":"option2","attributes":{"id":"noInlineCheckbox2"}},{"label":"3","value":"option3","attributes":{"id":"noInlineCheckbox3"}}],"inline":false}};
+
+    var selectElement =   {"name":"select","type":"select","options":{"value_options":[1,2,3,4,5]}};
+
+    var multipleSelectElement =   {"name":"multiple-select","type":"select","options":{"value_options":[1,2,3,4,5]},"attributes":{"multiple":true}}
+    var optionsRadiosElement =  {"name":"optionsRadios","type":"radio","options":{"value_options":{"option1":"Option one is this and that-be sure to include why it's great","optionsRadios2":"Option two can be something else and selecting it will deselect option one"}}};
+
+    var nullElement ={"name":"optionsRadios","type":"radio","options":{"value_options":{"option1":"Option one is this and that-be sure to include why it's great","optionsRadios2":"Option two can be something else and selecting it will deselect option one"}}}
+
+    function createAjaxObject(){
+        var ajaxThis = '';
+        var arrayOfInputs = [];
+        var ajaxDocument = {};
+        ajaxDocument["fields"] = {};
+        ajaxDocument["label"] = $("#form_id").val();
+        var ajaxConditions = [];
+        var ajaxjsAddons = {};
+        var ajaxPhpAddons=[];
+        //conditions = {};
+        var ajaxFieldsTable = {};
+        ajaxDocument['fields_table']=ajaxFieldsTable;
+        ajaxDocument["groups"]={};
+        $('table').each(function () {
+            var groupName = $(this).closest('.dataTables_wrapper').attr("id").split("_wrapper")[0];
+            if(groupName!=undefined) {
+            var group=[];
+            $(this).find('tbody  > tr').each(function () {
+
+                try {
+
+
+                    var name = $(this).children(':nth-child(2)').find("input").val();
+                    if (!name.includes("button"))
+                        arrayOfInputs.push(name + " varchar(255) default NULL");
+
+
+                    var type = $(this).children(':nth-child(3)').find("select").val();
+                    if (type.includes("button"))
+                        type = "button";
+
+                    var attributes = {};
+                    $(this).children(':nth-child(4)').find("input").each(function () {
+
+                        var field_name = $(this).attr("name");
+                        var field_value = $(this).val();
+                        if (field_value != "") {
+                            if(field_value.indexOf("{")>=0 || field_value.indexOf("[")>=0) {
+                                attributes[field_name] = JSON.stringify(eval("(" + field_value + ")"));
+                            }
+                            else {
+                                attributes[field_name] = field_value;
+                            }
+                        }
+                    });
+
+                    var options = {};
+                    $(this).children(':nth-child(5)').find("input").each(function () {
+
+                        var field_name = $(this).attr("name");
+                        var field_value = $(this).val();
+                        if (field_value != "")
+                            if(field_value.indexOf("{")>=0 || field_value.indexOf("[")>=0) {
+                                options[field_name] = JSON.stringify(eval("(" + field_value + ")"));
+                            }
+                            else {
+                                options[field_name] = field_value;
+                            }
+
+                    });
+
+
+                    $(this).children(':nth-child(6)').find(".input-group").each(function () {
+
+                        var field_value = $(this).children(':nth-child(2)').val();
+                        var action = $(this).children(':nth-child(1)').val();
+                        var condition = $(this).children(':nth-child(4)').val();
+                        var value_to_check = $(this).children(':nth-child(5)').val();
+                        // ajaxConditions=array();
+
+                        ajaxConditionRulesArray = [field_value, condition, value_to_check];
+                        ajaxConditions.push({name: {"action": action, "rules": ajaxConditionRulesArray}})
+                    });
+
+                    $(this).children(':nth-child(7)').find("textarea").each(function () {
+                        ajaxjsAddons[name] = $(this).val();
+                    });
+                    $(this).children(':nth-child(8)').find("textarea").each(function () {
+
+                        ajaxPhpAddons.push($(this).val());
+                    });
+                    $(this).children(':nth-child(9)').find("input").each(function () {
+
+                        ajaxFieldsTable[name] = $(this).val();
+                    });
+
+                    group.push(name);
+                }
+                catch (err) {
+
+                    console.log(err);
+                }
+
+                ajaxDocument["fields"][name] = {};
+                ajaxDocument["fields"][name]["type"] = type;
+                ajaxDocument["fields"][name]["name"] = name;
+                ajaxDocument["fields"][name]["attributes"] = attributes;
+                ajaxDocument["fields"][name]["options"] = options;
+
+            })
+        if(group.length>0)
+            ajaxDocument["groups"][groupName]=group;
+            }
+            // ajaxDocument["fields"][name]["groups"].push(groupName);
+        });
+
+
+        //ajaxDocument["fields"]["groups"]=groups;
+
+
+        ajaxObject={};
+        ajaxObject["document"]=ajaxDocument;
+        ajaxObject["conditions"]=ajaxConditions;
+        ajaxObject["jsAddons"]=ajaxjsAddons;
+        ajaxObject["PHPAddons"]=ajaxPhpAddons;
+        ajaxObject["fields_table"]=ajaxFieldsTable;
+
+        //create sql
+
+        arrayOfInputs.push("date date default NULL");
+        arrayOfInputs.push("pid bigint(20) default NULL");
+        arrayOfInputs.push("id bigint(20) NOT NULL auto_increment");
+        arrayOfInputs.push("user varchar(255) default NULL");
+        arrayOfInputs.push("authorized tinyint(4) default NULL");
+        arrayOfInputs.push("groupname varchar(255) default NULL");
+        arrayOfInputs.push("encounter varchar(255) default NULL");
+        ajaxObject["sql"]=" CREATE TABLE "+$("#form_id").val()+" ("+arrayOfInputs.join()+","+" PRIMARY KEY (id)) ENGINE=InnoDB; "
+        ajaxObject["_id"]=$("#form_id").val();
+
+        return ajaxObject;
+    }
+    $("#renderForm").on("click",function() {
+        var ajaxObject=createAjaxObject();
+        $.ajax({
+            type: "POST",
+            url: "renderForm",
+            data:{couchElement:JSON.stringify(ajaxObject)}
+        }).success(function(data) {
+            alert(data);
+            console.log(data);
+        });
+
+
+    });
+    $("#saveDraftForm").on("click",function() {
+        var ajaxObject=createAjaxObject();
+        $.ajax({
+            type: "POST",
+            url: "saveDraft",
+            data:{couchElement:JSON.stringify(ajaxObject)}
+        }).success(function(data) {
+            alert(data);
+            console.log(data);
+        });
+
+
+    });
+    $("#fetch_couch_documents").on("click",function() {
+
+        $("#allCouchDbDocuments").html("");
+        $.ajax({
+            type: "POST",
+            url: " getAllDocuments",
+
+        }).success(function(data) {
+           // alert(data->body);
+            var json=JSON.parse(data);
+            $.each(JSON.parse(data)['body']['rows'],function(){
+               console.log($(this)[0]['id']);
+                $("#allCouchDbDocuments").append("<option value='"+$(this)[0]['id']+"' name='list_of_couch_db'>"+$(this)[0]['id']+"</option>")
+            });
+
+          //  console.log(data);
+        });
+
+
+    });
+
+
+ //   getAllDocumentsAction
+    $("#showPreview").on("click",function() {
+
+
+        var ajaxObject = createAjaxObject();
+        $.ajax({
+            type: "POST",
+            url: "generatePreview",
+            data: {couchElement: JSON.stringify(ajaxObject)}
+        }).success(function (data) {
+            $("#showIframeHere").html("<iframe style='    width: 501px;            height: 600px;            border: 0;' id='iframePreview' ></iframe>");
+            var iframe = document.getElementById('iframePreview'),
+                iframeWin = iframe.contentWindow || iframe,
+                iframeDoc = iframe.contentDocument || iframeWin.document;
+
+
+
+            $(iframeDoc).ready(function (event) {
+                iframeDoc.open();
+                iframeDoc.write(data);
+
+
+                iframeDoc.close();
+        });
+
+
+            $("#previewFormRendered").html( $("#showIframeHere").html());
+
+        });
+
+    });
+
+$("#form_load").on("click",function() {
+
+        var ajaxObject=null;
+    $.ajax({
+        type: "POST",
+        url: " getAllDocuments",
+        data:{couchElement:JSON.stringify(ajaxObject)}
+    }).success(function(data) {
+        // alert(data->body);
+        var json=JSON.parse(data);
+        $.each(JSON.parse(data)['body']['rows'],function(){
+            console.log($(this)[0]['id']);
+            if($(this)[0]['id']== $("#allCouchDbDocuments").val())
+               ajaxObject=$(this)[0]['doc'];
+
+        });
+        if(!ajaxObject) {
+            alert("No document found in the DB");
+            return false;
+        }
+
+        else
+        {
+            var counter=1;
+            var counterAttributeSelect=1;
+            var counterConditional=1;
+
+
+            $.each(ajaxObject['document']['groups'],function(key,value){
+
+
+
+                    $("#group_name").val(key)
+                    $("#submit_group").click();
+                    var table = $('#'+key).DataTable();
+                    table.clear().draw();
+
+                    var phpAddonsCounter=0;
+                var counterOptionSelect=1
+                    $.each(value,function(k,v){
+
+                        table.row.add( [
+
+
+                            counter,
+                            '<input name="name" class="form-control" value= "'+ ajaxObject['document']['fields'][v]['name']+'"/>',
+
+                            createInputSelect(counter),
+                            createModal("attribute",counterAttributeSelect),
+                            createModal("option",counterOptionSelect),
+                            createModal("condition",counterConditional),
+                            '<div class="form-group"><label for="comment">Java  script / jquery addon</label><textarea name="JSAddon" class="form-control" rows="2" id="">'+ajaxObject['jsAddons'][v]+'</textarea></div>',
+                            '<div class="form-group"><label for="comment">Write calls to helpers orany php code</label><textarea name="PHPAddons" class="form-control" rows="2" id="">'+ajaxObject['PHPAddons'][phpAddonsCounter++]+'</textarea></div>',
+
+                            "<input name='table_name' class='form-control' placeholder='table name' value='"+ajaxObject['document']['fields'][v]['table_name']+"'/>"
+
+
+
+
+                        ] ).draw( false );
+
+                        if(ajaxObject['document']['fields'][v]['attributes']['type']==undefined)
+                        {
+                            typeElement=ajaxObject['document']['fields'][v];
+                            $("#select_"+counter).val(typeElement['type']);
+                        }
+                        else {
+                            if (ajaxObject['document']['fields'][v]['attributes']['type'] == "submit" || ajaxObject['document']['fields'][v]['attributes']['type'] == "cancel") {
+                                $("#select_" + counter).val(ajaxObject['document']['fields'][v]['name']);
+                            }
+                            else {
+
+                                $("#select_" + counter).val(ajaxObject['document']['fields'][v]['attributes']['type'])
+                            }
+                        }
+                        var Attributes=$("#attribute_"+counterAttributeSelect).find("#attribute_group_new_"+counterAttributeSelect);
+                        Attributes.html(" ");
+                        $.each(ajaxObject['document']['fields'][v]['attributes'] ,function(key,value){
+                            if(!$.isArray(value) && typeof(value)!='object') {
+                            Attributes.append('<div class="input-group"> <span class="input-group-addon" id="basic-addon1">'+key+'</span><input class="form-control" type="text" name="'+key+'" value="'+value+'"/></div>');
+                            }
+                            else{
+                                Attributes.append('<div class="input-group"> <span class="input-group-addon" id="basic-addon1">' + key + '</span><input class="form-control" type="text" name="' + key + '" value="' +JSON.stringify(value).replace(/\"/g,'\'') + '"/></div>');
+                            }
+                        });
+
+                        var options=$("#option_"+counterOptionSelect).find("#option_group_"+counterOptionSelect);
+                        options.html(" ");
+                        $.each(ajaxObject['document']['fields'][v]['options'] ,function(key,value){
+                            if(!$.isArray(value) && typeof(value)!='object') {
+                                 options.append('<div class="input-group"> <span class="input-group-addon" id="basic-addon1">'+key+'</span><input class="form-control" type="text" name="'+key+'" value="'+value+'"/></div>');
+                            }
+                            else
+                            {
+                                console.log(value);
+                                options.append('<div class="input-group"> <span class="input-group-addon" id="basic-addon1">' + key + '</span><input class="form-control" type="text" name="' + key + '" value="' +JSON.stringify(value).replace(/\"/g,'\'') + '"/></div>');
+                            }
+                        });
+
+
+                        $("#select_"+counter).click();
+
+
+                   /*     $("#attribute_"+counter).attr("id",key+"_"+counter);
+                        $("#option_"+counter).attr("id",key+"_"+counterOptionSelect);
+                        $("#condition_"+counter).attr("id",key+"_"+counterConditional);*/
+                        $("#select_"+counter).attr("id",key+"_"+counter);
+
+
+                        $('input[value="undefined"]').val(" ");
+                        $.each($('textarea'),function(){if($(this).text()=="undefined")$(this).text("") })
+                        counter++;
+                        counterAttributeSelect++;
+                        counterConditional++;
+                        counterOptionSelect++;
+
+                      console.log( ajaxObject['document']['fields'][v]);
+
+                    })
+
+
+            });
+        }
+    });
+
+$("#clearAllGroups").on("click",function(){
+    groupIdsArray=[];
+    $("#groups").html("");
+})
+        //  console.log(data);
+    });
+
+
+</script>

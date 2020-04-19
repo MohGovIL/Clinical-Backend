@@ -1,0 +1,1077 @@
+<style>
+    form[role="form"] .panel-body .tab-content {
+        width: 100%;
+        float: right;
+    }
+    .error-message {
+        margin: 0px;
+    }
+    .button
+    {
+        width: 150px;
+        padding: 10px;
+        background-color: #FF8C00;
+        box-shadow: -8px 8px 10px 3px rgba(0,0,0,0.2);
+        font-weight:bold;
+        text-decoration:none;
+    }
+    #cover{
+        position:fixed;
+        top:0;
+        left:0;
+        background:rgba(0,0,0,0.6);
+        z-index:99999;
+        width:100%;
+        height:100%;
+        display:none;
+    }
+    #loginScreen
+    {
+        height:380px;
+        width:340px;
+        margin:0 auto;
+        position:relative;
+        z-index:10;
+        display:none;
+        background: url(login.png) no-repeat;
+        border:5px solid #cccccc;
+        border-radius:10px;
+    }
+    #loginScreen:target, #loginScreen:target + #cover{
+        display:block;
+        opacity:2;
+    }
+    .cancel
+    {
+        display:block;
+        position:absolute;
+        top:3px;
+        right:2px;
+        background:rgb(245,245,245);
+        color:black;
+        height:30px;
+        width:35px;
+        font-size:30px;
+        text-decoration:none;
+        text-align:center;
+        font-weight:bold;
+    }
+
+    .loader {
+        /*border: 16px solid #f3f3f3;*/
+       /* border-radius: 50%;*/
+        /*border-top: 16px solid #3498db;*/
+        width: 180px;
+        height: 180px;
+        /*-webkit-animation: spin 3s linear infinite; */
+       /* animation: spin 3s linear infinite;*/
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        padding: 90px;
+
+    }
+
+    /* Safari */
+    @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(360deg); }
+        100% { -webkit-transform: rotate(0deg); }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(360deg); }
+        100% { transform: rotate(0deg); }
+    }
+
+    <?php if ($_SESSION['language_direction'] == 'rtl'):?>
+    .checkbox {
+        margin-right: 15px;
+    }
+
+    <?php else:?>
+    .checkbox {
+        margin-left: 15px;
+    }
+
+    <?php endif;?>
+
+    input[type=text], textarea {
+        -webkit-transition: all 0.30s ease-in-out;
+        -moz-transition: all 0.30s ease-in-out;
+        -ms-transition: all 0.30s ease-in-out;
+        -o-transition: all 0.30s ease-in-out;
+        outline: none;
+        border: 1px solid #DDDDDD;
+
+
+    }
+
+    input[type=text]:focus, textarea:focus {
+        box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+        border: 1px solid rgba(81, 203, 238, 1);
+        background: #f4ff99;
+    }
+
+    .nopadding {
+        padding: 1px !important;
+        margin: 0 !important;
+    }
+
+    .labelTitleSmall, .labelTitle {
+        font-size: 13px;
+        border-bottom: 1px solid #d1d1d1;
+        border-top: 1px solid #d1d1d1;
+        width: 100%;
+        padding: 10px 0 10px 0;
+        margin: 10px 0;
+        background: #fafafa;
+        padding-right: 10px;
+    }
+    .small_checkboxes_label {
+        font-size: 14px;
+        word-spacing: 18px;
+    }
+
+    .bold_main_title {
+        font-size: 20px;
+    }
+    .radio-inline-label{
+        padding-right: 0px !important;
+    }
+    label.radio-inline:first-of-type {
+        margin-right: 0px !important;
+    }
+    .custom-inline-input{
+        width :50% !important;
+    }
+
+    .form-control {
+        border:1px solid Gray ;
+    }
+
+    .form-control:focus {
+        border:1px solid #51CBEE !important;
+    }
+
+    .nav-tabs {
+         border-bottom: 0 !important;
+    }
+
+    label.custom-inline-input ~ span {
+        padding-right: 50%;
+    }
+        @media (max-width:990px){
+            .custom-size, .custom-inline-input{
+                width: 100% !important;
+                /*margin-bottom: 20px;*/
+            }
+
+            label.radio-inline:first-of-type {
+                margin-right: 20px !important;
+            }
+            .radio-inline+.error-message {
+                padding-right: 3%;
+                display: initial;
+            }
+            .custom-inline-input+.error-message {
+                padding-right: 0;
+            }
+
+            .form-group .checkbox label{
+                margin-top: 20px;
+            }
+
+    }
+    .container-fluid{
+        max-width: 1360px;
+    }
+
+
+</style>
+<div id="cover" >
+
+    <div class="loader">
+        <h4 style='    position: absolute;    top: 53px;    left: 16px;       color: #f7f7f7;    font-size: x-large;'>
+            <?php echo  \Formhandler\Controller\FormhandlerController::str_contains($form_title,str_replace("\\","",xls("Vaccine Counselling For Traveling Abroad")))?str_replace("\\\\","\\",xls("Please wait")) .'<br/>'.  xls(" For recommendations update"):''; ?>
+        </h4>
+    </div>
+</div>
+
+<!--<div align="center">
+    <br><br><br><br>
+    <a href="#loginScreen" class="button">Click here to Log In</a>
+</div>
+<div id="loginScreen">
+    <a href="#" class="cancel">&times;</a>
+</div>-->
+
+
+<div id="<?php echo $form_name;?>_form_scss">
+
+<?php echo $this->form($form, null); ?>
+
+
+    <span class="tooltip" title="&lt;img src=&quot;my-image.png&quot; /&gt; &lt;strong&gt; This text is in bold case !&lt;/strong&gt;">This is working</span>
+
+
+
+    <div class="groupsAreHere">
+    <div class="formIsHere">
+        <ul class="nav nav-tabs groupTabs">
+        </ul>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><?php echo $this->translate->z_xlt($form_title); ?></h3>
+        </div>
+        <div class="panel-body">
+            <div class="tab-content"></div>
+            <?php if ($PHPAddons): ?>
+                <?php foreach ($PHPAddons as $key => $phpLine): ?>
+                    <?php if ($phpLine): ?>
+                        <?php eval("\$str = $phpLine"); ?>
+                        <?php echo $str . "\n"; ?>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+        <div class="panel-footer">
+            <div class="formSumbitButtonsHere"></div>
+        </div>
+    </div>
+</div>
+
+<?php
+
+    $groupsTranslate = array();
+
+    foreach ($groups as $key => $group) {
+        unset ($group[$key]);
+        $groupsTranslate[$key] = $this->translate->z_xlt(str_replace("_", " ", $key));
+    }
+?>
+</div>
+<script type="text/javascript">
+
+    var tabsTranslate =<?php echo json_encode($groupsTranslate);?>;
+    var address = "<?php echo $address;?>";
+    var patient_id="<?php echo $patientInfo['pid'];?>";
+    var patient_gender="<?php echo $patientInfo['gender'];?>";
+    var authUserID="<?php echo $_SESSION['authUserID'];?>";
+    var currentDate="<?php echo oeFormatShortDate();?>";
+    var saveAndPrintFlag = "<?php echo $saveAndPrint;?>";
+
+
+    key_place_offset = '';
+    function executeThis(rules) {
+        switch (rules[1]) {
+            case "ns":
+                if ($("[name='" + rules[0] + "'][value='" + rules[2] + "']").is(':checked')) {
+                    return false;
+                }
+                else{
+                    return true;
+                }
+                break;
+            case "se":
+                if (($("[name='" + rules[0] + "']").is("select") && $("[name='" + rules[0] + "']").val() == rules[2] ) ||
+                    $("[name='" + rules[0] + "'][value='" + rules[2] + "']").is(':checked') || $("[name='" + rules[0] + "'][value='" + rules[2] + "']").is(':selected'))
+                    return true;
+                break;
+            case "eq":
+                if($("[name='" + rules[0] + "']")[0].type == 'radio')
+                {
+                    if ($("[name='" + rules[0] + "']:checked").val() == rules[2])
+                        return true;
+                }
+                else {
+                    if ($("[name='" + rules[0] + "']").val() == rules[2])
+                        return true;
+                }
+                break;
+            case "ne":
+                if($("[name='" + rules[0] + "']")[0].type == 'radio')
+                {
+                    if ($("[name='" + rules[0] + "']:checked").val() == rules[2])
+                        return true;
+                }
+                else {
+                    if ($("input[name='" + rules[0] + "']").val() != rules[2])
+                        return true;
+                }
+                break;
+            case "checked":
+                if ($("[name='" + rules[0] + "']:checked").val() == rules[2])
+                    return true;
+                break;
+            case "not_checked":
+                if ($("[name='" + rules[0] + "']:checked").val() != rules[2])
+                    return true;
+                break;
+            case "smaller":
+                if ($("[name='" + rules[0] + "']").val() < rules[2])
+                    return true;
+                break;
+            case "bigger":
+                if ($("[name='" + rules[0] + "']").val() > rules[2])
+                    return true;
+                break;
+            case "begin_bigger_end":
+                if ($("[name='" + rules[0] + "']").val() > $("[name='" + rules[2] + "']").val())
+                    return true;
+                break;
+        }
+        return false;
+    }
+    function cleanConstraintJob(name,job){
+        if(constraints[name] != undefined) {
+            if (constraints[name][job]!= null || constraints[name][job] != "null" || constraints[name][job] != undefined || constraints[name][job] != 'undefined')
+                delete(constraints[name][job]);
+        }
+    }
+    function action(name, actionR, rules) {
+        switch (actionR) {
+            case "showIf":
+                if (executeThis(rules)) {
+                    $("[name='" + name + "'").closest(".form-group-TWB").show();
+
+                    if ($("#label_for_" + name).length)
+                        $("#label_for_" + name).show();
+
+                }
+                else {
+                    $("[name='" + name + "']").closest(".form-group-TWB").hide();
+                    //debugger;
+                    if($("[name='" + name + "']")[0].type=="radio") {
+                        $("[name='" + name + "']").prop("checked", false);
+                    }
+                    else{
+                        $("[name='" + name + "']").val('');
+                    }
+
+                    if ($("#label_for_" + name).length)
+                        $("#label_for_" + name).hide();
+                }
+                break;
+            case "hideIf":
+                if (executeThis(rules)) {
+                    $("[name='" + name + "']").closest(".form-group-TWB").hide();
+                    //debugger;
+                    if($("[name='" + name + "']")[0].type=="radio") {
+                        $("[name='" + name + "']").prop("checked", false);
+                    }
+                    else{
+                        $("[name='" + name + "']").val('');
+                    }
+
+                    if ($("#label_for_" + name).length)
+                        $("#label_for_" + name).hide();
+
+                }
+                else{
+                    $("[name='" + name + "'").closest(".form-group-TWB").show();
+                    if ($("#label_for_" + name).length)
+                        $("#label_for_" + name).show();
+                }
+
+                break;
+            case "requireIf":
+
+                if (constraints == null || constraints == "null" || constraints == undefined || constraints == 'undefined') {
+                    constraints = {};
+                    constraints[name] = {};
+                }
+
+                if (executeThis(rules)) {
+                    constraints[name] = {"presence": {"message": "<?php echo $this->translate->z_xlt("Value is required")?>"}};
+                }
+                else {
+                        cleanConstraintJob(name,"presence");
+                        /*if(constraints[name] != undefined) {
+                        if (constraints[name].presence != null || constraints[name].presence != "null" || constraints[name].presence != undefined || constraints[name].presence != 'undefined')
+                           delete(constraints[name].presence);
+                    }*/
+                }
+                break;
+            case "disableIf":
+                if (executeThis(rules)) {
+                    $("[name='"+name+"']").prop("disabled",true);
+                }
+                else {
+                    $("[name='"+name+"']").prop("disabled",false);
+                }
+                break;
+            case "cleanIf":
+                if (executeThis(rules)) {
+                    $("[name='"+name+"']").val("");
+                }
+                break;
+            case "errorIf":
+                //show errors according conditions
+                if (executeThis(rules)) {
+                    $("#error_msg").remove();
+                    //disable not working on this button, always return to active I didn't find why.
+                    $("#button_submit").css('pointer-events', 'none');
+                    $("[name='"+name+"']").addClass('error-border');
+                    switch (rules[1]) {
+                        // error message for begin time that later then  end time
+                        case 'begin_bigger_end':
+                            $("[name='"+name+"']").after("<p id='error_msg'><small class='error-message' ><?php echo $this->translate->z_xlt('End time smaller than begin time')?></small></p>");
+                            break
+                        default:
+                            $("[name='"+name+"']").after("<small id='error_msg'><?php echo $this->translate->z_xlt('Value is valid')?></small>");
+                    }
+
+                }
+                else {
+                    //hide error and enable submit
+                    $("#button_submit").css('pointer-events', 'auto');
+                    $("[name='"+name+"']").removeClass('error-border');
+                    $("#error_msg").remove();
+                }
+                break;
+            case "lessThanOrEqualTo" :{
+                if (executeThis(rules)) {
+
+                    constraints[name] = {
+                        "numericality": {
+                            "onlyInteger": true,
+                            "lessThanOrEqualTo": parseInt(rules[2],10),
+                            "message": "<?php echo $this->translate->z_xlt("Must be less than or equal to")." ";?>"+rules[2]
+                    }
+                }
+                }
+
+                else{
+
+                  //  constraints[name] = {};
+                    cleanConstraintJob(name,"numericality")
+                }
+                break;
+            }
+            case "lessThan" :{
+                if (executeThis(rules)) {
+                    constraints[name] = {
+                        "numericality": {
+                            "onlyInteger": true,
+                            "lessThan":parseInt(rules[2],10),
+                            "message": "<?php echo $this->translate->z_xlt("Must be less than")." ";?>"+rules[2]
+                        }
+                    }
+                }
+                else{
+                    //constraints[name] = {};
+                    cleanConstraintJob(name,"numericality");
+
+                }
+                break;
+            }
+            case "greaterThanOrEqualTo" :{
+                if (executeThis(rules)) {
+                    constraints[name] = {
+                        "numericality": {
+                            "onlyInteger": true,
+                            "greaterThanOrEqualTo": parseInt(rules[2],10),
+                            "message": "<?php echo $this->translate->z_xlt("Must be grater than or equal to")." ";?>"+rules[2]
+                        }
+                    }
+                }
+                else{
+
+                   //constraints[name] = {};
+                    cleanConstraintJob(name,"numericality");
+                }
+                break;
+            }
+            case "greaterThan" :{
+                if (executeThis(rules)) {
+                    constraints[name] = {
+                        "numericality": {
+                            "onlyInteger": true,
+                            "greaterThan": parseInt(rules[2],10),
+                            "message": "<?php echo $this->translate->z_xlt("Must be grater than")." ";?>"+rules[2]
+                        }
+                    }
+                }
+                else{
+                    //constraints[name] = {};
+                    cleanConstraintJob(name,"numericality");
+                }
+                break;
+            }
+
+        }
+    }
+
+    function getGroupTab(id, active) {
+        if (active) {
+            return '<div id="' + id + '" class="tab-pane active"></div>';
+        }
+        return '<div id="' + id + '" class="tab-pane fade in"></div>';
+    }
+
+    function hideErrors2(input, id) {
+        $(input).removeClass('error-border');
+        $("#error_" + id).remove();
+    }
+
+    $("document").ready(function () {
+
+        inputs = {};
+
+        var groups      = <?php echo(json_encode($groups));?>;
+        var groupsCount = <?php echo count(json_decode(json_encode($groups), true));?>;
+        var counter     = 0;
+        var firstTab    = '';
+
+        dateOfCreationOfForm = '<?php echo $date;?>';
+        formId          = $("form").attr("id");
+
+        $(".groupsAreHere").appendTo("#" + formId);
+
+        //-------------------------------------------------
+        // Take care of form inside titles
+        //-------------------------------------------------
+
+        var inputParent = $(".labelTitle").parent();
+        var inputParentSmall = $(".labelTitleSmall").parent();
+        //$('label', inputParent).css('font-size', "30px").css('border-bottom', '1px solid #d1d1d1').css('width', '100%').css('padding', '10px 0 10px 0');
+        //$('label', inputParent).css('font-size', "16px").css('border-bottom', '1px solid #d1d1d1').css('border-top', '1px solid #d1d1d1').css('width', '100%').css('padding', '10px 0 10px 0').css('margin', '10px 0').css('background', '#fafafa');
+        $('label', inputParent).addClass('labelTitle');
+        $('label', inputParentSmall).addClass('labelTitleSmall');
+
+        inputParent.addClass('nopadding');
+        inputParentSmall.addClass('nopadding');
+
+        $.each(groups, function (tab, input) {
+
+            inputs[tab] = new Array();
+            counter_helper = 1;
+            $.each(input, function (key, value) {
+                if (typeof(value) == "object") {
+                    $.each(value, function (control_name, control_place) {
+                        if (!$.isArray(inputs[tab][control_place]))
+                            inputs[tab][control_place] = new Array();
+                        if (inputs[tab][control_place].indexOf(control_name) < 0)
+
+                            inputs[tab][control_place].push(control_name);
+                    });
+                }
+                else {
+                    if (!$.isArray(inputs[tab][counter_helper]))
+                        inputs[tab][counter_helper] = new Array();
+
+                    inputs[tab][counter_helper].push(value);
+                    counter_helper++;
+                }
+            });
+
+        });
+
+        $.each(inputs, function (tab, input) {
+
+            var active = (firstTab == '') ? 'class="active"' : '';
+
+            $(".groupTabs").append("<li role='presentation' "+ active +"><a data-toggle='tab' id='" + tab + "_group' href='#" + tab + "' class='oe-bold-black' >" + tabsTranslate[tab] + "</a></li>");
+
+            if (firstTab == '')
+                firstTab = tab;
+
+            if (document.getElementById(tab) == null) {
+                if (counter < 1) {
+                    newTab = getGroupTab(tab, true);
+                    counter++;
+                } else {
+                    newTab = getGroupTab(tab, false);
+                }
+            } else {
+                newTab = $("#" + tab);
+            }
+
+            $(".tab-content").append(newTab);
+
+            $.each(input, function (key, val) {
+
+                key_place_offset = key;
+
+                if ($("#" + tab + "_" + key_place_offset).length == 0 && val != undefined) {
+                    //it doesn't exist
+                    //var new_div = $("<div class='row' id='_" + tab + "_" + key_place_offset + "'></div>");
+                    var new_div = $("<div class='form-group row' id='_" + tab + "_" + key_place_offset + "'></div>");
+                    new_div.appendTo($("#" + tab));
+                }
+
+                if (val != undefined) {
+                    var elementsInOnRow = val.length;
+                    if(elementsInOnRow % 2 > 0 && elementsInOnRow!=1){
+                        elementsInOnRow ++;
+                    }
+                    var col_length=12 / elementsInOnRow;
+
+
+                    $.each(val, function (key_place, value) {
+
+                        var current_input=$("input[name='" + value + "']");
+                        var custom_size=current_input.hasClass( "custom-size" );
+
+                        if (custom_size){
+
+                            var element_class_all=current_input.attr('class');
+                            var sub_class = "wrapper-";
+                            var element_class = element_class_all.substr( element_class_all.indexOf(sub_class), 10 );
+                            col_length= element_class.replace( /^\D+/g, '');
+                        }
+
+
+                        if (!$.isEmptyObject($("div[id*='" + value + "']")) && $("div[id='" + value + "']").length > 0) {
+                            $("div[id='" + value + "']").closest(".form-group-TWB").appendTo($("#" + tab));
+                            return;
+                        }
+
+                        if (!$.isEmptyObject(current_input) && current_input.length > 0) {
+
+
+
+                            current_input.closest(".form-group-TWB").appendTo($("#_" + tab + "_" + key_place_offset));
+                            current_input.closest(".checkbox").appendTo($("#_" + tab + "_" + key_place_offset));
+
+                            if (current_input.attr("type") != "radio" && current_input.attr("type") != "hidden") {
+
+                                current_input.addClass("form-control");
+
+                                var is_one_line_input=current_input.hasClass( "custom-inline-input" );
+
+                                if (is_one_line_input){
+                                        current_input.closest(".form-group-TWB").addClass("form-inline  col-md-" + col_length);
+                                }else{
+
+                                        current_input.closest(".form-group-TWB").addClass("col-md-" + col_length);
+                                }
+
+                            } else {
+                                if (current_input.attr("type") == "radio") {
+
+                                    var radio_container=$("input[name='" + value + "']").closest(".form-group-TWB");
+
+                                        radio_container.addClass("col-md-" + col_length);
+
+                                    var is_one_line=radio_container.find('label').hasClass( "radio-one-line-label" );
+                                    radio_container.find('.radio label').css('margin-left', "15px");
+
+                                    if(is_one_line){
+                                        radio_container.children().not(':gt(0)').wrapAll("<div class='labelWrapper radio-inline radio-inline-label col-md-6'></div>");
+                                    }else{
+                                        radio_container.children().not(':gt(0)').wrapAll("<div class='labelWrapper'></div>");
+                                    }
+
+
+                                    radio_container.appendTo($("#_" + tab + "_" + key_place_offset));
+
+                                }
+
+                            }
+
+
+                            if (current_input.attr("type") == "hidden") {
+
+                                var checkbox_container= $("input[name='" + value + "']").closest(".form-group");
+
+                                checkbox_container.find('.checkbox').addClass("col-md-" +  col_length );
+                                checkbox_container.find('.checkbox').css('margin-right', "0px");
+                                checkbox_container.find('.checkbox').css('margin-top', "0px");
+                                checkbox_container.find('label').css('margin-right', "30px");
+                                checkbox_container.find("input[type='checkbox']").css('margin-right', "-33px");
+                                checkbox_container.appendTo($("#_" + tab + "_" + key_place_offset));
+
+                            }
+
+                            return;
+                        }
+
+                        if (!$.isEmptyObject($("textarea[name*='" + value + "']")) && $("textarea[name='" + value + "']").length > 0) {
+
+                            var current_input = $("textarea[name='" + value + "']");
+                            current_input.closest(".form-group-TWB").appendTo($("#_" + tab + "_" + key_place_offset));
+                            current_input.addClass("form-control");
+
+                            var is_one_line_input=current_input.hasClass( "custom-inline-input" );
+
+                            if (is_one_line_input){
+                                current_input.closest(".form-group-TWB").addClass("form-inline  col-md-" + col_length);
+                            }else{
+
+                                current_input.closest(".form-group-TWB").addClass("col-md-" + col_length);
+                            }
+
+                           // $("textarea[name='" + value + "']").closest(".form-group-TWB").addClass("col-md-" + col_length);
+
+                            return;
+                        }
+
+                        if (!$.isEmptyObject($("select[name*='" + value + "']")) && $("select[name='" + value + "']").length > 0) {
+
+                            var current_input = $("select[name='" + value + "']");
+
+                            current_input.addClass("form-control");
+
+
+                            var is_one_line_input=current_input.hasClass( "custom-inline-input" );
+
+                            if (is_one_line_input){
+                                current_input.closest(".form-group-TWB").addClass("form-inline  col-md-" + col_length);
+                            }else{
+
+                                current_input.closest(".form-group-TWB").addClass("col-md-" + col_length);
+                            }
+
+
+                            //$("select[name='" + value + "']").closest(".form-group-TWB").addClass("col-md-" + col_length);
+                            current_input.closest(".form-group-TWB").appendTo($("#_" + tab + "_" + key_place_offset));
+
+                            return;
+                        }
+
+                        if (!$.isEmptyObject($("a[name*='" + value + "']")) && $("a[name='" + value + "']").length > 0) {
+
+                            var current_input = $("a[name='" + value + "']");
+
+                            //current_input.addClass("form-control");
+
+
+                            var is_one_line_input=current_input.hasClass( "custom-inline-input" );
+
+                            if (is_one_line_input){
+                                current_input.closest(".form-group-TWB").addClass("form-inline  col-md-" + col_length);
+                            }else{
+
+                                current_input.closest(".form-group-TWB").addClass("col-md-" + col_length);
+                            }
+
+
+                            //$("a[name='" + value + "']").closest(".form-group-TWB").addClass("col-md-" + col_length);
+                            current_input.closest(".form-group-TWB").appendTo($("#_" + tab + "_" + key_place_offset));
+
+                            return;
+                        }
+
+
+
+                        if (!$.isEmptyObject($("button[name*='" + value + "']")) && $("button[name='" + value + "']").length > 0) {
+
+                            var current_input = $("button[name='" + value + "']");
+
+                            //current_input.addClass("form-control");
+
+
+                            var is_one_line_input=current_input.hasClass( "custom-inline-input" );
+
+                            if (is_one_line_input){
+                                current_input.closest(".form-group-TWB").addClass("form-inline  col-md-" + col_length);
+                            }else{
+
+                                current_input.closest(".form-group-TWB").addClass("col-md-" + col_length);
+                            }
+
+
+                            //$("a[name='" + value + "']").closest(".form-group-TWB").addClass("col-md-" + col_length);
+                            current_input.closest(".form-group-TWB").appendTo($("#_" + tab + "_" + key_place_offset));
+
+                            return;
+                        }
+
+                    });
+                }
+            });
+
+
+        });
+
+
+            $("form").find("#button_submit").appendTo($(".formSumbitButtonsHere"));
+            $("form").find("#button_cancel").appendTo($(".formSumbitButtonsHere"));
+            $("form").find("#print_page").appendTo($(".formSumbitButtonsHere"));
+
+        /*clean session when form load*/
+        sessionStorage.clear();
+        /******************************/
+
+        var targetNode = document.querySelector('[id$="_form_scss"]');
+        var config = { attributes: true, childList: true, subtree: true };
+        var callback = function(mutationsList, observer) {
+            var errorClassArray=['error-message','error-border'];
+            for(var mutation of mutationsList) {
+                /* clean session if validation turn on*/
+                if(errorClassArray.includes(mutation.target.className)){
+                    sessionStorage.clear();
+                }
+                /********************************/
+            }
+        };
+        var observer = new MutationObserver(callback);
+        observer.observe(targetNode, config);
+
+            function savePrintTolocalStorege(){
+                sessionStorage.setItem("print",formId);
+
+                $("#button_submit").on("click",function(){
+                    if( $("#button_submit").attr("disabled")=="disabled"){
+                        $("#button_submit_print").prop("disabled",true);
+                    }
+                    else{
+                        $("#button_submit_print").prop("disabled",false);
+                    }
+                });
+
+                $("input,textarea,select").on("click",function(){
+                    if( $("#button_submit").attr("disabled")=="disabled"){
+                        $("#button_submit_print").prop("disabled",true);
+                    }
+                    else{
+                        $("#button_submit_print").prop("disabled",false);
+                    }
+                })
+
+
+                $("#button_submit").click();
+            }
+        /* create save and print button */
+        if(saveAndPrintFlag=="true"){
+            var saveAndPrint=$("form").find("#button_submit").clone();
+            saveAndPrint.attr("id","button_submit_print");
+            saveAndPrint.attr("name","button_submit_print");
+            saveAndPrint.attr("type","button");
+            saveAndPrint.html('<?php echo xlt("save and print") ?>');
+            saveAndPrint.on("click",function(){
+                $(this).prop("disabled",true);
+                savePrintTolocalStorege();
+
+            });
+            saveAndPrint.css("margin-right","10px");
+            saveAndPrint.appendTo($(".formSumbitButtonsHere"));
+        }
+        /***********************************************/
+
+
+
+        <?php
+
+            if($conditions) {
+                foreach($conditions as $condition) {
+                    foreach($condition as $name=>$execute) {
+                        $rules = $execute['rules'];
+                        if(strpos($rules[1],"_arr")>-1)
+                        {
+                            $equality =  str_replace("_arr","",$rules[1]);
+                            $elements = explode(",",$rules[0]);
+                            $values = explode(",",$rules[2]);
+
+
+                            if(sizeof($elements) == sizeof($values)){
+                                foreach($elements as $key=>$val)
+                                {
+                                $rules =  [$val,$equality,$values[$key]];
+                                ?>
+                                    $("[name=<?php echo $val;?>]").bind("change click", function () {
+                                        action('<?php echo $val . '\',\'' . $execute['action'] . '\',' . json_encode($rules);?>);
+                                    });
+                                <?php
+                                }
+                            }
+                        }
+                        else{
+
+
+                        ?>
+                            $("[name=<?php echo $execute['rules'][0];?>]").bind("change click", function () {
+                                action('<?php echo $name . '\',\'' . $execute['action'] . '\',' . json_encode($execute['rules']);?>);
+                            });
+                        <?php
+                        }
+                    }
+                }
+            }
+        ?>
+
+        //replace all tabs head lines to proper text
+        $(document).find("li > a").each(function () {
+            var changed = ($(this).text().replace(/\_/g, " "));
+            $(this).text(changed);
+        });
+
+        if (groupsCount <= 1)
+            $("li[role='presentation']").text("");
+
+        <?php
+            $logArr = (array)json_decode($validationLog);
+            foreach ($logArr as $fieldName => $validatorArr) {
+                foreach ($validatorArr as $validatorName => $message) {
+                    ?>
+                    var element = "<span id='error_<?php echo attr($fieldName);?>' class='error-message'><?php echo attr($this->translate->z_xlt($message))?></span>";
+                    $("#<?php echo attr($fieldName);?>").parent().append(element);
+                    $("#<?php echo attr($fieldName);?>").on('click focus select', function () {
+                        hideErrors2(this, "<?php echo attr($fieldName);?>");
+                    });
+                <?php
+                }
+            }
+        ?>
+
+        $(".groupTabs").appendTo($(".tabsAreHere"));
+
+        <!-------------------FROM COUCH DB-------------------------------->
+        <?php
+        if($JSAddons) {
+            foreach($JSAddons as $key=>$jsLine) {
+                echo $jsLine;
+                echo "\r\n";
+            }
+        }
+        ?>
+        <!----------------END FROM COUCH DB-------------------------------->
+
+        function integerOnly() {
+            $("input[type='number']").keyup(function () {
+                this.value = this.value.replace(/[^0-9\.]/g, '');
+            });
+
+            $("input[type='number']").attr('min', '0');
+        }
+
+        function dateField() {
+           // $("input[type='date']").datepicker({ dateFormat: 'yy-mm-dd' });
+        }
+
+
+
+        function checkRadioBtns() {
+            var $radios = $('input[type="radio"]').parent().parent();
+
+            $radios.each(function(){
+                $('input[type=radio]:first', this).attr('checked', true);
+            });
+        }
+
+
+        integerOnly();
+        // todo - ask avi (failed dosage form)
+        // checkRadioBtns();
+
+        somethingChanged = false;
+        triggerChangeClick();
+
+        $('form').change(function() {
+            somethingChanged = true;
+        });
+
+
+        /* code for x button
+        function doWhenCancel(){
+            sessionStorage.clear();
+            if(somethingChanged)
+            {
+                ConfirmDialogTab("שים לב ביצעת שינויים בטופס - האם ברצונך לשמור את השינויים שביצעת");
+            }
+            else{
+                top.restoreSession();
+                //top.frames['RBot'].location.href = address
+
+                parent.parent.closeTab(parent.name, false);
+            }
+        }
+
+        var tabName=window.parent.frameElement.name;
+        var X= $(window.parent.parent.document).find("[aria-controls='"+tabName+"']").find(".ui-icon-close");
+
+        $(X).on('click',function (e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            doWhenCancel();
+        });
+        */
+
+        $("#button_cancel").on('click',function (e) {
+            sessionStorage.clear();
+            if(somethingChanged)
+            {
+                ConfirmDialog("שים לב ביצעת שינויים בטופס - האם ברצונך לשמור את השינויים שביצעת");
+            }
+            else{
+                top.restoreSession();
+                //top.frames['RBot'].location.href = address
+
+                parent.parent.closeTab(parent.name, false);
+            }
+
+        });
+
+        function translateMessage(obj,message) {
+
+            $.ajax({
+                type: "POST",
+                url: BASE_PATH + "/Formhandler/translateMessage" ,
+                data: {message: message}
+            }).done(function(data){
+
+                data = JSON.parse(data);
+                obj.message = data.output;
+
+            })
+
+        }
+    });
+
+    function setCurrentDateToControl(id,onlyPast,onlyFuture,defaultEmpty,notToday)
+    {
+        if(typeof onlyPast == 'undefined' || typeof onlyPast == null)
+            onlyPast=false;
+        if(typeof onlyFuture == 'undefined' || onlyFuture == null)
+            onlyFuture=false;
+        if(typeof defaultEmpty == 'undefined' || defaultEmpty == null )
+            defaultEmpty=false;
+        if(typeof notToday == 'undefined' || notToday == null )
+            notToday=false;
+
+        var minimumDate = false;
+        if(typeof onlyFuture !== 'undefined' && onlyFuture ){
+            minimumDate = 0;
+        }
+        if(typeof notToday !== 'undefined' && notToday){
+            //tomorrow
+            minimumDate = '+1970/01/02';
+        }
+
+        $("#"+id).datetimepicker({
+            maxDate: typeof onlyPast !== 'undefined' && onlyPast ? 0 : false,
+            minDate: minimumDate,
+            <?php $datetimepicker_timepicker = false; ?>
+            <?php $datetimepicker_showseconds = false; ?>
+            <?php $datetimepicker_formatInput = true; ?>
+            <?php require($GLOBALS['srcdir'] . '/js/xl/jquery-datetimepicker-2-5-4.js.php'); ?>
+            <?php // can add any additional javascript settings to datetimepicker here; need to prepend first setting with a comma ?>
+        });
+
+
+        if(typeof defaultEmpty !== 'undefined' && !defaultEmpty) {
+            if ($("#" + id).val() == '') {
+                $("#" + id).val(moment().format('<?php echo DateFormatRead('validateJS');?>')).trigger('change').click();
+            }
+        }
+    }
+
+
+    function setDateRangeToControl(id,fromDate,toDate)
+    {
+
+        $("#"+id).datetimepicker({
+            maxDate: toDate,
+            minDate: fromDate,
+            <?php $datetimepicker_timepicker = false; ?>
+            <?php $datetimepicker_showseconds = false; ?>
+            <?php $datetimepicker_formatInput = true; ?>
+            <?php require($GLOBALS['srcdir'] . '/js/xl/jquery-datetimepicker-2-5-4.js.php'); ?>
+            <?php // can add any additional javascript settings to datetimepicker here; need to prepend first setting with a comma ?>
+        });
+    }
+
+
+</script>

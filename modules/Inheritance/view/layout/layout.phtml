@@ -1,0 +1,96 @@
+
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <?php $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0');
+    echo $this->headMeta();
+    ?>
+
+    <!-- css files -->
+    <?php foreach($this->cssFiles as $file){
+
+        $this->headLink()->appendStylesheet($this->basePath() . $this->cssBasePath . $file);
+    }
+    echo $this->headLink();
+    ?>
+
+    <!-- Scripts -->
+    <?php
+    foreach($this->jsFiles as $file){
+
+        $this->headScript()->appendFile($this->basePath() . $this->jsBasePath . $file);
+    }
+    echo  $this->headScript() ;
+    ?>
+</head>
+<body class="body_top" dir="<?php echo $language_direction ?>" >
+<div class="container-fluid <?php echo $language_direction?>">
+    <div id="header" class="row">
+        <div class="col-md-12">
+            <nav class="navbar navbar-default navbar-static-top">
+                <div class="container-fluid">
+                    <ul class="nav  navbar-nav">
+                        <?php if(!empty($menuBar)): ?>
+                            <?php foreach($menuBar as $link): ?>
+                                <li role="presentation" id="<?php echo $link['id'] ?>"><a href="<?php echo $this->basePath() .  $link['url'] ?>"><?php echo $link['name'] ?></a></li>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class="col-md-12">
+            <?php echo $this->content; ?>
+        </div>
+    </div>
+    <footer>
+
+    </footer>
+</div> <!-- /container -->
+
+<!-- js constraints for Validate.js library-->
+<script>
+
+    var BASE_PATH = '<?php echo $this->basePath(); ?>';
+    var JS_BASE_PATH = '<?php echo $jsBasePath; ?>';
+    var JS_VARS = '<?php echo $jsVariables; ?>' ;
+
+    <?php if(isset($validateJs)): ?>
+
+    var constraints = <?php echo $validateJs; ?>;
+    var allConstraints = <?php echo $constraintsJs; ?>;
+    var formButton = '<?php echo $submitButtonId; ?>';
+    var formId = '<?php echo $formId; ?>'
+
+    <?php endif; ?>
+
+    <?php if(is_null($status)): ?>
+    var form_status = null;
+    <?php else: ?>
+    var form_status = '<?php echo $status; ?>';
+    <?php endif; ?>
+</script>
+
+<script>
+    alertify.defaults.glossary.cancel = "<?=xl('Cancel')?>";
+    alertify.defaults.glossary.ok = "<?=xl('OK')?>";
+    var lang_connection_error = "<?=xl('Connection Error')?>";
+    var lang_connection_error1 = "<?=xl('The sync connection is failed, please go to tech support')?>";
+    var lang_networking_connections_fail = "<?=xl('Networking connections fail')?>";
+    var lang_these_networks_have_successfully_updated = "<?=xl('These networks have successfully updated')?>";
+    var lang_success_update = "<?=xl('Success update')?>";
+    var lang_error_code = "<?=xl('Error code')?>";
+    var lang_syncs_are_not_cheked = "<?=xl('Syncs are not chekede')?>";
+    var lang_sql_fail = "<?=xl('Sql fail')?>";
+    var lang_sql_error = "<?=xl('An error occurred while running a SQL query')?>";
+
+</script>
+
+</body>
+</html>

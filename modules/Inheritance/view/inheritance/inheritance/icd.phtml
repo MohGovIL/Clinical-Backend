@@ -1,0 +1,65 @@
+<?php
+
+$title = xl('ICD');
+$this->headTitle($title);
+?>
+
+
+<div id="loading" class="row">
+    <div class="col-md-offset-2 col-md-8 loading-box">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <img src="<?=$basePatch?>/images/pouring/hourglass.svg"></div>
+            <div class="col-md-12 text-center"><h3><?php echo $translate->z_xlt('Loading') . '...'?></h3> </div>
+            <div class="loading-message text-center"></div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <div class="popupdarkbackground"></div>
+    <div class="main-content">
+        <input type="hidden" id="clinic_id" value="" />
+        <div class="title">
+            <?= ($this->escapeHtml($title) . ' - ' . $clinic_name)?>
+        </div>
+        <div id="lists">
+
+            <div class="content">
+                <select style="margin:20px auto 20px auto; width: 360px;" id="icd_id" class="form-control">
+                    <option value="icd10"><?= xl('ICD 10') ?></option>
+                    <option value="icd9"><?= xl('ICD 9') ?></option>
+                </select>
+            </div>
+            <button type="button" name="sync" id="sync" class="btn btn-default">סנכרן</button>
+        </div>
+    </div>
+
+    <div class="edit-content">
+
+        <div class="filter">
+            <label class="radio-inline">
+                <input id="icd9" value="icd9" type="radio" name="filter" checked ><?php echo $translate->z_xlt('ICD9') ?>
+            </label>
+            <label class="radio-inline">
+                <input id="icd10" value="icd10" type="radio" name="filter"><?php echo $translate->z_xlt('ICD10') ?>
+            </label>
+        </div>
+
+        <div class="content">
+            <table id="list-table" class="display" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th><?php echo $translate->z_xlt('Name') ?></th>
+                    <th><?php echo $translate->z_xlt('code') ?></th>
+                    <th><?php echo $translate->z_xlt('Sync') ?><input name="select_all" value="1" id="sync-icd-select-all" type="checkbox" /></th>
+
+                </tr>
+                </thead>
+
+            </table>
+        </div>
+    </div>
+
+</div>
+

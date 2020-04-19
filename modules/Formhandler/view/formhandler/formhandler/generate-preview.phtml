@@ -1,0 +1,176 @@
+
+<?php echo $this->form($form, null);?>
+<div class="groupsAreHere">
+    <div class="formIsHere">
+        <ul class="nav nav-tabs groupTabs">
+        </ul>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><?php echo $form_title;?></h3>
+        </div>
+        <div class="panel-body">
+            <div class="tab-content"></div>
+            <?php if($PHPAddons):?>
+                <?php foreach($PHPAddons as $key=>$phpLine):?>
+                    <?php if($phpLine):?>
+                        <?php eval("\$str = $phpLine");?>
+                        <?php echo $str. "\n";?>
+                    <?php endif;?>
+                <?php endforeach;?>
+            <?php endif;?>
+        </div>
+        <div class="panel-footer"><div class="formSumbitButtonsHere"></div></div>
+    </div>
+</div>
+<script>
+    function executeThis(rules){
+        switch(rules[1]){
+            case "ns":
+                if(($("[name='"+rules[0]+"']").is("select") &&$("[name='"+rules[0]+"']").val()!=rules[2] )||
+                    $("[name='"+rules[0]+"'][value='"+rules[2]+"']").not(':checked') || $("[name='"+rules[0]+"'][value='"+rules[2]+"']").not(':selected'))
+                    return true;
+                break;
+            case "se":
+                if(($("[name='"+rules[0]+"']").is("select") &&$("[name='"+rules[0]+"']").val()==rules[2] ) ||
+                    $("[name='"+rules[0]+"'][value='"+rules[2]+"']").is(':checked') || $("[name='"+rules[0]+"'][value='"+rules[2]+"']").is(':selected'))
+                    return true;
+                break;
+            case "eq":
+                if($("[name='"+rules[0]+"'").val()==rules[2])
+                    return true;
+                break;
+            case "ne":
+                if($("input[name='"+rules[0]+"'").val()!=rules[2])
+                    return true;
+                break;
+        }
+        return false;
+    }
+    function action(name,actionR,rules){
+        switch(actionR){
+            case "showIf":
+                if (executeThis(rules))
+                    $("[name='"+name+"'").parent().show();
+                else
+                    $("[name='"+name+"'").parent().hide();
+                break;
+            case "hideIf":
+                if (executeThis(rules))
+                    $("[name='"+name+"'").parent().hide();
+                else
+                    $("[name='"+name+"'").parent().show();
+                break;
+        }
+    }
+    var address = "<?php echo $address;?>";
+    function getGroupTab(id,active){
+        if (active) {
+            return '<div id="'+id+'" class="tab-pane active"></div>';
+        }
+        return '<div id="'+id+'" class="tab-pane fade in"></div>';
+    }
+    $("document").ready(function(){
+
+
+        <?php if($JSAddons):?>
+        <?php foreach($JSAddons as $key=>$jsLine):?>
+        <?php echo $jsLine;?>
+        <?php endforeach;?>
+        <?php endif;?>
+
+
+
+
+        var groups=<?php echo(json_encode($groups));?>;
+        var groupsCount=<?php echo count(json_decode(json_encode($groups),true));?>;
+        formId=$("form").attr("id");
+        $(".groupsAreHere").appendTo("#"+formId);
+        var counter=0;
+        var firstTab='';
+        $.each(groups,function(tab,input){
+            $(".groupTabs").append("<li role='presentation'><a data-toggle='tab' id='"+tab+"_group' href='#"+tab+"'>"+tab+"</a></li>");
+            if(firstTab=='')
+                firstTab=tab;
+            if(document.getElementById(tab)==null) {
+                if(counter<1) {
+                    newTab = getGroupTab(tab,true);
+                    counter++;
+                }
+                else {
+                    newTab = getGroupTab(tab,false);
+                }
+            }
+            else{
+                newTab = $("#"+tab);
+            }
+            $(".tab-content").append(newTab);
+            $.each(input,function(key,value) {
+                console.log($("input[name='" + value + "']").attr("type"));
+                if(! $.isEmptyObject($("input[name='" + value + "']")) && $("input[name='" + value + "']").length>0){
+                    $("input[name='" + value + "']").closest(".form-group").appendTo($("#" + tab));
+                    $("input[name='" + value + "']").closest(".checkbox").appendTo($("#" + tab));
+                    if($("input[name='" + value + "']").attr("type")!="radio" &&  $("input[name='" + value + "']").attr("type")!="hidden"  ){
+                        $("input[name='" + value + "']").addClass("form-control");
+                        $("input[name='" + value + "']").css("width", '500px');
+                    }
+                }
+                if(! $.isEmptyObject($("textarea[name*='" + value + "']")) && $("textarea[name='" + value + "']").length>0){
+                    //$("input[name*='" + value + "']").addClass("form-control col-md-4");
+                    $("textarea[name='" + value + "']").closest(".form-group").appendTo($("#" + tab));
+                    $("textarea[name='" + value + "']").addClass("form-control");
+                }
+                if(! $.isEmptyObject($("select[name*='" + value + "']")) && $("select[name='" + value + "']").length>0){
+                    $("select[name='" + value + "']").addClass("form-control");
+                    $("select[name='" + value + "']").css("width", '500px');
+                    $("select[name='" + value + "']").closest(".form-group").appendTo($("#" + tab));
+                }
+                /*  if(! $.isEmptyObject($("option[name*='" + value + "']")) && $("option[name*='" + value + "']").length>0){
+                 //$("input[name*='" + value + "']").addClass("form-control col-md-4");
+                 $("option[name*='" + value + "']").closest(".form-group").appendTo($("#" + tab));
+                 }
+                 if(! $.isEmptyObject($("div[id*='" + value + "_replace']")) && $("div[id*='" + value + "_replace']").length>0){
+                 //$("input[name*='" + value + "']").addClass("form-control col-md-4");
+                 $("div[id*='" + value + "_replace']").closest(".form-group").appendTo($("#" + tab));
+                 }*/
+            });
+        });
+        $("form").find("#button_submit").appendTo($(".formSumbitButtonsHere"));
+        $("form").find("#button_cancel").appendTo($(".formSumbitButtonsHere"));
+        //$("form").find("button").parent().addClass("pull-right");
+        <!--?php foreach($JSAddons as $key=>$jsLine):?-->
+        <!--?php echo $jsLine;?-->
+        <!--?php endforeach;?-->
+        <?php if($conditions):?>
+        <?php foreach($conditions as $condition):?>
+        <?php foreach($condition as $name=>$execute):?>
+        $("[name=<?php echo $execute['rules'][0];?>]").bind("change click", function() { action('<?php echo $name.'\',\''.$execute['action'].'\','.json_encode($execute['rules']);?>)});
+            <?php endforeach;?>
+            <?php endforeach;?>
+            <?php endif;?>
+            //replace all tabs head lines to proper text
+            $(document).find("li > a").each(function(){
+                var changed=($(this).text().replace(/\_/g," "));
+                $(this).text(changed);
+            })
+            if(groupsCount<=1)
+            {
+                $("li[role='presentation']").text("");
+            }
+            function hideErrors2(input, id) {
+                $(input).removeClass('error-border');
+                $("#error_"+id).remove();
+            }
+            <?php $logArr=(array)json_decode($validationLog);?>
+            <?php foreach ($logArr as $fieldName => $validatorArr) :?>
+            <?php foreach ($validatorArr as $validatorName => $message) :?>
+            var element="<span id='error_<?php echo $fieldName;?>' class='error-message'><?php echo $message;?></span>";
+            $("#<?php echo $fieldName;?>").parent().append(element);
+            $("#<?php echo $fieldName;?>").on('click focus select', function () {
+                hideErrors2(this, "<?php echo $fieldName;?>");
+            });
+            <?php  endforeach;?>
+            <?php endforeach;?>
+            $(".groupTabs").appendTo($(".tabsAreHere"));
+        });
+</script>

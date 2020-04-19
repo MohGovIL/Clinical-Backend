@@ -1,0 +1,146 @@
+<div class="col-md-12">
+
+    <div class="container">
+        <div id="irregular-distribution" class="row centered-form">
+            <div class="col-xs-12 col-sm-12  col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><?php echo xlt("Upload tables data from CSV"); ?></h3>
+                    </div>
+                    <div class="panel-body">
+                        <form method="post" id="csv_form" enctype="multipart/form-data">
+
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <label for="approval_type" class="  "><?php echo xlt("Destination table name"); ?></label>
+                                    <select required name="table_name" id="table_name" class="form-control"><option value=""><?php echo xlt('Choose table'); ?></option>
+                                        <?php foreach ($lists as $list): ?>
+                                            <option value="<?php echo $list->static_name;?>"><?php echo $list->external_name;?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label"><?php echo xlt("File to upload"); ?></label>
+                                        <input required type="file" name="csv_file" id="csv_file" class="filestyle" data-icon="false">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <?php if($action_type == 'edm_init'): ?>
+                                        <label class="control-label"><?php echo xlt("Date of file"); ?></label>
+                                        <input type="text" required name="file_date"  id="file_date" class="datepicker form-control" value="<?php echo date('Y-m-d'); ?>">
+                                        <?php  else:?>
+                                            <input type="hidden" required name="file_date"  id="file_date" class="datepicker form-control" value="<?php echo date('Y-m-d'); ?>">
+                                        <?php endif; ?>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!------ upload BUTTON ------>
+                            <br><br>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-2 ">
+                                    <?php if($action_type == 'edm_init'): ?>
+                                        <button type="submit" name="upload" id="upload" class="btn btn-default form-control" value="<?php echo xlt('upload')?>"><?php echo xlt("Upload  data"); ?></button>
+                                    <?php /* submit by js */ else:?>
+                                        <button id="upload_csv" class="btn btn-default form-control" ><?php echo xlt('Upload  data')?></button>
+                                        <input type="text" name="upload"  id="upload_post" class="hidden" value="upload">
+                                        <button type="submit" name="submit_upload"  id="upload" class="hidden"></button>
+                                    <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="message" class="col-md-offset-1 col-md-10">
+                                    <?php if(isset($errorMsg)): ?>
+                                    <br>
+                                    <div class="alert text-center alert-danger" role="alert"><?php echo xlt($errorMsg);?></div>
+                                    <?php endif; ?>
+                                    <?php if(isset($successMsg)): ?>
+                                        <br>
+                                        <div class="alert text-center alert-success" role="alert"><?php echo xlt($successMsg);?></div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var csvContent = "<?php echo $csv_backup; ?>";
+    if (csvContent == null || csvContent == ""){
+        console.log ("No Show");
+    }
+    else{
+        // Opera 8.0+
+        var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+
+        // Firefox 1.0+
+        var isFirefox = typeof InstallTrigger !== 'undefined';
+
+        // Safari 3.0+ "[object HTMLElementConstructor]"
+        var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+
+        // Internet Explorer 6-11
+        var isIE = /*@cc_on!@*/false || !!document.documentMode;
+        // Edge 20+
+        var isEdge = !isIE && !!window.StyleMedia;
+
+        // Chrome 1+
+        var isChrome = !!window.chrome && !!window.chrome.webstore;
+
+        // Blink engine detection
+        var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+        var fileName = "export_backup";
+        var file_type=".csv";
+
+        if (isIE) {
+            var oWin = window.open();
+            oWin.document.write("<?php echo $csv_backup; ?>");
+            oWin.document.close();
+            fileName = "export_backup";
+            oWin.document.execCommand('SaveAs', true, fileName + file_type);
+            oWin.close();
+        }
+        else {
+            var csvContent = "<?php echo $csv_backup; ?>";
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", "data:text/csv;charset=utf-8,\uFEFF" + encodedUri);
+            link.setAttribute("download",fileName + file_type);
+            link.click();
+        }
+    }
+
+    $('#table_name').on('change', function () {
+        $('#message').html('<div><div>');
+    });
+
+    $('#upload_csv').on('click', function (e) {
+
+
+        if($('#table_name').val().length == 0 || $('#file_date').val().length == 0 || $('#csv_file').val().length == 0 ){
+            $('#upload').trigger('click');
+        } else {
+            //todo export old data
+        }
+    })
+
+
+</script>
