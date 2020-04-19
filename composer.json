@@ -1,0 +1,19 @@
+{
+  "name": "clinikal/vertical-imaging-backend",
+  "description": "React app for OpenEMR",
+  "type": "clinikal-vertical",
+  "authors": [
+    {
+      "name": "Clinikal team"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@bitbucket.org:clinikal/composer-installers-clinikal-extender.git"
+    }
+  ],
+  "require": {
+    "clinikal/composer-installers-clinikal-extender": "dev-master"
+  }
+}
