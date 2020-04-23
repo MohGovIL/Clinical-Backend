@@ -3,6 +3,7 @@
 
 namespace GenericTools\Service;
 
+use OpenEMR\Common\Acl\AclMain;
 use OpenEMR\Common\Crypto\CryptoGen;
 
 class AclCheckExtendedService {
@@ -19,7 +20,7 @@ class AclCheckExtendedService {
         if ($user === '' || $user === null || $user === false) {
             $user = $this->getAuthUser();
         }
-        $result = acl_check($section, $value, $user, $return_value);
+        $result = AclMain::aclCheckCore($section, $value, $user, $return_value);
         return $result;
     }
 

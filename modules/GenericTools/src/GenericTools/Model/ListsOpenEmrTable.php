@@ -3,7 +3,7 @@
 namespace GenericTools\Model;
 
 use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Adapter;
 
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;

@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 21/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class MAPPING FOR ORGANIZATION
  */
 
@@ -41,7 +41,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRPatient = new FHIRPatient;
 
         $ListsTable = $this->container->get(ListsTable::class);
@@ -555,14 +555,14 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
 
         $telecom=$data['telecom'];
 
-        foreach($telecom as $j =>$telData){
+        if (is_array($telecom)){
+            foreach($telecom as $j =>$telData){
 
-            $FHIRPatient->getTelecom()[$j]->getSystem()->setValue($telData['system']);
-            $FHIRPatient->getTelecom()[$j]->getValue()->setValue($telData['value']);
-            $FHIRPatient->getTelecom()[$j]->getUse()->setValue($telData['use']);
-
+                $FHIRPatient->getTelecom()[$j]->getSystem()->setValue($telData['system']);
+                $FHIRPatient->getTelecom()[$j]->getValue()->setValue($telData['value']);
+                $FHIRPatient->getTelecom()[$j]->getUse()->setValue($telData['use']);
+            }
         }
-
 
         $this->FHIRPatient=$FHIRPatient;
 

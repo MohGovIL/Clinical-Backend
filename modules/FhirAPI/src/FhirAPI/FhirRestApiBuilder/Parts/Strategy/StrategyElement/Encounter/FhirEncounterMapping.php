@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 21/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class MAPPING FOR Encounter
  */
 
@@ -41,7 +41,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->setFHIREncounter(new FHIREncounter());
     }
 
@@ -256,7 +256,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         $FHIRReferenceParticipantIndividual = $this->createFHIRReference(["reference" => null]);
         $FHIRParticipant = new FHIREncounterParticipant(["individual" => $FHIRReferenceParticipantIndividual]);
         $FHIREncounter->addParticipant($FHIRParticipant);
-        
+
         $FHIREncounter->addParticipant(deep_copy($FHIRParticipant));
         /*****************/
 

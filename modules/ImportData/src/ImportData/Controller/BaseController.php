@@ -107,7 +107,7 @@ class BaseController extends AbstractActionController
 
         /*
         $sm = $this->getServiceLocator();
-        $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+        $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
         $sql = new customDB($dbAdapter);
 
         $lang = $sql->getCurrentLang();
@@ -189,7 +189,7 @@ class BaseController extends AbstractActionController
 
     protected function getCustomDB(){
 
-        $dbAdapter = $this->container->get('Zend\Db\Adapter\Adapter');
+        $dbAdapter = $this->container->get('Laminas\Db\Adapter\Adapter');
         $CustomDb = new CustomDb($dbAdapter);
         return $CustomDb;
     }

@@ -322,14 +322,17 @@ trait baseTable
 
 
     public function parsePredicateAnd($value,&$where,$field){
-        if(is_array($value[self::$VALUE])) {
-            foreach ($value[self::$VALUE] as $key => $val) {
-                $this->buildOrAndPredicateWhereToWhere($val,$where,$field,self::$AND);
+
+        if(is_array($value)){
+            if(is_array($value[self::$VALUE])) {
+                foreach ($value[self::$VALUE] as $key => $val) {
+                    $this->buildOrAndPredicateWhereToWhere($val,$where,$field,self::$AND);
+                }
+                return;
             }
         }
-        else{
-            $this->buildOrAndPredicateWhereToWhere($value,$where,$field,self::$AND);
-        }
+        $this->buildOrAndPredicateWhereToWhere($value,$where,$field,self::$AND);
+
     }
 
     public function checkIfIn($value){

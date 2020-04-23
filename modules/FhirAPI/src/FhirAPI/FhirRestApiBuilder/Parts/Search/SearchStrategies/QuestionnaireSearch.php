@@ -11,7 +11,7 @@ class QuestionnaireSearch extends BaseSearch
     {
 
         $this->paramHandler('title','name');
-        $this->paramHandler('status','state');
+        $this->paramHandler('status','state',null,array("active"=>"1","retired"=>"0"));
         $this->paramHandler('name','directory');
         $this->searchParams = $this->paramsToDB;
         $this->runMysqlQuery();
