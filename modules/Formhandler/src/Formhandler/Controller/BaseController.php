@@ -78,7 +78,7 @@ class BaseController extends AbstractActionController
     protected function getLanguage(){
 
 
-        $dbAdapter = $this->container->get('Zend\Db\Adapter\Adapter');
+        $dbAdapter = $this->container->get('Laminas\Db\Adapter\Adapter');
         $sql = new CustomSql($dbAdapter);
 
         $lang = $sql->getCurrentLang();
@@ -331,7 +331,7 @@ class BaseController extends AbstractActionController
        // $container = $this->getServiceLocator();
 
 
-        $dbAdapter = $this->container->get('Zend\Db\Adapter\Adapter');
+        $dbAdapter = $this->container->get('Laminas\Db\Adapter\Adapter');
         $CustomDb = new CustomDb($dbAdapter);
         return $CustomDb;
     }

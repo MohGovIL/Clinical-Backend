@@ -182,12 +182,22 @@ abstract class BaseSearch implements SearchInt
         }
     }
 
-    public function paramHandler($fhirSearchParam, $tableParams, $dbTable = null)
+    public function paramHandler($fhirSearchParam, $tableParams, $dbTable = null,$conversion=array())
     {
         if (is_null($dbTable)) {
             $dbTable = $this->MAIN_TABLE;
         }
         if (isset($this->searchParams[$fhirSearchParam])) {
+
+            if(!empty($conversion)){
+                $originalVal=$this->searchParams[$fhirSearchParam][0]['value'];
+                if(!empty($conversion[$originalVal])){
+                    $this->searchParams[$fhirSearchParam][0]['value']=$conversion[$originalVal];
+                }
+
+
+            }
+
             $this->paramsToDB[$dbTable . '.' . $tableParams] = $this->searchParams[$fhirSearchParam];
         }
     }

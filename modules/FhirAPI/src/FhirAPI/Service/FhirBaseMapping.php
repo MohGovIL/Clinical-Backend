@@ -73,7 +73,7 @@ class FhirBaseMapping
     {
         $this->container = $container;
         try{
-            $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+            $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
             $this->fhirRequestParamsHandler = $container->get(FhirValidateTypes::class);
         }catch(Exception $e){
 

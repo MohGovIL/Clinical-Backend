@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Dror Golan drorgo@matrix.co.il
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * FHIR ORGANIZATION trait
  */
 
@@ -113,6 +113,7 @@ trait FHIROrganizationTelecomTrait
     {
 
         $contactPoint = null;
+        $info=array();
         $systemFhir = ["phone","fax","email","pager","url","sms","other","phone_home","phone_mobile","phone_work","mobile"];
 
         foreach($systemFhir as $key=>$value){

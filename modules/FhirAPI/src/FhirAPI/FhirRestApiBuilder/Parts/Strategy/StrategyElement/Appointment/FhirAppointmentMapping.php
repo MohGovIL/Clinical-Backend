@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 21/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class MAPPING FOR ORGANIZATION
  */
 
@@ -35,7 +35,7 @@ class FhirAppointmentMapping extends FhirBaseMapping implements MappingData
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRAppointment = new FHIRAppointment;
         $categoriesListTable = $this->container->get(PostcalendarCategoriesTable::class);
         $this->postCalendarCategoriesList = $categoriesListTable->fetchAll(array(), true);

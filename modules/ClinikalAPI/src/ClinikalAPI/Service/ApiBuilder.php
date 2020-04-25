@@ -9,6 +9,7 @@ namespace ClinikalAPI\Service;
 
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use GenericTools\Service\AclCheckExtendedService;
+use OpenEMR\Common\Acl\AclMain;
 use RestConfig;
 use ClinikalAPI\Model\TranslationTables;
 use OpenEMR\RestControllers\AuthRestController;
@@ -30,7 +31,9 @@ class ApiBuilder
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+       // $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
+          $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
+
     }
 
 
@@ -100,7 +103,6 @@ class ApiBuilder
 
         return true;
     }
-
 
 }
 

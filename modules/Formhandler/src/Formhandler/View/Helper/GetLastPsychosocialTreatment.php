@@ -13,7 +13,7 @@ use Zend\Db\Adapter\Driver\Feature\DriverFeatureInterface;
 use Zend\Form\View\Helper\AbstractHelper;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Adapter;
 
 class GetLastPsychosocialTreatment extends AbstractHelper
 {
@@ -101,7 +101,7 @@ class GetLastPsychosocialTreatment extends AbstractHelper
             $returnedHtml = '<div dir="rtl" style="border 1px solid grey;" id=replace_me_psychosocial_treatment>';
            /* $returnedHtml .= '<dl class="dl-horizontal">
                        <div class="col-md-6" dir="rtl">
-                       
+
                        <dt><span class = "label label-default">'.$translate->z_xlt("Indevidual therapy").'</span></dt><dd> <input type="checkbox" disabled ' .($values["indevidual_therapy"]==1?'checked':'') . ' \></dd>
                        <dt><span class = "label label-default">'.$translate->z_xlt("Detailed treatment method").'</span></dt><dd>'. $translate->z_xlt($customdb->getValueFromList($values["detailed_treatment_method"],'moh_indevidual_therapy_list')) .'</dd>
                        <dt><span class = "label label-default">'.$translate->z_xlt("Family therapy").'</span></dt><dd><input type="checkbox"  disabled ' .($values["family_therapy"]==1?'checked':'') . ' \></dd>
@@ -111,9 +111,9 @@ class GetLastPsychosocialTreatment extends AbstractHelper
                        <div class="col-md-6">
                        <dt><span class = "label label-default">'.$translate->z_xlt("Group therapy").'</span></dt><dd>  <input type="checkbox"  disabled ' .($values["group_therapy"]==1?'checked':'') . ' \></dd>
                        <dt><span class = "label label-default">'.$translate->z_xlt("Group therapy method").'</span></dt><dd>' . $translate->z_xlt($customdb->getValueFromList($values["group_therapy_method"],'moh_group_therapy_list')) . '</dd>
-                       
-                     
-                       
+
+
+
                        <dt><span class = "label label-default">'.$translate->z_xlt("Family therapy method").'</span></dt><dd>' . $translate->z_xlt($customdb->getValueFromList($values["family_therapy_method"],'moh_family_therapy_list'))  . '</dd>
                        <dt><span class = "label label-default">'.$translate->z_xlt("Other therapy method").'</span></dt><dd>' . $values["other_treatment_method"] . '</dd>
                        </div>

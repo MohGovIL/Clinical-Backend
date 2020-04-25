@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Dror Golan drorgo@matrix.co.il
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * Encounter search - strategy
  */
 

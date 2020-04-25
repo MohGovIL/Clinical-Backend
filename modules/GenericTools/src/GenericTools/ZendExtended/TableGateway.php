@@ -9,7 +9,7 @@
 namespace GenericTools\ZendExtended;
 
 use Zend\Db\TableGateway\TableGateway as ZendTableGateway;
-use Zend\Db\Adapter\AdapterInterface;
+use Laminas\Db\Adapter\AdapterInterface;
 use Zend\Db\ResultSet\ResultSetInterface;
 use GenericTools\ZendExtended\Sql;
 

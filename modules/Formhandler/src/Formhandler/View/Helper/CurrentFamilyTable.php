@@ -12,7 +12,7 @@ use Zend\Db\Adapter\Driver\Feature\DriverFeatureInterface;
 use Zend\Form\View\Helper\AbstractHelper;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Adapter;
 
 class CurrentFamilyTable  extends AbstractHelper
 {

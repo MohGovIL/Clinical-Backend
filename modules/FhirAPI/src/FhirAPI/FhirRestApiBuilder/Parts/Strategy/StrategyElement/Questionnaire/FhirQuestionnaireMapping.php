@@ -36,7 +36,7 @@ class FhirQuestionnaireMapping extends FhirBaseMapping implements MappingData
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRQuestionnaire = new FHIRQuestionnaire;
     }
 
