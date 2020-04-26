@@ -1,3 +1,7 @@
+
+INSERT INTO `modules` (`mod_id`, `mod_name`, `mod_directory`, `mod_parent`, `mod_type`, `mod_active`, `mod_ui_name`, `mod_relative_link`, `mod_ui_order`, `mod_ui_active`, `mod_description`, `mod_nick_name`, `mod_enc_menu`, `permissions_item_table`, `directory`, `date`, `sql_run`, `type`) VALUES (NULL, 'FhirAPI', 'FhirAPI', '', '', '1', 'FhirAPI', '', '15', '0', '', '', '', NULL, '', '2019-12-04 00:26:40', '1', '1');
+
+
 CREATE TABLE `fhir_healthcare_services` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `active` BOOLEAN NOT NULL DEFAULT 1,
