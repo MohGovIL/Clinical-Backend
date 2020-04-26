@@ -1,5 +1,5 @@
 {
-  "name": "israeli-moh/clinikal-backend",
+  "name": "clinikal/clinikal-backend",
   "description": "clinikal backend",
   "type": "clinikal-vertical",
   "authors": [
@@ -14,6 +14,6 @@
     }
   ],
   "require": {
-    "israeli-moh/composer-installers-clinikal-extender": "dev-master"
+    "clinikal/composer-installers-clinikal-extender": "dev-master"
   }
 }
