@@ -52,3 +52,4 @@ INSERT INTO `moh_import_data` (`id`, `external_name`, `clinikal_name`, `static_n
 (17, 'ICD10', 'codes', 'icd10', 'EDM', '2017-03-29 00:00:00'),
 (18, 'ICD9', 'codes', 'icd9', 'EDM', '2017-03-02 09:11:01'),
 (19, 'MOH_KUPAT_CHOLIM_BRANCHES', 'MOH_KUPAT_CHOLIM_BRANCHES', 'mkcb', 'CSV', '2017-03-29 00:00:00');
+
