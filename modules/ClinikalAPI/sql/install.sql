@@ -7,7 +7,12 @@ START TRANSACTION;
 -- VALUES
 -- (null, 'ClinikalAPI', 'ClinikalAPI', '', '', 1, 'Clinikalapi', 'public/clinikalapi/', 0, 0, '', '', '', NULL, '', '2020-04-28 10:15:55', 1, 1, '0.1.0', '');
 
-
+ALTER TABLE `patient_data`
+ADD `mh_house_no` VARCHAR(255) NOT NULL AFTER `guardianemail`,
+ADD `mh_pobox` VARCHAR(255) NOT NULL AFTER `mh_house_no`,
+ADD `mh_type_id` VARCHAR(255) NOT NULL AFTER `mh_pobox`,
+ADD `mh_english_name` VARCHAR(255) NOT NULL AFTER `mh_type_id`,
+ADD `mh_insurance_organiz` VARCHAR(255) NOT NULL AFTER `mh_english_name`;
 
 
 REPLACE INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`, `timestamp`) VALUES
