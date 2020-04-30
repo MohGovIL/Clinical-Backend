@@ -59,7 +59,7 @@ class Module {
         $serviceConfig = array(
             'factories' => array(
                 InheritanceTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Inheritance());
                     $tableGateway = new TableGateway('networking', $dbAdapter, null, $resultSetPrototype);
@@ -83,7 +83,7 @@ class Module {
                     return $table;
                 },
                 ListsTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Inheritance());
                     $tableGateway = new TableGateway('list_options', $dbAdapter, null, $resultSetPrototype);
@@ -91,7 +91,7 @@ class Module {
                     return $table;
                 },
                 CodesTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Inheritance());
                     $tableGateway = new TableGateway('codes', $dbAdapter, null, $resultSetPrototype);

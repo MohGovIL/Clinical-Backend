@@ -61,7 +61,7 @@ class Module {
         return array(
             'factories' => array(
                 ImportDataTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new ImportData());
                     $tableGateway = new TableGateway('moh_import_data', $dbAdapter, null, $resultSetPrototype);
@@ -69,7 +69,7 @@ class Module {
                     return $table;
                 },
                 ListsTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Lists());
                     $tableGateway = new TableGateway('list_options', $dbAdapter, null, $resultSetPrototype);
@@ -77,7 +77,7 @@ class Module {
                     return $table;
                 },
                 CodesTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Codes());
                     $tableGateway = new TableGateway('codes', $dbAdapter, null, $resultSetPrototype);
@@ -85,7 +85,7 @@ class Module {
                     return $table;
                 },
                 LangConstantsTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new LangConstants());
                     $tableGateway = new TableGateway('lang_constants', $dbAdapter, null, $resultSetPrototype);
@@ -93,7 +93,7 @@ class Module {
                     return $table;
                 },
                 LangDefinitionsTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new LangDefinitions());
                     $tableGateway = new TableGateway('lang_definitions', $dbAdapter, null, $resultSetPrototype);
@@ -101,7 +101,7 @@ class Module {
                     return $table;
                 },
                 ImportDataLogTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new ImportDataLog());
                     $tableGateway = new TableGateway('moh_import_data_log', $dbAdapter, null, $resultSetPrototype);

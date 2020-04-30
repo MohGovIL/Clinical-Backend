@@ -67,7 +67,7 @@ class Module {
                     return $table;
                 },
                 'ExampleTableGateway' => function (ContainerInterface $container) {
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Examle());
                     return new TableGateway('sql_table_name', $dbAdapter, null, $resultSetPrototype);
@@ -112,7 +112,7 @@ class Module {
                 'drug_and_alchol_table' => function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $table= new DrugAndAlcoholUsageTable();
                     $table->setDbAdapter( $dbAdapter);
@@ -123,7 +123,7 @@ class Module {
                 'generate_custom_input_with_data' => function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $CustomInput= new GenerateCustomInputWithData();
                     $CustomInput->setDbAdapter( $dbAdapter);
@@ -133,7 +133,7 @@ class Module {
                 'create_custom_control_from_list'=> function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $CustomInput= new CreateCustomControlFromList();
                     $CustomInput->setDbAdapter( $dbAdapter);
@@ -150,7 +150,7 @@ class Module {
                 'current_family_table'=> function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $CustomInput= new CurrentFamilyTable();
                     $CustomInput->setDbAdapter( $dbAdapter);
@@ -160,7 +160,7 @@ class Module {
                 'get_last_psychosocial_treatment'=>function(ContainerInterface $container){
 
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $CustomInput= new GetLastPsychosocialTreatment();
                     $CustomInput->setDbAdapter( $dbAdapter);
@@ -170,7 +170,7 @@ class Module {
                 'generic_table' => function(ContainerInterface $container) {
                         // Get the shared service manager instance
                          //$sm =  $container->getServiceLocator();
-                        $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                        $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                         // Now inject it into the view helper constructor
                         $table= new GenericTable($container);
                         $table->setDbAdapter( $dbAdapter);
@@ -185,7 +185,7 @@ class Module {
                 'helper_factory' => function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $table= new HelperFactory($container);
                     $table->setDbAdapter( $dbAdapter);
@@ -200,7 +200,7 @@ class Module {
                 'side_effect_generic_table' => function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $table= new SideEffectGenericTable($container);
                     $table->setDbAdapter( $dbAdapter);
