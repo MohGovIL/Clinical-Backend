@@ -11,7 +11,7 @@ Examples can be found [here](https://clinikal-documentation.readthedocs.io/en/la
 
 Formhandler
 --------------------------------------
-Tool to automatically create and handle OpenEmr forms. 
+Tool to automatically create and handle OpenEMR forms. 
 
 GenericTools
 --------------------------------------
