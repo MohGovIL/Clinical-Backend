@@ -6,7 +6,7 @@ API for none FHIR calls
 
 FhirAPI     
 --------------------------------------
-Implementaion of  [hl7 FHIR version 4] (https://www.hl7.org/fhir/)
+Implementaion of  [hl7 FHIR version 4](https://www.hl7.org/fhir/)
 
 Formhandler
 --------------------------------------
