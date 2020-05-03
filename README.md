@@ -27,15 +27,16 @@ Inheritance
 # Installation guide 
 
 1.install [openEMR](https://www.open-emr.org)
-
+```
 git clone https://github.com/openemr/openemr.git
 composer install --no-dev
 npm install
 npm run build
 composer dump-autoload -o
+```
 
 2. Edit openemr/composer.json 
-
+```
     "require": {
     ...
         "clinikal/composer-installers-clinikal-extender": "dev-master",
@@ -62,7 +63,7 @@ composer dump-autoload -o
             "url": "git@github.com:israeli-moh/clinikal-backend.git"
         }
     ],
-
+```
 
 
 3. run composer update
