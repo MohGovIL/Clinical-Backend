@@ -6,7 +6,8 @@ API for none FHIR calls
 
 FhirAPI     
 --------------------------------------
-Implementaion of  [hl7 FHIR version 4](https://www.hl7.org/fhir/)
+Implementaion of  [hl7 FHIR version 4](https://www.hl7.org/fhir/) 
+Examples can be found [here](https://clinikal-documentation.readthedocs.io/en/latest/api/fhir/#appointment)
 
 Formhandler
 --------------------------------------
