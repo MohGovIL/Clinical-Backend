@@ -68,3 +68,15 @@ composer dump-autoload -o
 
 
 3. run composer update
+
+4.open in browsre http://localhost/  your installation dir  /openemr/setup.php
+
+5. Follow the installation guide 
+
+you can run the folling commads before install to speed up the prosses 
+'''
+sudo chmod 777 sites/default/sqlconf.php
+sudo chmod -R 777 sites/default/documents
+'''
+
+
