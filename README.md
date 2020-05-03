@@ -29,6 +29,7 @@ Inheritance
 1.install [openEMR](https://www.open-emr.org)
 ```
 git clone https://github.com/openemr/openemr.git
+cd openemr
 composer install --no-dev
 npm install
 npm run build
