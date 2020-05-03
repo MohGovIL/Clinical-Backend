@@ -69,7 +69,10 @@ composer dump-autoload -o
 
 3.run composer update
 
-4.open in browsre http://localhost/  your installation dir  /openemr/setup.php
+4.open in browsre
+```
+http://localhost/  your installation dir  /openemr/setup.php
+```
 
 5.Follow the installation guide 
 
