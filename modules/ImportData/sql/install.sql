@@ -1,13 +1,4 @@
-START TRANSACTION;
 
---
--- REPLACE INTO `modules` (`mod_id`, `mod_name`, `mod_directory`, `mod_parent`, `mod_type`, `mod_active`, `mod_ui_name`, `mod_relative_link`, `mod_ui_order`, `mod_ui_active`, `mod_description`, `mod_nick_name`, `mod_enc_menu`, `permissions_item_table`, `directory`, `date`, `sql_run`, `type`, `sql_version`, `acl_version`)
--- VALUES
--- (null, 'ImportData', 'ImportData', '', '', 1, 'Importdata', 'public/importdata/', 0, 0, '', '', '', NULL, '', '2020-04-28 10:14:25', 1, 1, '0.1.0', '');
-
---
--- Table structure for table `moh_import_data_log`
---
 
 DROP TABLE IF EXISTS `moh_import_data_log`;
 CREATE TABLE `moh_import_data_log` (
@@ -59,5 +50,3 @@ INSERT INTO `moh_import_data` (`id`, `external_name`, `clinikal_name`, `static_n
 (17, 'ICD10', 'codes', 'icd10', 'EDM', '2017-03-29 00:00:00'),
 (18, 'ICD9', 'codes', 'icd9', 'EDM', '2017-03-02 09:11:01'),
 (19, 'MOH_KUPAT_CHOLIM_BRANCHES', 'MOH_KUPAT_CHOLIM_BRANCHES', 'mkcb', 'CSV', '2017-03-29 00:00:00');
-
-COMMIT;

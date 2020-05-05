@@ -1,12 +1,4 @@
 
-
-
-START TRANSACTION;
-
--- REPLACE INTO `modules` (`mod_id`, `mod_name`, `mod_directory`, `mod_parent`, `mod_type`, `mod_active`, `mod_ui_name`, `mod_relative_link`, `mod_ui_order`, `mod_ui_active`, `mod_description`, `mod_nick_name`, `mod_enc_menu`, `permissions_item_table`, `directory`, `date`, `sql_run`, `type`, `sql_version`, `acl_version`)
--- VALUES
--- (null, 'ClinikalAPI', 'ClinikalAPI', '', '', 1, 'Clinikalapi', 'public/clinikalapi/', 0, 0, '', '', '', NULL, '', '2020-04-28 10:15:55', 1, 1, '0.1.0', '');
-
 ALTER TABLE `patient_data`
 ADD `mh_house_no` VARCHAR(255) NOT NULL AFTER `guardianemail`,
 ADD `mh_pobox` VARCHAR(255) NOT NULL AFTER `mh_house_no`,
@@ -37,4 +29,4 @@ VALUES
 ('userlist3', 'passport', 'Passport', '20', '0', '0','', '1'),
 ('userlist3', 'temporary', 'Temporary', '30', '0', '0','' ,'1');
 
-COMMIT;
+
