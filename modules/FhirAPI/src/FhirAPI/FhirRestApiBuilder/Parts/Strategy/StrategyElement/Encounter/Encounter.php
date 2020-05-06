@@ -164,6 +164,69 @@ class Encounter Extends Restful implements  Strategy
     }
 
 
+    /**
+     * delete Encounter data
+     *
+     * @param string
+     * @return FHIRBundle | FHIREncounter
+     * @throws
+     */
+    public function delete()
+    {
+        //check if can delete data
+        $documentsTable = $this->container->get(DocumentsTable::class);
+        $encounterId = $this->paramsFromUrl[0];
+
+        // can not delete encounter that has a document
+        $params = array('encounter_id' => $encounterId);
+        $documentsDataFromDb = $documentsTable->buildGenericSelect($params);
+        if (!empty($documentsDataFromDb))
+        {
+            $moreInfo = "failed to delete from db";
+            $explanation = "document linked to this encounter was found-delete it first";
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation, $moreInfo);
+        }
+
+        // can not delete encounter that has forms
+        $questionnaireResponseTable = $this->container->get(QuestionnaireResponseTable::class);
+        $questionnaireResponseFromDb=$questionnaireResponseTable->buildGenericSelect(["questionnaire_response.encounter"=>$encounterId]);
+        if (!empty($questionnaireResponseFromDb))
+        {
+            $moreInfo = "failed to delete from db";
+            $explanation = "At least one form linked to this encounter was found-delete it first";
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation, $moreInfo);
+        }
+
+        $encounterTable = $this->container->get(FormEncounterTable::class);
+
+        // can not delete encounter that does not exist
+        $encounterDataFromDb = $encounterTable->buildGenericSelect(["id" => $this->paramsFromUrl[0]]);
+        if (empty($encounterDataFromDb))
+        {
+            $moreInfo = "failed to delete from db";
+            $explanation = "encounter was not found";
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation, $moreInfo);
+        }
+
+        // can not delete encounter that is not in status planned
+        $encStatus = $encounterDataFromDb[0]["status"];
+        if ($encStatus !== "planned")
+        {
+            $moreInfo = "failed to delete from db";
+            $explanation = "encounter status is " . $encStatus;
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation, $moreInfo);
+        }
+
+        $delete = $encounterDataFromDb = $encounterTable->deleteDataByParams(array("id" => $encounterId));
+        if ($delete === 1) {
+            return $this->mapping->createDeleteSuccessRespond();
+        } else {
+            $explanation = "failed to delete from db ";
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation);
+        }
+    }
+
+
 
     /**
      * @return mixed
