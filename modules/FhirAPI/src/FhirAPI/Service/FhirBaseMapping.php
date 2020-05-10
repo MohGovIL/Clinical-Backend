@@ -514,8 +514,11 @@ class FhirBaseMapping
     {
 
         $FHIRBoolean = new FHIRBoolean;
-        $bool= ($bool && $bool!='false') ? "true" : "false";
 
+        if(!is_null($bool)){
+            $bool= ($bool && $bool!='false') ? "true" : "false";
+        }
+        
         $this->fhirRequestParamsHandler::checkByPreg($bool, 'boolean', 'ALLOW_NULL_ERROR');
 
         $FHIRBoolean->setValue($bool);
