@@ -149,7 +149,7 @@ class DocumentReference extends Restful implements  Strategy
         {
             $moreInfo="failed to retrieve from db";
             $explanation="document was not found";
-            $this->mapping->createDeleteFailRespond($docId,$explanation,$moreInfo);
+            return $this->mapping->createDeleteFailRespond($docId,$explanation,$moreInfo);
         }
         $documentsDataFromDb = $documentsDataFromDb[0];
         $couchDocId=$documentsDataFromDb['couchDocId'];
@@ -173,7 +173,7 @@ class DocumentReference extends Restful implements  Strategy
                 $explanation="failed to delete from db ";
                 return $this->mapping->createDeleteFailRespond($docId,$explanation);
             }
-            
+
         }
 
     }
