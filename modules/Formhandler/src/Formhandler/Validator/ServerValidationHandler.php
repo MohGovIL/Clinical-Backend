@@ -9,15 +9,15 @@
 
 namespace Formhandler\Validator;
 
-use Zend\Validator;
-use Zend\Validator\ValidatorChain;
+use Laminas\Validator;
+use Laminas\Validator\ValidatorChain;
 
 class ServerValidationHandler
 {
     const NAME="name";
     const CUSTOMVALIDATORPATH="Formhandler\\Validator\\";
-    const ZENDVALIDATORPATH="Zend\\Validator\\";
-    const ZENDFILTERPATH="Zend\\Filter\\";
+    const ZENDVALIDATORPATH="Laminas\\Validator\\";
+    const ZENDFILTERPATH="Laminas\\Filter\\";
     const GOOD="OK";
     const NOTFOUND="Validator not found";
 

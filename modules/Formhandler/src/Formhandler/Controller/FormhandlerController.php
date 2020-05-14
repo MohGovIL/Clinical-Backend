@@ -10,15 +10,15 @@ namespace Formhandler\Controller;
 
 use Formhandler\Validator\ServerValidationHandler;
 use Interop\Container\ContainerInterface;
-use Zend\Validator\Callback;
-use Zend\Validator;
+use Laminas\Validator\Callback;
+use Laminas\Validator;
 use Formhandler\Controller\BaseController;
 use Formhandler\Plugin\CouchDBHandle;
 use Formhandler\View\Helper\DrugAndAlcoholUsageTable;
-use Zend\Json\Server\Exception\ErrorException;
-use Zend\View\Model\ViewModel;
-use Zend\Form\Element;
-use Zend\Form\Form;
+use Laminas\Json\Server\Exception\ErrorException;
+use Laminas\View\Model\ViewModel;
+use Laminas\Form\Element;
+use Laminas\Form\Form;
 use Formhandler\Model\customDB;
 use TwbBundle\Form\Element\StaticElement;
 class FormhandlerController extends BaseController
@@ -821,7 +821,7 @@ class FormhandlerController extends BaseController
 
         $form=null;
         $elements=(array)json_decode($this->params()->fromPost('couchElement'));
-        $form =  new \Zend\Form\Form("Preview");
+        $form =  new \Laminas\Form\Form("Preview");
 
         $arrayOfFields=json_decode(json_encode($elements[self::DOCUMENT]->fields),true);
 
@@ -981,7 +981,7 @@ class FormhandlerController extends BaseController
             //TODO: make globals from document,label,_id,sql,draft,validation,conditional
 
             $form_title = $this->translate->z_xlt($form_params[self::DOCUMENT][self::LABEL]);
-            $form =  new \Zend\Form\Form($form_params[self::ID]);
+            $form =  new \Laminas\Form\Form($form_params[self::ID]);
 
             $url=$this->getBasePath()."/save/".$form_name;
             $form->setAttribute('action', $url);

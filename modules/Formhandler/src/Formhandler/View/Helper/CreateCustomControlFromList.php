@@ -10,8 +10,8 @@
 namespace Formhandler\View\Helper;
 use Application\Listener\Listener;
 use Formhandler\Model\customDB;
-use Zend\Db\Exception\ErrorException;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\Db\Exception\ErrorException;
+use Laminas\View\Helper\AbstractHelper;
 
 
 class CreateCustomControlFromList extends AbstractHelper

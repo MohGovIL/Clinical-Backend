@@ -8,7 +8,7 @@
 namespace Fromhandler\View\Helper;
 
 use InvalidArgumentException;
-use Zend\Form\View\Helper\AbstractHelper;
+use Laminas\Form\View\Helper\AbstractHelper;
 
 /**
  * Class TwbBundleFontAwesome

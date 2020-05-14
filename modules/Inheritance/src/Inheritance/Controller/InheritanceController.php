@@ -7,7 +7,7 @@ use Inheritance\Model\InheritanceTable;
 use Inheritance\Form\InheritanceForm;
 use Inheritance\Model\Networking;
 use Inheritance\Model\NetworkingDB;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 use Interop\Container\ContainerInterface;
 
 

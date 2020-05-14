@@ -9,9 +9,9 @@
 namespace ImportData\Controller;
 
 use Dompdf\Exception;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\AbstractActionController;
 use ImportData\Controller\BaseController;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 use ImportData\Plugin\EDMRequest;
 use ImportData\Lists\CountriesList;
 use ImportData\Model\ImportDataLog;

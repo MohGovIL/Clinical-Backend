@@ -17,7 +17,7 @@ use ClinikalAPI\Service\Settings;
 use Interop\Container\ContainerInterface;
 use FhirAPI\Service\FhirApiBuilder;
 use GenericTools\Model\ListsTable;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class ApiBuilder
 {
