@@ -1,3 +1,4 @@
+
 <?php
 /**
  * Created by PhpStorm.
@@ -996,7 +997,7 @@ class BaseController extends AbstractActionController
     }
     protected function getServerSideValidation()
     {
-        return $this->serverSideValidation;http://localhost/rabi_100/openemr/interface/modules/zend_modules/public/rabies-incident/main?id=109#
+        return $this->serverSideValidation;
     }
 
     protected function getInputFilter($validators)
