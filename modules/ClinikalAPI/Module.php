@@ -26,8 +26,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\MvcEvent;
+use Zend\Db\ResultSet\ResultSet;
 
-
+use Zend\Db\TableGateway\TableGateway as ZendTableGateway;
+use ClinikalAPI\Model\ClinikalPatientTrackingChanges;
+use ClinikalAPI\Model\ClinikalPatientTrackingChangesTable;
 
 class Module {
 
@@ -63,6 +66,14 @@ class Module {
                 ApiBuilder::class =>  function(ContainerInterface $container) {
                     $model = new ApiBuilder($container);
                     return $model;
+                },
+                ClinikalPatientTrackingChangesTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new ClinikalPatientTrackingChanges());
+                    $tableGateway = new ZendTableGateway('clinikal_patient_tracking_changes', $dbAdapter, null, $resultSetPrototype);
+                    $table = new ClinikalPatientTrackingChangesTable($tableGateway);
+                    return $table;
                 },
             ),
         );
