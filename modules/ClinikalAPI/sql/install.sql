@@ -30,3 +30,8 @@ VALUES
 ('userlist3', 'temporary', 'Temporary', '30', '0', '0','' ,'1');
 
 
+CREATE TABLE `clinikal_patient_tracking_changes` (
+  `facility_id` int(11) NOT NULL,
+  `update_date` datetime NOT NULL DEFAULT current_timestamp,
+   PRIMARY KEY (`facility_id`)
+) ;
