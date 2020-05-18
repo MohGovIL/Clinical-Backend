@@ -8,13 +8,15 @@ namespace ClinikalAPI\Model;
 
 use Zend\Db\Sql\Where;
 use Zend\Db\TableGateway\TableGateway;
-use GenericTools\Model\baseTable;
+use GenericTools;
 
 class ClinikalPatientTrackingChangesTable
 {
 
 
     protected $tableGateway;
+
+    use GenericTools\Model\baseTable;
 
     public function __construct(TableGateway $tableGateway)
     {
