@@ -1,9 +1,4 @@
 <?php
-/**
- * User: Eyal Wolanowski eyalvo@matrix.co.il
- * Date: 17/05/20
- * Time: 16:58
- */
 
 namespace GenericTools\Service;
 
@@ -98,12 +93,12 @@ class SseService
         header('Content-Type: text/event-stream');
         header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
         header("Pragma: no-cache"); // HTTP 1.0.
+        header('Content-Encoding: none');
+        header("X-Accel-Buffering: no");
 
-
-        echo "heartbeatTimeout: " . $this->client_timeout . "\n\n";
-        echo "retry: " . $this->client_retry_delay . "\n\n";
-        ob_flush();
-        flush();
+        echo "heartbeatTimeout: " . $this->client_timeout . PHP_EOL.PHP_EOL;
+        echo "retry: " . $this->client_retry_delay . PHP_EOL.PHP_EOL;
+        $this->flush_buffers();
 
         $expirationTime = time() + $this->connect_time_limit;
 
@@ -117,7 +112,7 @@ class SseService
          * When CONNECT_TIME_LIMIT (server max run time) ends
          * send 204 response to the client
          */
-        ob_start();
+
         header("HTTP/1.1 204 NO CONTENT",true);
         header("Expires: 0",true);   // Proxies.
         ob_end_flush();         //now the headers are sent
@@ -143,16 +138,15 @@ class SseService
                 'event' => "update",
                 'info' => "true"
             ]);
-            echo "id: {$this->eventId}\n";
-            echo "data: {$data}\n\n";
-            ob_flush();
-            flush();
+            echo "id: {$this->eventId}". PHP_EOL;
+            echo "data: {$data}". PHP_EOL.PHP_EOL;
+            $this->flush_buffers();
+
             $sentUpdate = true;
         }
         if (!$sentUpdate) {
-            echo ": heartbeat\n\n";
-            ob_flush();
-            flush();
+            echo ": heartbeat". PHP_EOL.PHP_EOL;
+            $this->flush_buffers();
         }
     }
 
@@ -176,6 +170,13 @@ class SseService
     protected function getTimeStamp()
     {
         return $this->timeStamp;
+    }
+
+    protected function flush_buffers(){
+        ob_end_flush();
+        ob_flush();
+        flush();
+        ob_start();
     }
 
 }
