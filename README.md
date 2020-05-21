@@ -18,8 +18,7 @@ Add the following to the openemr/composer.json:
 ],
 "require": {
     "clinikal/clinikal-backend": "dev-master",
-    "clinikal/composer-installers-clinikal-extender": "dev-master",
-    "clinikal/vertical-imaging-backend": "dev-master"
+    "clinikal/composer-installers-clinikal-extender": "dev-master"
 },
 "extra": {
     "installer-types": [
