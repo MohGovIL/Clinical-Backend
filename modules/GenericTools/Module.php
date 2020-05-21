@@ -315,10 +315,6 @@ class Module
                     $table = new LogServiceTable($tableGateway);
                     return $table;
                 },
-
-
-
-
             ),
         );
     }
