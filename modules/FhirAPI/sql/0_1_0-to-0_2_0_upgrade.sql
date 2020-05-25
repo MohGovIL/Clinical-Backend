@@ -192,12 +192,14 @@ CREATE TABLE questionnaires_schemas(
     qid int(11) NOT NULL AUTO_INCREMENT,
     form_name varchar(255) NOT NULL,
     form_table varchar(255) NOT NULL,
-    column_name varchar(255) NOT NULL,
+    column_name varchar(255) DEFAULT NULL,
     column_type varchar(255) NOT NULL,
     question varchar(255) DEFAULT NULL,
     PRIMARY KEY (`qid`)
 );
 #EndIf
+
+ALTER TABLE `questionnaires_schemas` CHANGE `column_name` `column_name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
 
 #IfNotTable questionnaire_response
 CREATE TABLE `questionnaire_response`(
@@ -374,3 +376,5 @@ CREATE TABLE `form_context_map` (
     PRIMARY KEY (`form_id`,`context_type`,`context_id`)
 );
 #EndIf
+
+

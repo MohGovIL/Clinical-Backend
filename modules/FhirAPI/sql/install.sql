@@ -53,7 +53,7 @@ CREATE TABLE questionnaires_schemas(
     qid int(11) NOT NULL AUTO_INCREMENT,
     form_name varchar(255) NOT NULL,
     form_table varchar(255) NOT NULL,
-    column_name varchar(255) NOT NULL,
+    column_name varchar(255) DEFAULT NULL,
     column_type varchar(255) NOT NULL,
     question varchar(255) DEFAULT NULL,
     PRIMARY KEY (`qid`)
@@ -214,5 +214,5 @@ CREATE TABLE `form_context_map` (
     `context_id`        INT NOT NULL,
     PRIMARY KEY (`form_id`,`context_type`,`context_id`)
 );
-
+ 
 
