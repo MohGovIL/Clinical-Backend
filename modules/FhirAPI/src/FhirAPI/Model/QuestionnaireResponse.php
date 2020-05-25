@@ -4,7 +4,7 @@
 * @author  Eyal Wolanowski <eyalvo@matrix.co.il>
 */
 
-namespace GenericTools\Model;
+namespace FhirAPI\Model;
 
 
 class QuestionnaireResponse

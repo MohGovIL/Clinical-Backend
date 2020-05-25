@@ -352,3 +352,25 @@ VALUES
 ('sex', 'other', 'Other', '30', '0', '0','', '1'),
 ('sex', 'unknown', 'Unknown', '40', '0', '0','' ,'0');
 #EndIf
+
+
+#IfNotTable fhir_questionnaire
+CREATE TABLE `fhir_questionnaire` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `name`      varchar(255) NOT NULL,
+    `directory` varchar(255) NOT NULL,
+    `state`     tinyint(4)   DEFAULT NULL,
+    `aco_spec`  varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ;
+#EndIf
+
+
+#IfNotTable form_context_map
+CREATE TABLE `form_context_map` (
+    `form_id`           INT NOT NULL,
+    `context_type`      varchar(255) NOT NULL COMMENT 'reason_code / service_type',
+    `context_id`        INT NOT NULL,
+    PRIMARY KEY (`form_id`,`context_type`,`context_id`)
+);
+#EndIf
