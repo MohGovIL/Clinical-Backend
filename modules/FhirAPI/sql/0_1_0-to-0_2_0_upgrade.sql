@@ -352,3 +352,20 @@ VALUES
 ('sex', 'other', 'Other', '30', '0', '0','', '1'),
 ('sex', 'unknown', 'Unknown', '40', '0', '0','' ,'0');
 #EndIf
+
+
+
+#IfNotRow fhir_rest_elements name Condition
+INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES ('Condition', 1);
+#EndIf
+
+#IfNotRow2D list_options list_id outcome title recurrence
+DELETE  FROM `list_options` WHERE `list_id` LIKE 'outcome';
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`, `timestamp`) VALUES
+('outcome', '1', 'active', 5, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '2', 'recurrence', 10, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '3', 'relapse', 15, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '4', 'inactive', 20, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '5', 'resolved', 25, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '6', 'remission', 25, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44');

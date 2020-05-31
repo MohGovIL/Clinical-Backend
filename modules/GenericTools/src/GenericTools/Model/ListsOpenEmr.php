@@ -21,6 +21,9 @@ class ListsOpenEmr
     public $comments;
     public $pid;
     public $list_option_id;
+    public $outcome;
+    public $user;
+    public $reaction;
 
     public function exchangeArray($data)
     {
@@ -41,5 +44,8 @@ class ListsOpenEmr
         $this->comments = (!empty($data['comments'])) ? $data['comments'] : null;
         $this->pid = (!empty($data['pid'])) ? $data['pid'] : null;
         $this->list_option_id = (!empty($data['list_option_id'])) ? $data['list_option_id'] : null;
+        $this->outcome = (!empty($data['outcome']) || $data['outcome']==="0") ? $data['outcome'] : null;
+        $this->user = (!empty($data['user'])) ? $data['user'] : null;
+        $this->reaction = (!empty($data['reaction'])) ? $data['reaction'] : "";
     }
 }
