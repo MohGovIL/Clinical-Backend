@@ -9,6 +9,7 @@ namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\RelatedPerso
 
 use function DeepCopy\deep_copy;
 use Exception;
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\RelatedPersonTable;
@@ -48,6 +49,10 @@ class FhirRelatedPersonMapping extends FhirBaseMapping implements MappingData
         $identifier=$FhirObject->getIdentifier();
         $identifier= ( !is_array($identifier) ) ? null : $identifier[0];
         $dbRelatedPerson['identifier'] = ( is_null($identifier) ) ? null : $identifier->getValue();
+
+        $text = $FhirObject->getName()[0]->getText();
+        $name = ( is_null($text) ) ? null : $text->getValue();
+        $dbRelatedPerson['full_name'] = $name;
 
         try{
             $type=$identifier->getType()->getCoding()[0]->getCode();
@@ -93,10 +98,16 @@ class FhirRelatedPersonMapping extends FhirBaseMapping implements MappingData
             return null;
         }
         $FHIRRelatedPerson=$this->FHIRRelatedPerson;
-
-        $FHIRRelatedPerson->setId($relatedPersonFromDb['id']);
+        $FHIRId=$this->createFHIRId($relatedPersonFromDb['id']);
+        $FHIRRelatedPerson->setId($FHIRId);
         $FHIRRelatedPerson->getIdentifier()[0]->setValue($relatedPersonFromDb['identifier']);
         $FHIRRelatedPerson->getIdentifier()[0]->getType()->getCoding()[0]->setCode($relatedPersonFromDb['identifier_type']);
+
+        if(!is_null($relatedPersonFromDb['full_name'])){
+            $FHIRString=$this->createFHIRString($relatedPersonFromDb['full_name']);
+            $FHIRRelatedPerson->getName()[0]->setText($FHIRString);
+        }
+
         $active= ($relatedPersonFromDb['active']) ? true :false;
         $FHIRRelatedPerson->getActive()->setValue($active);
         $patientReference='Patient/'.$relatedPersonFromDb['pid'];
@@ -153,6 +164,12 @@ class FhirRelatedPersonMapping extends FhirBaseMapping implements MappingData
         $type=$parsedData['identifier'][0]['type']['coding'][0]['code'];
         $FHIRRelatedPerson->getIdentifier()[0]->getType()->getCoding()[0]->setCode($type);
 
+        $dbName=$parsedData['name'][0]['text'];
+        if(!is_null($dbName)){
+            $name=$FHIRString=$this->createFHIRString($dbName);
+            $FHIRRelatedPerson->getName()[0]->setText($name);
+        }
+
         $FHIRRelatedPerson->getActive()->setValue($parsedData['active']);
 
         $patientReference=$parsedData['patient']['reference'];
@@ -192,6 +209,10 @@ class FhirRelatedPersonMapping extends FhirBaseMapping implements MappingData
         $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array('code'=>null));
         $FhirPatientIdentifier->setType($FHIRCodeableConcept);
         $FHIRRelatedPerson->addIdentifier($FhirPatientIdentifier);
+
+        $FHIRHumanName=$this->createFHIRHumanName(null,null,null);
+        $FHIRRelatedPerson->addName($FHIRHumanName);
+
         $FHIRBoolean=$this->createFHIRBoolean(null);
         $FHIRRelatedPerson->setActive($FHIRBoolean);
         $FHIRReference=$this->createFHIRReference(array('reference'=>null));
@@ -221,7 +242,13 @@ class FhirRelatedPersonMapping extends FhirBaseMapping implements MappingData
     {
         $relatedPersonTable = $this->container->get(RelatedPersonTable::class);
         $primaryKey='id';
+        unset($data['related_person']['id']);
         $updated=$relatedPersonTable->safeUpdate($data['related_person'],array($primaryKey=>$id));
+
+        if(!is_array($updated)){
+            return ErrorCodes::http_response_code('400','Error inserting to db');
+        }
+
         $this->initFhirObject();
         return $this->DBToFhir($updated);
     }

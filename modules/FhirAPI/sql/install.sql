@@ -215,4 +215,4 @@ CREATE TABLE `form_context_map` (
     PRIMARY KEY (`form_id`,`context_type`,`context_id`)
 );
  
-
+ALTER TABLE `related_person` ADD `full_name` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`;
