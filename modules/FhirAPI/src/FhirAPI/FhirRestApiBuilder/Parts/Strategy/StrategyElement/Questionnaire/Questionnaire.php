@@ -15,7 +15,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Patch\GenericPatch;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Questionnaire\FhirQuestionnaireMapping;
 
-use GenericTools\Model\RegistryTable;
+use FhirAPI\Model\FhirQuestionnaireTable;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRQuestionnaire;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRRelatedPerson;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
@@ -72,8 +72,8 @@ class Questionnaire Extends Restful implements  Strategy
     public function read()
     {
         $fid=$this->paramsFromUrl[0];
-        $registryTable = $this->container->get(RegistryTable::class);
-        $questionnaire =$registryTable->buildGenericSelect(["registry.id"=>$fid]);
+        $fhirQuestionnaireTable = $this->container->get(FhirQuestionnaireTable::class);
+        $questionnaire =$fhirQuestionnaireTable->buildGenericSelect(["fhir_questionnaire.id"=>$fid]);
 
         if (!is_array($questionnaire) || count($questionnaire) != 1) {
             $FHIRBundle = new FHIRBundle;
@@ -99,7 +99,7 @@ class Questionnaire Extends Restful implements  Strategy
     public function search()
     {
         $paramsToSearch = array(
-            'tableToSearchOnOrm'=>$this->container->get(RegistryTable::class),
+            'tableToSearchOnOrm'=>$this->container->get(FhirQuestionnaireTable::class),
             'fhirObj'=>new FhirQuestionnaireMapping($this->container),
             'paramsToSearch'=>null,
             'container'=>$this->container,

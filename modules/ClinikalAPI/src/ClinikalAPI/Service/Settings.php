@@ -48,7 +48,15 @@ class Settings
             "format_date" => DateFormatRead('validateJS'),
             "user_role" => $aclTables->whatIsUserAroGroups($uid),
             "user_aco" =>$aclTables->getAcoForThisGroup($uid),
-            "clinikal_vertical" => 'imaging'
+            "clinikal_vertical" => 'imaging',
+            "clinikal"=> array(
+                "clinikal_hide_appoitments"=>$GLOBALS['clinikal_hide_appoitments'],
+                "patient admission" =>array(
+                    "clinikal_pa_commitment_form"=>$GLOBALS['clinikal_pa_commitment_form'],
+                    "clinikal_pa_arrival_way" =>$GLOBALS['clinikal_pa_arrival_way'],
+                    "clinikal_pa_next_enc_status" =>$GLOBALS['clinikal_pa_next_enc_status'],
+                ),
+                )
         );
 
         return RestControllerHelper::responseHandler($settings, null, 200);

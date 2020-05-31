@@ -113,3 +113,20 @@ CREATE TABLE `clinikal_patient_tracking_changes` (
    PRIMARY KEY (`facility_id`)
 ) ;
 +#EndIf
+
+
+-- always restore to default in upgrade
+
+REPLACE INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
+('clinikal_hide_appoitments', 0, '0');
+
+
+REPLACE INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
+('clinikal_pa_commitment_form', 0, '1');
+
+
+REPLACE INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
+('clinikal_pa_arrival_way', 0, '0');
+
+REPLACE INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
+('clinikal_pa_next_enc_status', 0, 'arrived');

@@ -15,7 +15,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Restful;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Strategy;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\QuestionnaireResponse\FhirQuestionnaireResponseMapping;
-use GenericTools\Model\QuestionnaireResponseTable;
+use FhirAPI\Model\QuestionnaireResponseTable;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRQuestionnaireResponse;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
 

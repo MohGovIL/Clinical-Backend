@@ -37,9 +37,15 @@ use OpenEMR\Events\Globals\GlobalsInitializedEvent;
 use OpenEMR\Events\RestApiExtend\RestApiCreateEvent;
 use OpenEMR\Services\Globals\GlobalSetting;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Zend\Mvc\MvcEvent;
+use Laminas\Mvc\MvcEvent;
 use FhirAPI\Service\FhirRequestParamsHandler;
 
++use GenericTools\ZendExtended\TableGateway;
++use Laminas\Db\ResultSet\ResultSet;
++use FhirAPI\Model\QuestionnaireResponseTable;
++use FhirAPI\Model\QuestionnaireResponse;
++use FhirAPI\Model\FhirQuestionnaireTable;
++use FhirAPI\Model\FhirQuestionnaire;
 
 
 class Module {
@@ -87,6 +93,22 @@ class Module {
                     $model = new FhirValidateTypes();
                     return $model;
                 },
+                FhirQuestionnaireTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FhirQuestionnaire());
+                    $tableGateway = new TableGateway('fhir_questionnaire', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FhirQuestionnaireTable($tableGateway);
+                    return $table;
+                },
+                QuestionnaireResponseTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new QuestionnaireResponse());
+                    $tableGateway = new TableGateway('questionnaire_response', $dbAdapter, null, $resultSetPrototype);
+                    $table = new QuestionnaireResponseTable($tableGateway);
+                    return $table;
+                },
 
             ),
         );
@@ -115,9 +137,30 @@ class Module {
     public function addCustomGlobals(GlobalsInitializedEvent $event) {
 
         $event->getGlobalsService()->createSection("Fetch Files", "Connectors");
-
         $setting = new GlobalSetting( "Enable FHIR Type Validation", 'bool', 1, "When checked, run fhir native validation are active" );
         $event->getGlobalsService()->appendToSection( "Connectors", "fhir_type_validation", $setting );
+
+
+        /*******************************************************************/
+        $event->getGlobalsService()->createSection("clinikal settings", "Connectors");
+        $setting = new GlobalSetting( "clinkal - hide appointments in all the screens", 'bool', 0, "When checked, hide appointments in all the screens" );
+        $event->getGlobalsService()->appendToSection( "clinikal settings", "clinikal_hide_appoitments", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "clinkal - patient admission - enable commitment form", 'bool', 1, "When checked, Enable commitment form" );
+        $event->getGlobalsService()->appendToSection( "clinikal settings", "clinikal_pa_commitment_form", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "clinkal - patient admission - show arrival way", 'bool', 0, "When checked, Enable arrival way" );
+        $event->getGlobalsService()->appendToSection( "clinikal settings", "clinikal_pa_arrival_way", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "clinikal - patient admission - first status of the encounter", 'text', "arrived", "Define next status" );
+        $event->getGlobalsService()->appendToSection( "clinikal settings", "clinikal_pa_next_enc_status", $setting );
+        /*******************************************************************/
     }
 
 

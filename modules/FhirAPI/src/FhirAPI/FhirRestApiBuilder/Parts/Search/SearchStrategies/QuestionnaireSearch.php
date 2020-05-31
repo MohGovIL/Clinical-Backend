@@ -6,7 +6,7 @@ namespace FhirAPI\FhirRestApiBuilder\Parts\Search\SearchStrategies;
 class QuestionnaireSearch extends BaseSearch
 {
     public $paramsToDB = array();
-    public $MAIN_TABLE = 'registry';
+    public $MAIN_TABLE = 'fhir_questionnaire';
     public function search()
     {
 
