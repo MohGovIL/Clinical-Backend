@@ -37,9 +37,15 @@ use OpenEMR\Events\Globals\GlobalsInitializedEvent;
 use OpenEMR\Events\RestApiExtend\RestApiCreateEvent;
 use OpenEMR\Services\Globals\GlobalSetting;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Zend\Mvc\MvcEvent;
+use Laminas\Mvc\MvcEvent;
 use FhirAPI\Service\FhirRequestParamsHandler;
 
++use GenericTools\ZendExtended\TableGateway;
++use Laminas\Db\ResultSet\ResultSet;
++use FhirAPI\Model\QuestionnaireResponseTable;
++use FhirAPI\Model\QuestionnaireResponse;
++use FhirAPI\Model\FhirQuestionnaireTable;
++use FhirAPI\Model\FhirQuestionnaire;
 
 
 class Module {
@@ -86,6 +92,22 @@ class Module {
                 FhirValidateTypes::class =>  function() {
                     $model = new FhirValidateTypes();
                     return $model;
+                },
+                FhirQuestionnaireTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FhirQuestionnaire());
+                    $tableGateway = new TableGateway('fhir_questionnaire', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FhirQuestionnaireTable($tableGateway);
+                    return $table;
+                },
+                QuestionnaireResponseTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new QuestionnaireResponse());
+                    $tableGateway = new TableGateway('questionnaire_response', $dbAdapter, null, $resultSetPrototype);
+                    $table = new QuestionnaireResponseTable($tableGateway);
+                    return $table;
                 },
 
             ),

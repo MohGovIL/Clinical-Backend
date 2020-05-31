@@ -62,8 +62,6 @@ use GenericTools\Model\LogService;
 
 
 // todo: move the following to FHIR Module.php
-use GenericTools\Model\QuestionnaireResponseTable;
-use GenericTools\Model\QuestionnaireResponse;
 use GenericTools\Model\RelatedPerson;
 use GenericTools\Model\RelatedPersonTable;
 use GenericTools\Model\FormsGenericHandlerTable;
@@ -288,14 +286,6 @@ class Module
                     $resultSetPrototype->setArrayObjectPrototype(new Registry());
                     $tableGateway = new TableGateway('registry', $dbAdapter, null, $resultSetPrototype);
                     $table = new RegistryTable($tableGateway);
-                    return $table;
-                },
-                QuestionnaireResponseTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
-                    $resultSetPrototype = new ResultSet();
-                    $resultSetPrototype->setArrayObjectPrototype(new QuestionnaireResponse());
-                    $tableGateway = new TableGateway('questionnaire_response', $dbAdapter, null, $resultSetPrototype);
-                    $table = new QuestionnaireResponseTable($tableGateway);
                     return $table;
                 },
                 FormsGenericHandlerTable::class =>  function(ContainerInterface $container) {

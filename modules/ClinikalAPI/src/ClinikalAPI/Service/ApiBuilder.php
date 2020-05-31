@@ -28,6 +28,7 @@ class ApiBuilder
     CONST MOH_STREETS="mh_streets";
 
     use ApiTools;
+    use LoadFormsService;
 
     public function __construct(ContainerInterface $container)
     {
@@ -80,6 +81,13 @@ class ApiBuilder
                 //exit php or return 401 if not authorized
                 //$this->checkAcl("clinikal_api", "sse");
                 return $this->patientsTrackingCheckRefresh($facility_id);
+            },
+            "GET /api/load-forms" => function () {
+                $service_type=$_GET['service_type'];
+                $reason_code=$_GET['reason_code'];
+                //exit php or return 401 if not authorized
+                $this->checkAcl("clinikal_api", "general_settings");
+                return $this->loadForms($service_type,$reason_code);
             },
 
 

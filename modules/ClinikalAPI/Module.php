@@ -31,6 +31,8 @@ use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway as ZendTableGateway;
 use ClinikalAPI\Model\ClinikalPatientTrackingChanges;
 use ClinikalAPI\Model\ClinikalPatientTrackingChangesTable;
+use ClinikalAPI\Model\FormContextMap;
+use ClinikalAPI\Model\FormContextMapTable;
 
 class Module {
 
@@ -73,6 +75,14 @@ class Module {
                     $resultSetPrototype->setArrayObjectPrototype(new ClinikalPatientTrackingChanges());
                     $tableGateway = new ZendTableGateway('clinikal_patient_tracking_changes', $dbAdapter, null, $resultSetPrototype);
                     $table = new ClinikalPatientTrackingChangesTable($tableGateway);
+                    return $table;
+                },
+                FormContextMapTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FormContextMap());
+                    $tableGateway = new ZendTableGateway('form_context_map', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FormContextMapTable($tableGateway);
                     return $table;
                 },
             ),
