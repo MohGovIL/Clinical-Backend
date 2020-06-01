@@ -26,11 +26,13 @@ class Patients
     public $mh_english_name;
     public $deceased_date;
     public $mh_insurance_organiz;
+    public $uuid;
 
 
     public function exchangeArray($data)
     {
         $this->id = (!empty($data['id'])) ? $data['id'] : null;
+        $this->uuid = (!empty($data['uuid'])) ? $data['uuid'] : null;
         $this->fname = (!empty($data['fname'])) ? $data['fname'] : null;
         $this->lname = (!empty($data['lname'])) ? $data['lname'] : null;
         $this->mname = (!empty($data['mname'])) ? $data['mname'] : null;

@@ -106,6 +106,12 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
 
         $dbPatient['pid'] = (is_null($patient->getId())) ? null : $patient->getId()->getValue();
 
+        if(!is_null($dbPatient['pid'])){
+            $dbPatient['uuid'] =  base_convert($dbPatient['pid'], 10, 16);
+        }else {
+            ErrorCodes::http_response_code('406','object is not valid - uuid can not be null');
+        }
+
         $pidElement = (is_null($patient->getIdentifier()[0])) ? null : $patient->getIdentifier()[0]->getValue();
         $dbPatient['ss'] = (is_null($pidElement)) ? null : $pidElement->getValue();
 
