@@ -43,8 +43,6 @@ use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle\FHIRBundleSearch;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle\FHIRBundleResponse;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRSearchEntryMode;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRBundleType;
-use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionEvidence;
-use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionStage;
 use OpenEMR\FHIR\R4\FHIRResourceContainer;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRUnsignedInt;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIROperationOutcome;
@@ -69,6 +67,7 @@ class FhirBaseMapping
     private $adapter = null;
     private $container = null;
     private $fhirRequestParamsHandler = null;
+    CONST   LIST_SYSTEM_LINK="http://clinikal/valueset/";
 
     use ConversionsTrait;
 
@@ -1108,74 +1107,6 @@ class FhirBaseMapping
     }
 
 
-
-    /**
-     * create FHIRConditionStage
-     *
-     * @param array
-     *
-     * @return FHIRConditionStage | null
-     */
-    public function createFHIRConditionStage(array $stageArr)
-    {
-        $FHIRConditionStage = new FHIRConditionStage;
-
-        if (key_exists('summary', $stageArr)) {
-
-            $FHIRConditionStage->setSummary($stageArr['summary']);
-        }else{
-            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
-            $FHIRConditionStage->setSummary($FHIRCodeableConcept);
-        }
-
-        if (key_exists('assessment', $stageArr)) {
-            $FHIRConditionStage->addAssessment($stageArr['assessment']);
-
-        }else{
-            $FHIRReference = $this->createFHIRReference(null);
-            $FHIRConditionStage->addAssessment($FHIRReference);
-        }
-
-        if (key_exists('type', $stageArr)) {
-            $FHIRConditionStage->setType($stageArr['type']);
-        }else{
-            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
-            $FHIRConditionStage->setType($FHIRCodeableConcept);
-        }
-
-        return $FHIRConditionStage;
-    }
-
-
-    /**
-     * create FHIRConditionEvidence
-     *
-     * @param array
-     *
-     * @return FHIRConditionEvidence | null
-     */
-    public function createFHIRConditionEvidence(array $conditionEvidenceArr)
-    {
-        $FHIRConditionEvidence = new FHIRConditionEvidence;
-
-        if (key_exists('code', $conditionEvidenceArr)) {
-
-            $FHIRConditionEvidence->addCode($conditionEvidenceArr['code']);
-        }else{
-            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
-            $FHIRConditionEvidence->addCode($FHIRCodeableConcept);
-        }
-
-        if (key_exists('detail', $conditionEvidenceArr)) {
-            $FHIRConditionEvidence->addDetail($conditionEvidenceArr['detail']);
-
-        }else{
-            $FHIRReference = $this->createFHIRReference(null);
-            $FHIRConditionEvidence->addDetail($FHIRReference);
-        }
-
-        return $FHIRConditionEvidence;
-    }
 
 
     /**

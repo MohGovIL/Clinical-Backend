@@ -11,7 +11,8 @@ use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
-
+use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionEvidence;
+use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionStage;
 use GenericTools\Model\ListsOpenEmrTable;
 use GenericTools\Model\ListsTable;
 use Interop\Container\ContainerInterface;
@@ -194,7 +195,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
             $outcome=$outcomeList[$conditionDataFromDb['outcome']];
             $outcomeCoding= $FHIRCondition->getClinicalStatus()->getCoding()[0];
             $outcomeCoding->setCode($conditionDataFromDb['outcome']);
-            $outcomeCoding->getSystem()->setValue('clinikal/valueset/reaction/outcome');
+            $outcomeCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK.'outcome');
             $FHIRCondition->getClinicalStatus()->setText($outcome);
         }
 
@@ -223,7 +224,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
             $occurrenceList=$this->getOccurrenceTypes();
             $occurrence=$occurrenceList[$conditionDataFromDb['occurrence']];
             $stageCoding->setCode($conditionDataFromDb['occurrence']);
-            $stageCoding->getSystem()->setValue('clinikal/valueset/reaction/occurrence');
+            $stageCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK.'occurrence');
             $stage->getType()->setText($occurrence);
         }
 
@@ -251,7 +252,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
         if(!empty($conditionDataFromDb['reaction'])){
             $evidenceCode->getCode()->setValue($conditionDataFromDb['reaction']);
-            $evidenceCode->getSystem()->setValue('clinikal/valueset/reaction');
+            $evidenceCode->getSystem()->setValue(self::LIST_SYSTEM_LINK.'reaction');
         }
 
         $this->FHIRCondition=$FHIRCondition;
@@ -421,7 +422,79 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         return false;
     }
 
+
+    /**
+     * create FHIRConditionStage
+     *
+     * @param array
+     *
+     * @return FHIRConditionStage | null
+     */
+    public function createFHIRConditionStage(array $stageArr)
+    {
+        $FHIRConditionStage = new FHIRConditionStage;
+
+        if (key_exists('summary', $stageArr)) {
+
+            $FHIRConditionStage->setSummary($stageArr['summary']);
+        }else{
+            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+            $FHIRConditionStage->setSummary($FHIRCodeableConcept);
+        }
+
+        if (key_exists('assessment', $stageArr)) {
+            $FHIRConditionStage->addAssessment($stageArr['assessment']);
+
+        }else{
+            $FHIRReference = $this->createFHIRReference(null);
+            $FHIRConditionStage->addAssessment($FHIRReference);
+        }
+
+        if (key_exists('type', $stageArr)) {
+            $FHIRConditionStage->setType($stageArr['type']);
+        }else{
+            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+            $FHIRConditionStage->setType($FHIRCodeableConcept);
+        }
+
+        return $FHIRConditionStage;
+    }
+
+
+    /**
+     * create FHIRConditionEvidence
+     *
+     * @param array
+     *
+     * @return FHIRConditionEvidence | null
+     */
+    public function createFHIRConditionEvidence(array $conditionEvidenceArr)
+    {
+        $FHIRConditionEvidence = new FHIRConditionEvidence;
+
+        if (key_exists('code', $conditionEvidenceArr)) {
+
+            $FHIRConditionEvidence->addCode($conditionEvidenceArr['code']);
+        }else{
+            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+            $FHIRConditionEvidence->addCode($FHIRCodeableConcept);
+        }
+
+        if (key_exists('detail', $conditionEvidenceArr)) {
+            $FHIRConditionEvidence->addDetail($conditionEvidenceArr['detail']);
+
+        }else{
+            $FHIRReference = $this->createFHIRReference(null);
+            $FHIRConditionEvidence->addDetail($FHIRReference);
+        }
+
+        return $FHIRConditionEvidence;
+    }
+
 }
+
+
+
 
 
 
