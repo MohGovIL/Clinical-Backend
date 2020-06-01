@@ -378,3 +378,7 @@ CREATE TABLE `form_context_map` (
 #EndIf
 
 
+#IfMissingColumn related_person full_name
+ALTER TABLE `related_person` ADD `full_name` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`;
+#EndIf
+

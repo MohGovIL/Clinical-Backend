@@ -17,6 +17,7 @@ class RelatedPersonSearch extends BaseSearch
         $this->paramHandler('relationship','relationship');
         $this->paramHandler('gender','gender');
         $this->paramHandler('email','email');
+        $this->paramHandler('name','full_name');
         // search by phone means search by any telecom that has system='phone'
         //that means we need to map both phone_home and phone_cell to phone
         $this->searchParams = $this->paramsToDB;

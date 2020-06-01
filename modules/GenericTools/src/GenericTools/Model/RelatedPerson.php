@@ -16,6 +16,7 @@ class RelatedPerson
     public $phone_cell;
     public $email;
     public $gender;
+    public $full_name;
 
     public function exchangeArray($data)
     {
@@ -29,5 +30,6 @@ class RelatedPerson
         $this->phone_cell = (!empty($data['phone_cell'])) ? $data['phone_cell'] : null;
         $this->email = (!empty($data['email'])) ? $data['email'] : null;
         $this->gender = (!empty($data['gender'])) ? $data['gender'] : null;
+        $this->full_name = (!empty($data['full_name'])) ? $data['full_name'] : null;
     }
 }
