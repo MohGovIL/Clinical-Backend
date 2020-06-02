@@ -121,7 +121,7 @@ class Patient Extends Restful implements  Strategy
         if (class_exists('OpenEMR\Common\Uuid\UuidRegistry')) {
             $dbData['uuid'] = (new UuidRegistry(['table_name' => 'patient_data']))->createUuid();
         }
-taa
+
         $flag=$this->mapping->validateDb($dbData);
         if($flag){
             $rez=$patientTable->safeInsert($dbData,'id','pid');
