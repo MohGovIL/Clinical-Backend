@@ -11,11 +11,11 @@ namespace GenericTools\Controller;
 
 use Formhandler\Validator\ServerValidationHandler;
 use GenericTools\Model\AclTables;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\AbstractActionController;
 use Application\Listener\Listener;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 //use GenericTools\Model\CustomSql;
-use Zend\InputFilter\InputFilter;
+use Laminas\InputFilter\InputFilter;
 use Mpdf\Mpdf;
 use Interop\Container\ContainerInterface;
 use GenericTools\Model\ListsTable;
@@ -80,7 +80,7 @@ class BaseController extends AbstractActionController
     protected function renderPdf($viewModelName, array $parameters = array(), $headerViewModel = null, $headerParameters = null, $footerViewModel  = null, $footerParameters = null, $title  = '')
     {
 
-        $renderer = $this->getServiceLocator()->get('Zend\View\Renderer\PhpRenderer');
+        $renderer = $this->getServiceLocator()->get('Laminas\View\Renderer\PhpRenderer');
         //$this->layout('GenericTools/layout/pdf');
         $langParameter = array('langDir' => $_SESSION['language_direction'], 'langCode' => $this->getLangLanguagesTable()->getLangCode($_SESSION['language_choice']));
 
@@ -313,7 +313,7 @@ class BaseController extends AbstractActionController
      * @param $data
      * @param bool $convertToJson
      * @param int $responsecode
-     * @return \Zend\Stdlib\ResponseInterface
+     * @return \Laminas\Stdlib\ResponseInterface
      * @comment to use this function return this $response in your controller
      */
     protected function responseWithNoLayout($data, $convertToJson=true, $responsecode=200){

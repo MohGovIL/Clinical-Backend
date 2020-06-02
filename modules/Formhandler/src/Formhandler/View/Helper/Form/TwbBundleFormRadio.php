@@ -2,9 +2,9 @@
 
 namespace Formhandler\View\Helper\Form;
 
-use Zend\Form\View\Helper\FormRadio;
-use Zend\Form\ElementInterface;
-use Zend\Form\Element\MultiCheckbox;
+use Laminas\Form\View\Helper\FormRadio;
+use Laminas\Form\ElementInterface;
+use Laminas\Form\Element\MultiCheckbox;
 
 class TwbBundleFormRadio extends FormRadio
 {
@@ -22,8 +22,8 @@ class TwbBundleFormRadio extends FormRadio
     //private static $checkboxFormat = '%s';
 
     /**
-     * @see \Zend\Form\View\Helper\FormRadio::render()
-     * @param \Zend\Form\ElementInterface $oElement
+     * @see \Laminas\Form\View\Helper\FormRadio::render()
+     * @param \Laminas\Form\ElementInterface $oElement
      * @return string
      */
     public function render(ElementInterface $oElement)
@@ -56,8 +56,8 @@ class TwbBundleFormRadio extends FormRadio
     }
 
     /**
-     * @see \Zend\Form\View\Helper\FormMultiCheckbox::renderOptions()
-     * @param \Zend\Form\Element\MultiCheckbox $oElement
+     * @see \Laminas\Form\View\Helper\FormMultiCheckbox::renderOptions()
+     * @param \Laminas\Form\Element\MultiCheckbox $oElement
      * @param array $aOptions
      * @param array $aSelectedOptions
      * @param array $aAttributes
@@ -87,7 +87,7 @@ class TwbBundleFormRadio extends FormRadio
             //Option attributes
             $aInputAttributes = $aAttributes;
             if (isset($aOptionspec['attributes'])) {
-                $aInputAttributes = \Zend\Stdlib\ArrayUtils::merge($aInputAttributes, $aOptionspec['attributes']);
+                $aInputAttributes = \Laminas\Stdlib\ArrayUtils::merge($aInputAttributes, $aOptionspec['attributes']);
             }
 
             //Option value
@@ -130,7 +130,7 @@ class TwbBundleFormRadio extends FormRadio
                     $sLabel = $oTranslator->translate($sLabel, $this->getTranslatorTextDomain());
                 }
 
-                if (!($oElement instanceof \Zend\Form\LabelAwareInterface) || !$oElement->getLabelOption('disable_html_escape')) {
+                if (!($oElement instanceof \Laminas\Form\LabelAwareInterface) || !$oElement->getLabelOption('disable_html_escape')) {
                     $sLabel = $this->getEscapeHtmlHelper()->__invoke($sLabel);
                 }
 

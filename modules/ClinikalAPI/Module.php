@@ -23,12 +23,12 @@ use ClinikalAPI\Service\ApiBuilder;
 use Interop\Container\ContainerInterface;
 use OpenEMR\Events\RestApiExtend\RestApiCreateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Zend\Db\TableGateway\TableGateway;
-use Zend\ModuleManager\ModuleManager;
-use Zend\Mvc\MvcEvent;
-use Zend\Db\ResultSet\ResultSet;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\ModuleManager\ModuleManager;
+use Laminas\Mvc\MvcEvent;
+use Laminas\Db\ResultSet\ResultSet;
 
-use Zend\Db\TableGateway\TableGateway as ZendTableGateway;
+use Laminas\Db\TableGateway\TableGateway as ZendTableGateway;
 use ClinikalAPI\Model\ClinikalPatientTrackingChanges;
 use ClinikalAPI\Model\ClinikalPatientTrackingChangesTable;
 use ClinikalAPI\Model\FormContextMap;
@@ -40,10 +40,10 @@ class Module {
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
+            'Laminas\Loader\ClassMapAutoloader' => array(
                 __DIR__ . '/autoload_classmap.php',
             ),
-            'Zend\Loader\StandardAutoloader' => array(
+            'Laminas\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
 
@@ -70,7 +70,7 @@ class Module {
                     return $model;
                 },
                 ClinikalPatientTrackingChangesTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new ClinikalPatientTrackingChanges());
                     $tableGateway = new ZendTableGateway('clinikal_patient_tracking_changes', $dbAdapter, null, $resultSetPrototype);
@@ -78,7 +78,7 @@ class Module {
                     return $table;
                 },
                 FormContextMapTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new FormContextMap());
                     $tableGateway = new ZendTableGateway('form_context_map', $dbAdapter, null, $resultSetPrototype);

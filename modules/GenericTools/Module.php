@@ -31,11 +31,11 @@ use GenericTools\Model\PostcalendarCategoriesTable;
 use GenericTools\Model\ListsOpenEmr;
 use GenericTools\Model\ListsOpenEmrTable;
 use GenericTools\Controller\GenericToolsExtended;
-use Zend\Db\ResultSet\ResultSet;
+use Laminas\Db\ResultSet\ResultSet;
 use GenericTools\ZendExtended\TableGateway;
-use Zend\ModuleManager\ModuleManager;
+use Laminas\ModuleManager\ModuleManager;
 use Application\Listener\Listener;
-use Zend\Mvc\MvcEvent;
+use Laminas\Mvc\MvcEvent;
 use Interop\Container\ContainerInterface;
 use GenericTools\Model\PostcalendarEvents;
 use GenericTools\Model\PostcalendarEventsTable;
@@ -86,10 +86,10 @@ class Module
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
+            'Laminas\Loader\ClassMapAutoloader' => array(
                 __DIR__ . '/autoload_classmap.php',
             ),
-            'Zend\Loader\StandardAutoloader' => array(
+            'Laminas\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
 

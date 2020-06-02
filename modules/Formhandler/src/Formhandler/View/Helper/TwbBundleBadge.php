@@ -2,7 +2,7 @@
 
 namespace  Formhandler\View\Helper;
 
-use Zend\Form\View\Helper\AbstractHelper;
+use Laminas\Form\View\Helper\AbstractHelper;
 use InvalidArgumentException;
 
 class TwbBundleBadge extends AbstractHelper
@@ -51,11 +51,11 @@ class TwbBundleBadge extends AbstractHelper
                 $aBadgeAttributes['class'] .= ' badge';
             }
         }
-        
+
         if (null !== ($oTranslator = $this->getTranslator())) {
             $sBadgeMessage = $oTranslator->translate($sBadgeMessage, $this->getTranslatorTextDomain());
         }
-        
+
         return sprintf(
             self::$badgeFormat,
             $this->createAttributesString($aBadgeAttributes),

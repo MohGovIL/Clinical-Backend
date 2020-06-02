@@ -2,7 +2,7 @@
 
 namespace ImportData\Model;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class ImportDataTable
 {

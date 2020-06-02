@@ -2,7 +2,7 @@
 
 namespace GenericTools\Controller;
 
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 
 class ModuleconfigController
 {

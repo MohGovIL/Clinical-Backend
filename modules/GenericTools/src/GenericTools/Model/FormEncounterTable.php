@@ -4,10 +4,10 @@ namespace GenericTools\Model;
 
 use GenericTools\Model\UtilsTraits\JoinBuilder;
 use GenericTools\Traits\magicMethods;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Where;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\TableGateway\TableGateway;
 
 class FormEncounterTable
 {

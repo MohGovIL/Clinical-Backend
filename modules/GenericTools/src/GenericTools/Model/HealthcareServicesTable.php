@@ -4,9 +4,9 @@
 namespace GenericTools\Model;
 
 use GenericTools\Model\UtilsTraits\JoinBuilder;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\TableGateway\TableGateway;
 
 class HealthcareServicesTable
 {

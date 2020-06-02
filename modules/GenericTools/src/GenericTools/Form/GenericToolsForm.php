@@ -2,8 +2,8 @@
 
 namespace GenericTools\Form;
 
-use Zend\Form\Form,
- Zend\Form\Element;
+use Laminas\Form\Form,
+ Laminas\Form\Element;
 
 /**
  * Description of AlbumForm

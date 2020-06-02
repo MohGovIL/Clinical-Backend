@@ -9,7 +9,7 @@
 namespace GenericTools\Helpers;
 
 
-use Zend\Db\Exception\ErrorException;
+use Laminas\Db\Exception\ErrorException;
 
 class ArrivalDaysParserHelper
 {

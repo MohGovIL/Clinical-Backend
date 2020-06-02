@@ -4,10 +4,10 @@
 namespace GenericTools\Model;
 
 use GenericTools\Model\UtilsTraits\JoinBuilder;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Sql;
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Sql;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Expression;
 
 class DocumentsTable
 {
