@@ -118,7 +118,7 @@ class Patient Extends Restful implements  Strategy
 
         $patientTable = $this->container->get(PatientsTable::class);
 
-        if (class_exists('UuidRegistry')) {
+        if (class_exists('OpenEMR\Common\Uuid\UuidRegistry')) {
             $dbData['uuid'] = (new UuidRegistry(['table_name' => 'patient_data']))->createUuid();
         }
 
