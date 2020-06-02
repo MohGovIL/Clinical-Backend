@@ -12,6 +12,7 @@ use Exception;
 
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Questionnaire\Questionnaire;
+use FhirAPI\Model\QuestionnaireResponseTable;
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\RelatedPersonTable;
 use Interop\Container\ContainerInterface;
@@ -135,7 +136,8 @@ class FhirQuestionnaireResponseMapping extends FhirBaseMapping implements Mappin
             return null;
         }
         $FHIRQuestionnaireResponse=$this->FHIRQuestionnaireResponse;
-        $FHIRQuestionnaireResponse->setId($questionnaireResponseFromDb['id']);
+        $FHIRId=$this->createFHIRId($questionnaireResponseFromDb['id']);
+        $FHIRQuestionnaireResponse->setId($FHIRId);
 
         $FHIRDateTime=$this->createFHIRDateTime(null,null,$questionnaireResponseFromDb['update_date']);
         $FHIRQuestionnaireResponse->getAuthored()->setValue($FHIRDateTime->getValue());
@@ -237,8 +239,10 @@ class FhirQuestionnaireResponseMapping extends FhirBaseMapping implements Mappin
             $qid=$item->getLinkId()->getValue();
             $answerObj=$item->getAnswer()[0];
             $getFunc=$answersMapping[$qid];
-            $answer=$answerObj->$getFunc();
-            $answers[$qid]=$answer;
+            if(!is_null($getFunc)){
+                $answer=$answerObj->$getFunc();
+                $answers[$qid]=$answer;
+            }
         }
 
         return array(
@@ -285,13 +289,14 @@ class FhirQuestionnaireResponseMapping extends FhirBaseMapping implements Mappin
         return $dBdata;
     }
 
-    public function updateDbData($data,$id)
+    public function updateDbData($dBdata,$id)
     {
-        $relatedPersonTable = $this->container->get(RelatedPersonTable::class);
         $primaryKey='id';
-        $updated=$relatedPersonTable->safeUpdate($data['related_person'],array($primaryKey=>$id));
-        $this->initFhirObject();
-        return $this->DBToFhir($updated);
+        $questionnaireResponseTable = $this->container->get(QuestionnaireResponseTable::class);
+        $updated=$questionnaireResponseTable->safeUpdate($dBdata['questionnaire_response'],array($primaryKey=>$id));
+        $this->saveAnswers($dBdata,$updated);
+
+        return true;
     }
 
     private function buildParams($QuestionnaireResponse)

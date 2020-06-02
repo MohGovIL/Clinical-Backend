@@ -104,3 +104,29 @@ UPDATE `patient_data` SET `mh_type_id` = 'temporary' WHERE `patient_data`.`mh_ty
 UPDATE `patient_data` SET `mh_type_id` = 'passport' WHERE `patient_data`.`mh_type_id` = "idtype_2";
 UPDATE `patient_data` SET `mh_type_id` = 'id'       WHERE `patient_data`.`mh_type_id` = "idtype_1";
 #EndIf
+
+
+#IfNotTable clinikal_patient_tracking_changes
+CREATE TABLE `clinikal_patient_tracking_changes` (
+  `facility_id` int(11) NOT NULL,
+  `update_date` datetime NOT NULL DEFAULT current_timestamp,
+   PRIMARY KEY (`facility_id`)
+) ;
+#EndIf
+
+
+-- always restore to default in upgrade
+
+REPLACE INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
+('clinikal_hide_appoitments', 0, '0');
+
+
+REPLACE INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
+('clinikal_pa_commitment_form', 0, '1');
+
+
+REPLACE INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
+('clinikal_pa_arrival_way', 0, '0');
+
+REPLACE INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
+('clinikal_pa_next_enc_status', 0, 'arrived');

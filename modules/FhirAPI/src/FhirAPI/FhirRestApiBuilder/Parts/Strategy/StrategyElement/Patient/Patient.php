@@ -24,6 +24,7 @@ use GenericTools\Model\UserTable;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRPatient;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
 use OpenEMR\FHIR\R4\FHIRResourceContainer;
+use OpenEMR\Common\Uuid\UuidRegistry;
 
 
 class Patient Extends Restful implements  Strategy
@@ -116,6 +117,11 @@ class Patient Extends Restful implements  Strategy
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
         $patientTable = $this->container->get(PatientsTable::class);
+
+        if (class_exists('OpenEMR\Common\Uuid\UuidRegistry')) {
+            $dbData['uuid'] = (new UuidRegistry(['table_name' => 'patient_data']))->createUuid();
+        }
+
         $flag=$this->mapping->validateDb($dbData);
         if($flag){
             $rez=$patientTable->safeInsert($dbData,'id','pid');

@@ -1,16 +1,17 @@
 <?php
 
 
-namespace GenericTools\Model;
+namespace FhirAPI\Model;
 
 use Laminas\Db\TableGateway\TableGateway;
 use GenericTools\Model\UtilsTraits\JoinBuilder;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
+use GenericTools;
 
 class QuestionnaireResponseTable
 {
-    use baseTable;
+    use GenericTools\Model\baseTable;
     use JoinBuilder;
     protected $tableGateway;
 
@@ -29,7 +30,7 @@ class QuestionnaireResponseTable
         ];
 
         $this->appendJoin(
-            ["reg"=>"registry"],
+            ["reg"=>"fhir_questionnaire"],
             new Expression("reg.directory=questionnaire_response.form_name"),
             $joinFieldsArr,
             Select::JOIN_LEFT

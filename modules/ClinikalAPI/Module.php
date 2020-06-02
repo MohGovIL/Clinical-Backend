@@ -26,8 +26,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\ModuleManager\ModuleManager;
 use Laminas\Mvc\MvcEvent;
+use Laminas\Db\ResultSet\ResultSet;
 
-
+use Laminas\Db\TableGateway\TableGateway as ZendTableGateway;
+use ClinikalAPI\Model\ClinikalPatientTrackingChanges;
+use ClinikalAPI\Model\ClinikalPatientTrackingChangesTable;
+use ClinikalAPI\Model\FormContextMap;
+use ClinikalAPI\Model\FormContextMapTable;
 
 class Module {
 
@@ -63,6 +68,22 @@ class Module {
                 ApiBuilder::class =>  function(ContainerInterface $container) {
                     $model = new ApiBuilder($container);
                     return $model;
+                },
+                ClinikalPatientTrackingChangesTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new ClinikalPatientTrackingChanges());
+                    $tableGateway = new ZendTableGateway('clinikal_patient_tracking_changes', $dbAdapter, null, $resultSetPrototype);
+                    $table = new ClinikalPatientTrackingChangesTable($tableGateway);
+                    return $table;
+                },
+                FormContextMapTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FormContextMap());
+                    $tableGateway = new ZendTableGateway('form_context_map', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FormContextMapTable($tableGateway);
+                    return $table;
                 },
             ),
         );

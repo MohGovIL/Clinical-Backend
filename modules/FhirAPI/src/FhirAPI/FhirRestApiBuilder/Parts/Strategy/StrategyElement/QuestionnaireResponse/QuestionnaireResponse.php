@@ -15,7 +15,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Restful;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Strategy;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\QuestionnaireResponse\FhirQuestionnaireResponseMapping;
-use GenericTools\Model\QuestionnaireResponseTable;
+use FhirAPI\Model\QuestionnaireResponseTable;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRQuestionnaireResponse;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
 
@@ -48,6 +48,10 @@ class QuestionnaireResponse Extends Restful implements  Strategy
         $this->mapping = new FhirQuestionnaireResponseMapping($container);
     }
 
+    public function getMapping()
+    {
+        return $this->mapping;
+    }
 /********************end of base internal functions********************************************************************/
 
     /**
@@ -117,7 +121,19 @@ class QuestionnaireResponse Extends Restful implements  Strategy
      */
     public function patch()
     {
-        return ErrorCodes::http_response_code('405','Method Not Allowed');
+        $initPatch['paramsFromUrl']=$this->paramsFromUrl;
+        $initPatch['paramsFromBody']=$this->paramsFromBody;
+        $initPatch['container']=$this->container;
+        $initPatch['mapping']=$this->mapping;
+        $questionnaireResponse=new QuestionnaireResponse($initPatch);
+        $initPatch['selfApiCalls']=$questionnaireResponse;
+        /** must put the mapping of the class and not an instance of mapping
+         *   in order the mapping will be properly initialized
+         */
+        $initPatch['mapping']=$questionnaireResponse->getMapping();
+        $patch = new GenericPatch($initPatch);
+        $update= $patch->patch();
+        return $this->read();
     }
 
     /**
@@ -152,17 +168,12 @@ class QuestionnaireResponse Extends Restful implements  Strategy
      */
     public function update()
     {
-
         $dBdata = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
         $dBdata['questionnaire_response']['update_date']=date('Y-m-d H:i:s');
-        $questionnaireResponseTable = $this->container->get(QuestionnaireResponseTable::class);
-        $primaryKey='id';
-        $id=$dBdata['questionnaire_response']['id'];
+        unset($dBdata['questionnaire_response']['id']);
+        $id= $this->paramsFromUrl[0];
+        $this->mapping->updateDbData($dBdata,$id);
 
-        $updated=$questionnaireResponseTable->safeUpdate($dBdata['questionnaire_response'],array($primaryKey=>$id));
-        $formId=$this->mapping->saveAnswers($dBdata,$updated);
-
-        $this->paramsFromUrl[0]=$formId;
         return $this->read();
      }
 

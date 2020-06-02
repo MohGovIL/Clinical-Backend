@@ -53,7 +53,7 @@ CREATE TABLE questionnaires_schemas(
     qid int(11) NOT NULL AUTO_INCREMENT,
     form_name varchar(255) NOT NULL,
     form_table varchar(255) NOT NULL,
-    column_name varchar(255) NOT NULL,
+    column_name varchar(255) DEFAULT NULL,
     column_type varchar(255) NOT NULL,
     question varchar(255) DEFAULT NULL,
     PRIMARY KEY (`qid`)
@@ -198,3 +198,21 @@ VALUES
 ('clinikal_app_statuses', 'waitlist', 'Waitlisted', 60, 0, 0, '', '', '', 0, 0, 1, '', 1);
 
 
+CREATE TABLE `fhir_questionnaire` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `name`      varchar(255) NOT NULL,
+    `directory` varchar(255) NOT NULL,
+    `state`     tinyint(4)   DEFAULT NULL,
+    `aco_spec`  varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ;
+
+
+CREATE TABLE `form_context_map` (
+    `form_id`           INT NOT NULL,
+    `context_type`      varchar(255) NOT NULL COMMENT 'reason_code / service_type',
+    `context_id`        INT NOT NULL,
+    PRIMARY KEY (`form_id`,`context_type`,`context_id`)
+);
+ 
+ALTER TABLE `related_person` ADD `full_name` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`;
