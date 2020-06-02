@@ -234,7 +234,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
         if(count($codeFromDb)>1){
             $code->getCode()->setValue($codeFromDb[1]);
-            $code->getSystem()->setValue("clinikal/diagnosis/type/".$codeFromDb[0]);
+            $code->getSystem()->setValue(self::LIST_SYSTEM_LINK.$codeFromDb[0]);
         }
 
         $FHIRCondition->getNote()[0]->setText($conditionDataFromDb['comments']);
