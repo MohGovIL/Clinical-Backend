@@ -50,3 +50,12 @@ INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
 
 INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
 ('clinikal_pa_next_enc_status', 0, 'arrived');
+
+CREATE TABLE `clinikal_templates_map` (
+  `form_id` int(11) NOT NULL,
+  `form_field` varchar(50) NOT NULL,
+  `service_type` varchar(50) NOT NULL,
+  `reason_code` varchar(50) NOT NULL,
+  `message_id` varchar(50) NOT NULL,
+  `seq` smallint(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
