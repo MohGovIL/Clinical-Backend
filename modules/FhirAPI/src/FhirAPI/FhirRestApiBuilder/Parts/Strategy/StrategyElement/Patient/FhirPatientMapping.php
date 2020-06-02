@@ -19,7 +19,6 @@ use Interop\Container\ContainerInterface;
 
 /*include FHIR*/
 
-use OpenEMR\Common\Uuid\UuidRegistry;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRPatient;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRContactPoint;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
@@ -107,12 +106,6 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $dbPatient = array();
 
         $dbPatient['pid'] = (is_null($patient->getId())) ? null : $patient->getId()->getValue();
-
-        if(!is_null($dbPatient['pid'])){
-            $dbPatient['uuid'] =  (new UuidRegistry(['table_name' => 'patient_data']))->createUuid();
-        }else {
-            ErrorCodes::http_response_code('406','object is not valid - uuid can not be null');
-        }
 
         $pidElement = (is_null($patient->getIdentifier()[0])) ? null : $patient->getIdentifier()[0]->getValue();
         $dbPatient['ss'] = (is_null($pidElement)) ? null : $pidElement->getValue();
