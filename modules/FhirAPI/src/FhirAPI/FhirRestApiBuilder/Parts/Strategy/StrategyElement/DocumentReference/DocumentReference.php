@@ -110,13 +110,18 @@ class DocumentReference extends Restful implements  Strategy
         if(!$valid) {
             return self::$errorCodes::http_response_code(406);
         }
-
+        /*
         // save to couchdb
+        In the new env couchdb not working and we will work with S3
+        Until it will develop the document will not saved
         $couchdbIds = $couchdbService->saveDoc($dbStructuredData['couchdb']['data'], false);
         if( $couchdbIds == false ) {
             return self::$errorCodes::http_response_code(500);
         }
-
+        */
+        // todo - replace it
+        $couchdbIds['id'] = 5;
+        $couchdbIds['rev']  = md5('string');
         // save to documents table
         $dbStructuredData['documents']['couch_docid'] = $couchdbIds['id'];
         $dbStructuredData['documents']['couch_revid'] = $couchdbIds['rev'];
