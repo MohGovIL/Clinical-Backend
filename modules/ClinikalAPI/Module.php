@@ -88,7 +88,7 @@ class Module {
                     return $table;
                 },
                 GetTemplatesServiceTable::class =>  function(ContainerInterface $container) {
-                    xdebug_break();
+
                     $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new GetTemplatesService());

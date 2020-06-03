@@ -97,7 +97,7 @@ class ApiBuilder
                 $form_field=$_GET['form-field'];
                 //exit php or return 401 if not authorized
                 $this->checkAcl("clinikal_api", "general_settings");
-                xdebug_break();
+
                 return $this->getTemplatesForForm($form_id,$form_field,$service_type,$reason_code);
             },
 

@@ -26,7 +26,7 @@ class GetTemplatesServiceTable
         "seq"  => "seq",
     );
     public function getTemplatesForForm($form_id=null,$form_field=null,$service_type=null,$reason_code=null){
-        xdebug_break();
+
         if($form_id === null  || $form_field === null || $service_type ===null || $reason_code===null) //primary keys cannot be null
             return null;
 
