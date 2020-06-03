@@ -33,6 +33,8 @@ use ClinikalAPI\Model\ClinikalPatientTrackingChanges;
 use ClinikalAPI\Model\ClinikalPatientTrackingChangesTable;
 use ClinikalAPI\Model\FormContextMap;
 use ClinikalAPI\Model\FormContextMapTable;
+use ClinikalAPI\Model\GetTemplatesService;
+use ClinikalAPI\Model\GetTemplatesServiceTable;
 
 class Module {
 
@@ -83,6 +85,15 @@ class Module {
                     $resultSetPrototype->setArrayObjectPrototype(new FormContextMap());
                     $tableGateway = new ZendTableGateway('form_context_map', $dbAdapter, null, $resultSetPrototype);
                     $table = new FormContextMapTable($tableGateway);
+                    return $table;
+                },
+                GetTemplatesServiceTable::class =>  function(ContainerInterface $container) {
+                    xdebug_break();
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new GetTemplatesService());
+                    $tableGateway = new ZendTableGateway('clinikal_templates_map', $dbAdapter, null, $resultSetPrototype);
+                    $table = new GetTemplatesServiceTable($tableGateway);
                     return $table;
                 },
             ),
