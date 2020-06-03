@@ -11,7 +11,7 @@ namespace GenericTools\Helpers;
 
 use GenericTools\Controller\GenericToolsController;
 use GenericTools\Library\FacilityAddons\FacilityWorkingHours;
-use Zend\Db\Exception\ErrorException;
+use Laminas\Db\Exception\ErrorException;
 
 class ClinicInfoParserHelper
 {

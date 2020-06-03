@@ -1,7 +1,7 @@
 <?php
 namespace Formhandler\View\Helper\Form;
 
-use Zend\Form\View\Helper\FormElementErrors;
+use Laminas\Form\View\Helper\FormElementErrors;
 
 class TwbBundleFormElementErrors extends FormElementErrors
 {

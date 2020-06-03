@@ -5,7 +5,7 @@ namespace Formhandler\View\Helper;
 use Application\Listener\Listener;
 use Formhandler\Model\customDB;
 use Pouring\Controller\PouringController;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 
 class MaxDosageHelper extends AbstractHelper

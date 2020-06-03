@@ -106,7 +106,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $dbPatient = array();
 
         $dbPatient['pid'] = (is_null($patient->getId())) ? null : $patient->getId()->getValue();
-
+        
         $pidElement = (is_null($patient->getIdentifier()[0])) ? null : $patient->getIdentifier()[0]->getValue();
         $dbPatient['ss'] = (is_null($pidElement)) ? null : $pidElement->getValue();
 

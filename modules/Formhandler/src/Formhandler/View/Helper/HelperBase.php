@@ -6,8 +6,8 @@
 
 namespace Formhandler\View\Helper;
 use Formhandler\Model\customDB;
-use Zend\Form\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Laminas\Form\View\Helper\AbstractHelper;
+use Laminas\ServiceManager\ServiceLocatorAwareInterface;
 
 
 

@@ -16,9 +16,9 @@ use Inheritance\Model\NetworkingDBTable;
 use Inheritance\Model\Lists;
 use Inheritance\Model\ListsTable;
 use Inheritance\Controller\ModuleconfigController;
-use Zend\Db\ResultSet\ResultSet;
+use Laminas\Db\ResultSet\ResultSet;
 use GenericTools\ZendExtended\TableGateway;
-use Zend\ModuleManager\ModuleManager;
+use Laminas\ModuleManager\ModuleManager;
 use Inheritance\Model\Codes;
 use Inheritance\Model\CodesTable;
 use Interop\Container\ContainerInterface;
@@ -29,10 +29,10 @@ class Module {
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
+            'Laminas\Loader\ClassMapAutoloader' => array(
                 __DIR__ . '/autoload_classmap.php',
             ),
-            'Zend\Loader\StandardAutoloader' => array(
+            'Laminas\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
 

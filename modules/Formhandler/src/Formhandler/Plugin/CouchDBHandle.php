@@ -22,7 +22,7 @@ namespace Formhandler\Plugin;
 
 use Formhandler\Controller\FormhandlerController;
 use OpenEMR\Common\Crypto\CryptoGen;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Application\Model\ApplicationTable;
 
 

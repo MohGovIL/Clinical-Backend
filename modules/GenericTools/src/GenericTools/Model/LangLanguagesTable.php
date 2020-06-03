@@ -2,7 +2,7 @@
 
 namespace GenericTools\Model;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 /**
  * Class PumpsTable
