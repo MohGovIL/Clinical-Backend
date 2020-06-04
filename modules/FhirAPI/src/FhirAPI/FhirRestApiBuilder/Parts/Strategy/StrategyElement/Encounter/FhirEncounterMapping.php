@@ -120,10 +120,10 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
             $extensionName=substr($url, strrpos($url, '/') + 1);
             switch ($extensionName) {
                 case self::AW_URL:
-                        $encounter["arrival_way"]=$Extensions[$exIndex]->getValueString();
+                        $encounter["arrival_way"]=trim($Extensions[$exIndex]->getValueString());
                     break;
                 case self::RCD_URL:
-                        $encounter["reason_codes_details"]=$Extensions[$exIndex]->getValueString();
+                        $encounter["reason_codes_details"]=trim($Extensions[$exIndex]->getValueString());
                     break;
             }
         }
