@@ -11,6 +11,7 @@ use Laminas\Db\Sql\Expression;
 
 class ListsOpenEmrTable
 {
+    use baseTable;
     protected $tableGateway;
 
     public function __construct(TableGateway $tableGateway)

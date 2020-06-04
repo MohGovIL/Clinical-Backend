@@ -11,6 +11,7 @@ use DateTime;
 use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use Interop\Container\ContainerInterface;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRAnnotation;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRId;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRBoolean;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
@@ -66,6 +67,7 @@ class FhirBaseMapping
     private $adapter = null;
     private $container = null;
     private $fhirRequestParamsHandler = null;
+    CONST   LIST_SYSTEM_LINK="http://clinikal/valueset/";
 
     use ConversionsTrait;
 
@@ -1120,6 +1122,53 @@ class FhirBaseMapping
     }
 
 
+
+
+    /**
+     * create FHIRAnnotation
+     *
+     * @param array
+     *
+     * @return FHIRAnnotation | null
+     */
+    public function createFHIRAnnotation(array $annotationArr)
+    {
+        $FHIRAnnotation = new FHIRAnnotation();
+
+        if (key_exists('text', $annotationArr)) {
+
+            $FHIRAnnotation->setText($annotationArr['text']);
+        }else{
+            $FHIRMarkdown= $this->createFHIRMarkdown(null);
+            $FHIRAnnotation->setText($FHIRMarkdown);
+        }
+
+        if (key_exists('authorReference', $annotationArr)) {
+            $FHIRAnnotation->setAuthorReference($annotationArr['authorReference']);
+
+        }else{
+            $FHIRReference = $this->createFHIRReference(null);
+            $FHIRAnnotation->setAuthorReference($FHIRReference);
+        }
+
+        if (key_exists('authorString', $annotationArr)) {
+            $FHIRAnnotation->setAuthorString($annotationArr['authorString']);
+
+        }else{
+            $FHIRString = $this->createFHIRString(null);
+            $FHIRAnnotation->setAuthorString($FHIRString);
+        }
+
+        if (key_exists('time', $annotationArr)) {
+            $FHIRAnnotation->setTime($annotationArr['time']);
+
+        }else{
+            $FHIRDateTime = $this->createFHIRDateTime(null);
+            $FHIRAnnotation->setTime($FHIRDateTime);
+        }
+
+        return $FHIRAnnotation;
+    }
 
 
 }
