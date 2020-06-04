@@ -2,7 +2,7 @@
 
 namespace Formhandler\View\Helper;
 
-use Zend\Form\View\Helper\AbstractHelper;
+use Laminas\Form\View\Helper\AbstractHelper;
 use LogicException;
 use InvalidArgumentException;
 

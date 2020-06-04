@@ -18,6 +18,7 @@ use GenericTools\Model\PatientsTable;
 use Interop\Container\ContainerInterface;
 
 /*include FHIR*/
+
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRPatient;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRContactPoint;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
@@ -105,7 +106,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $dbPatient = array();
 
         $dbPatient['pid'] = (is_null($patient->getId())) ? null : $patient->getId()->getValue();
-
+        
         $pidElement = (is_null($patient->getIdentifier()[0])) ? null : $patient->getIdentifier()[0]->getValue();
         $dbPatient['ss'] = (is_null($pidElement)) ? null : $pidElement->getValue();
 

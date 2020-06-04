@@ -2,8 +2,8 @@
 
 namespace GenericTools\Model;
 
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Sql\Where;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Where;
 
 /**
  * Class PumpsTable

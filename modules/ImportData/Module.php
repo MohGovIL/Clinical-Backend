@@ -7,11 +7,11 @@
  */
 namespace ImportData;
 
-use Zend\Db\ResultSet\ResultSet;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\ResultSet\ResultSet;
+use Laminas\Db\TableGateway\TableGateway;
 use ImportData\Controller\ModuleconfigController;
 use ImportData\Controller\ImportDataController;
-use Zend\ModuleManager\ModuleManager;
+use Laminas\ModuleManager\ModuleManager;
 use ImportData\Model\ImportDataTable;
 use ImportData\Model\ImportData;
 use ImportData\Model\Lists;
@@ -32,10 +32,10 @@ class Module {
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
+            'Laminas\Loader\ClassMapAutoloader' => array(
                 __DIR__ . '/autoload_classmap.php',
             ),
-            'Zend\Loader\StandardAutoloader' => array(
+            'Laminas\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
 

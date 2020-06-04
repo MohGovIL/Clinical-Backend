@@ -13,7 +13,7 @@ use OpenEMR\FHIR\R4\FHIRDomainResource\FHIREncounter;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRString;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
 use OpenEMR\FHIR\R4\FHIRResourceContainer;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\Sql\Expression;
 
 
 class EncounterSearch extends BaseSearch

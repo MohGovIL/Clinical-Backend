@@ -9,7 +9,7 @@
 namespace Formhandler\Validator;
 use DateTime;
 use SqlParser\Context;
-use Zend\Validator\AbstractValidator;
+use Laminas\Validator\AbstractValidator;
 
 class Equality extends AbstractValidator
 {

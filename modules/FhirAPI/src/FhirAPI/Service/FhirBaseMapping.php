@@ -259,7 +259,7 @@ class FhirBaseMapping
      *
      * @return FHIRHumanName
      */
-    public function createFHIRHumanName($fName, $lName, $mName = null)
+    public function createFHIRHumanName($fName, $lName, $mName = null,$text=null)
     {
         $this->fhirRequestParamsHandler::checkByPreg($fName, 'string', 'ALLOW_NULL_ERROR');
         $this->fhirRequestParamsHandler::checkByPreg($lName, 'string', 'ALLOW_NULL_ERROR');
@@ -279,17 +279,32 @@ class FhirBaseMapping
             $fNameString = new FHIRString();
             $fNameString->setValue($fName);
             $FHIRHumanName->addGiven($fNameString);
+        }else{
+            $FHIRHumanName->addGiven(new FHIRString());
         }
+
         if (!empty($mName)) {
             $mNametring = new FHIRString();
             $mNametring->setValue($mName);
             $FHIRHumanName->addGiven($mNametring);
+        }else{
+            $FHIRHumanName->addGiven( new FHIRString());
         }
 
         if (!empty($lName)) {
             $lNameString = new FHIRString();
             $lNameString->setValue($lName);
             $FHIRHumanName->setFamily($lNameString);
+        }else{
+            $FHIRHumanName->setFamily(new FHIRString());
+        }
+
+        if (!empty($text)) {
+            $HNtext = new FHIRString();
+            $HNtext->setValue($text);
+            $FHIRHumanName->setText($HNtext);
+        }else{
+            $FHIRHumanName->setText(new FHIRString());
         }
 
         return $FHIRHumanName;

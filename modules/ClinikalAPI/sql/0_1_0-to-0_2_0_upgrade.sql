@@ -112,7 +112,7 @@ CREATE TABLE `clinikal_patient_tracking_changes` (
   `update_date` datetime NOT NULL DEFAULT current_timestamp,
    PRIMARY KEY (`facility_id`)
 ) ;
-+#EndIf
+#EndIf
 
 
 -- always restore to default in upgrade

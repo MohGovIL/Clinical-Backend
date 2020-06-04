@@ -8,7 +8,7 @@
 
 namespace GenericTools\Service;
 
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 use Interop\Container\ContainerInterface;
 
 
@@ -67,7 +67,7 @@ class MailService
      */
     public function body($viewTemplate, $viewParams)
     {
-        $renderer = $this->continer->get('Zend\View\Renderer\PhpRenderer');
+        $renderer = $this->continer->get('Laminas\View\Renderer\PhpRenderer');
         $body = new ViewModel($viewParams);
         $body->setTemplate($viewTemplate);
         $body = $renderer->render($body);

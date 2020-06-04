@@ -3,10 +3,10 @@
 
 namespace GenericTools\Model;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 use GenericTools\Model\UtilsTraits\JoinBuilder;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 
 class RegistryTable
 {

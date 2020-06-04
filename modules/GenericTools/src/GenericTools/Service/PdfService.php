@@ -8,7 +8,7 @@
 
 namespace GenericTools\Service;
 
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 use Mpdf\Mpdf;
 use GenericTools\Controller\GenericToolsController;
 use Interop\Container\ContainerInterface;
@@ -32,7 +32,7 @@ class PdfService
     public function __construct(ContainerInterface $container)
     {
         $this->continer = $container;
-        $this->renderer = $this->continer->get('Zend\View\Renderer\PhpRenderer');
+        $this->renderer = $this->continer->get('Laminas\View\Renderer\PhpRenderer');
         $this->langParameter = array('langDir' => $_SESSION['language_direction'], 'langCode' => $this->continer->get('GenericTools\Model\LangLanguagesTable')->getLangCode($_SESSION['language_choice']));
     }
 

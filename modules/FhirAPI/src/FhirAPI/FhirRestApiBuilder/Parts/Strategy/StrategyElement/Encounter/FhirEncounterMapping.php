@@ -55,11 +55,8 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     public function fhirToDb($FHIREncounter)
     {
         $encounter=array();
-
         $encounter["status"]= $FHIREncounter->getStatus()->getValue();
-
         $encounter['id']= $FHIREncounter->getId()->getValue();
-
 
         $date=$FHIREncounter->getPeriod()->getStart()->getValue();
         $encounter['date']= $this->convertToDateTime($date);
@@ -68,12 +65,19 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         if (strpos($reference, self::APT_REF.'/') !== false ) {
             $encounter["eid"]= (!empty($reference)) ? substr($reference,strlen(self::APT_REF)+1,20) : null;
 
+        }else{
+            $encounter["eid"]=null;
         }
 
         $reference=$FHIREncounter->getServiceProvider()->getReference()->getValue();
         if (strpos($reference, self::ORG_REF.'/') !== false ) {
             $encounter["facility_id"]= (!empty($reference)) ? substr($reference,strlen(self::ORG_REF)+1,20) : null;
+        }else{
+            $encounter["facility_id"]=null;
         }
+
+        $encounter["provider_id"]=null;
+        $encounter["escort_id"]=null;
 
         $participants=$FHIREncounter->getParticipant();
         foreach($participants as $index =>$participant){
@@ -90,6 +94,8 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         $reference= $FHIREncounter->getSubject()->getReference()->getValue();
         if (strpos($reference, self::PATIENT_REF.'/') !== false ) {
             $encounter["pid"]= (!empty($reference)) ? substr($reference,strlen(self::PATIENT_REF)+1,20) : null;
+        }else{
+            $encounter["pid"]=null;
         }
 
         $encounter["priority"]=$FHIREncounter->getPriority()->getCoding()[0]->getCode()->getValue();

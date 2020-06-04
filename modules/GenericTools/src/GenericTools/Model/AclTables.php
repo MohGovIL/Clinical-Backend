@@ -2,7 +2,7 @@
 
 namespace GenericTools\Model;
 
-use Zend\Db\Sql\Sql;
+use Laminas\Db\Sql\Sql;
 
 class AclTables
 {

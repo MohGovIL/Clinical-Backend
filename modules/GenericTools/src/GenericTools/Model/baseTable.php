@@ -8,12 +8,12 @@
 
 namespace GenericTools\Model;
 use Exception;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Predicate\Predicate;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Where;
-use Zend\Db\Sql\Update;
-use Zend\Db\Sql\Insert;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Predicate\Predicate;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\Sql\Update;
+use Laminas\Db\Sql\Insert;
 trait baseTable
 {
     private static  $AND = "AND";

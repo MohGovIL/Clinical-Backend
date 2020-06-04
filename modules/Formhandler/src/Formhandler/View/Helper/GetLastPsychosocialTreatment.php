@@ -8,11 +8,11 @@
 namespace Formhandler\View\Helper;
 use Application\Listener\Listener;
 use Formhandler\Model\customDB;
-use Zend\Db\Adapter\Driver\DriverInterface;
-use Zend\Db\Adapter\Driver\Feature\DriverFeatureInterface;
-use Zend\Form\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Db\Adapter\Driver\DriverInterface;
+use Laminas\Db\Adapter\Driver\Feature\DriverFeatureInterface;
+use Laminas\Form\View\Helper\AbstractHelper;
+use Laminas\ServiceManager\ServiceLocatorAwareInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Db\Adapter\Adapter;
 
 class GetLastPsychosocialTreatment extends AbstractHelper

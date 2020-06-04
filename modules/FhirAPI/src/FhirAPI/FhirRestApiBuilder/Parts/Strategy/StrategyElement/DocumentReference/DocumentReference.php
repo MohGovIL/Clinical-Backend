@@ -84,8 +84,10 @@ class DocumentReference extends Restful implements  Strategy
             'buildThisSearch' => self::SEARCHSTRATEGYPATH . 'DocumentReferenceSearch'
         );
         $searchContext = new SearchContext($paramsToSearch);
-        return $searchContext->doSearch();
+        //return $searchContext->doSearch();
 
+        //todo  - remove after CouchDB success or another file save method
+        return json_decode('{"resourceType":"Bundle","type":"searchset","timestamp":"2020-06-03T15:43:28.000Z","total":3,"entry":[{"response":{"status":"200","outcome":{"resourceType":"OperationOutcome"}}},{"resource":{"id":"1","resourceType":"DocumentReference","status":"current","category":[{"coding":[{"code":"2","display":"EMedical Record"}]}],"author":[{"reference":"Practitioner/"}],"content":[{"attachment":{"contentType":"application/pdf","data":"","url":"Referral_03/06/2020_15:35_202004121586683163427143.pdf"}}],"context":{"encounter":[{"reference":"Encounter/1"}],"sourcePatientInfo":{"reference":"Patient/1"}}},"search":{"mode":"match"}},{"resource":{"id":"2","resourceType":"DocumentReference","status":"current","category":[{"coding":[{"code":"2","display":"EMedical Record"}]}],"author":[{"reference":"Practitioner/"}],"content":[{"attachment":{"contentType":"application/pdf","data":"","url":"Commitment_03/06/2020_15:35_20200413170859158676893929502.pdf"}}],"context":{"encounter":[{"reference":"Encounter/1"}],"sourcePatientInfo":{"reference":"Patient/1"}}},"search":{"mode":"match"}},{"resource":{"id":"3","resourceType":"DocumentReference","status":"current","category":[{"coding":[{"code":"2","display":"EMedical Record"}]}],"author":[{"reference":"Practitioner/"}],"content":[{"attachment":{"contentType":"image/png","data":"","url":"Document1_03/06/2020_15:35_b_4.jpg.png"}}],"context":{"encounter":[{"reference":"Encounter/1"}],"sourcePatientInfo":{"reference":"Patient/1"}}},"search":{"mode":"match"}}]}');
     }
 
     public function create()
@@ -110,13 +112,18 @@ class DocumentReference extends Restful implements  Strategy
         if(!$valid) {
             return self::$errorCodes::http_response_code(406);
         }
-
+        /*
         // save to couchdb
+        In the new env couchdb not working and we will work with S3
+        Until it will develop the document will not saved
         $couchdbIds = $couchdbService->saveDoc($dbStructuredData['couchdb']['data'], false);
         if( $couchdbIds == false ) {
             return self::$errorCodes::http_response_code(500);
         }
-
+        */
+        // todo - replace it
+        $couchdbIds['id'] = 5;
+        $couchdbIds['rev']  = md5('string');
         // save to documents table
         $dbStructuredData['documents']['couch_docid'] = $couchdbIds['id'];
         $dbStructuredData['documents']['couch_revid'] = $couchdbIds['rev'];
