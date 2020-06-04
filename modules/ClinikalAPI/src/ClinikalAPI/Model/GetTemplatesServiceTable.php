@@ -8,9 +8,9 @@
 
 namespace ClinikalAPI\Model;
 
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Where;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\TableGateway\TableGateway;
 
 class GetTemplatesServiceTable
 {
@@ -29,7 +29,7 @@ class GetTemplatesServiceTable
 
         if($form_id === null  || $form_field === null || $service_type ===null || $reason_code===null) //primary keys cannot be null
             return null;
-xdebug_break();
+
         $rsArray = array();
         $select = $this->tableGateway->getSql()->select();
         $joinExp= new Expression("clinikal_templates_map.message_id = list.option_id AND list.list_id = 'clinikal_templates' ");
