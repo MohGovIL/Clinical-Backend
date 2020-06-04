@@ -29,16 +29,17 @@ class GetTemplatesServiceTable
 
         if($form_id === null  || $form_field === null || $service_type ===null || $reason_code===null) //primary keys cannot be null
             return null;
-
+xdebug_break();
         $rsArray = array();
         $select = $this->tableGateway->getSql()->select();
         $joinExp= new Expression("clinikal_templates_map.message_id = list.option_id AND list.list_id = 'clinikal_templates' ");
         $select->join(array ("list"=>"list_options") , $joinExp, $this->listArr, self::LEFT_JOIN);
         $where = new Where();
 
+
         if(!is_null($service_type)){
             $where->equalTo("service_type",$service_type)->AND->
-                    equalTo("reason_code",$reason_code)->AND->
+                    in("reason_code",explode(",",$reason_code))->AND->
                     equalTo("form_field",$form_field)->AND->
                     equalTo("form_id",$form_id);
         }
