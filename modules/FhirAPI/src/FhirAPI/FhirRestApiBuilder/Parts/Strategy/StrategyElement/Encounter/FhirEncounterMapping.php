@@ -36,6 +36,8 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     CONST RP_REF= 'RelatedPerson';
     CONST PATIENT_REF= 'Patient';
     CONST ORG_REF= 'Organization';
+    CONST RCD_URL = 'reasonCodesDetail';
+    CONST AW_URL='arrivalWay';
 
     public function __construct(ContainerInterface $container)
     {
@@ -111,6 +113,21 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
             $reasonsCodes[]=array("eid"=>$eid,"reason_code"=>$reasonsCode);
         }
 
+        $Extensions= $FHIREncounter->getExtension();
+
+        foreach($Extensions as $exIndex => $Extension){
+            $url =   $Extension->getUrl();
+            $extensionName=substr($url, strrpos($url, '/') + 1);
+            switch ($extensionName) {
+                case self::AW_URL:
+                        $encounter["arrival_way"]=$Extensions[$exIndex]->getValueString();
+                    break;
+                case self::RCD_URL:
+                        $encounter["reason_codes_details"]=$Extensions[$exIndex]->getValueString();
+                    break;
+            }
+        }
+
         $encounterData=array('form_encounter'=>$encounter,'encounter_reasoncode_map'=>$reasonsCodes);
 
         return $encounterData;
@@ -132,7 +149,6 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 
         $FHIREncounter->getStatus()->setValue($encounter["status"]);
         $FHIREncounter->getId()->setValue($encounter['id']);
-
         $date=$this->createFHIRDateTime(null,null,$encounter['date']);
         $FHIREncounter->getPeriod()->getStart()->setValue($date);
 
@@ -191,9 +207,30 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
                $FHIRCodeableConcept=$this->createFHIRCodeableConcept($reason);
                $FHIREncounter->addReasonCode($FHIRCodeableConcept);
            }
-
        }
 
+        $Extensions= $FHIREncounter->getExtension();
+
+        foreach($Extensions as $exIndex => $Extension){
+            $url =   $Extension->getUrl();
+            $extensionName=substr($url, strrpos($url, '/') + 1);
+            switch ($extensionName) {
+                case self::AW_URL:
+                    if(isset($encounter["arrival_way"]) && !is_null($encounter["arrival_way"])){
+                        $Extensions[$exIndex]->setValueString($encounter["arrival_way"]);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
+                case self::RCD_URL:
+                    if(isset($encounter["reason_codes_details"]) && !is_null($encounter["reason_codes_details"])){
+                        $Extensions[$exIndex]->setValueString($encounter["reason_codes_details"]);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
+            }
+        }
 
         $this->FHIREncounter=$FHIREncounter;
 
@@ -240,9 +277,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 
     public function initFhirObject()
     {
-
         $FHIREncounter = new FHIREncounter;
-
         $FHIREncounterStatus = new FHIREncounterStatus(['value' => null]);
         $FHIREncounter->setStatus($FHIREncounterStatus);
 
@@ -280,6 +315,11 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         $reason=array('code'=>null,'text'=>null);
         $FHIRCodeableConcept=$this->createFHIRCodeableConcept($reason);
         $FHIREncounter->addReasonCode($FHIRCodeableConcept);
+
+        $FHIRExtensionRSD= $this->createFHIRExtension(self::EXTENSIONS_URL.self::RCD_URL,'string',null);
+        $FHIREncounter->addExtension($FHIRExtensionRSD);
+        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_URL.self::AW_URL,'string',null);
+        $FHIREncounter->addExtension($FHIRExtensionAW);
 
         $this->FHIREncounter=$FHIREncounter;
         return $FHIREncounter;

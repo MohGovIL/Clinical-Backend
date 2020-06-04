@@ -214,5 +214,9 @@ CREATE TABLE `form_context_map` (
     `context_id`        INT NOT NULL,
     PRIMARY KEY (`form_id`,`context_type`,`context_id`)
 );
- 
+
 ALTER TABLE `related_person` ADD `full_name` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`;
+
+ALTER TABLE `form_encounter`
+ADD `arrival_way` VARCHAR(255) NULL DEFAULT NULL AFTER `eid`,
+ADD `reason_codes_details` TEXT NULL DEFAULT NULL AFTER `arrival_way`;

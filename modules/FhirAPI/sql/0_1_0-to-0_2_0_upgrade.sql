@@ -382,3 +382,8 @@ CREATE TABLE `form_context_map` (
 ALTER TABLE `related_person` ADD `full_name` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`;
 #EndIf
 
+#IfMissingColumn form_encounter arrival_way
+ALTER TABLE `form_encounter`
+ADD `arrival_way` VARCHAR(255) NULL DEFAULT NULL AFTER `eid`,
+ADD `reason_codes_details` TEXT NULL DEFAULT NULL AFTER `arrival_way`;
+#EndIf
