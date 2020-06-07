@@ -1,29 +1,28 @@
 <?php
 /**
- * Date: 21/01/20
- * @author  eyal wolanowski <eyalvo@matrix.co.il>
- * This class MAPPING FOR Condition
+ * Date: 07/06/20
+ * @author  Eyal Wolanowski <eyalvo@matrix.co.il>
+ * This class MAPPING FOR MedicationStatement
  */
 
-namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Condition;
+namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MedicationStatement;
 
 use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
-use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionEvidence;
-use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionStage;
 use GenericTools\Model\ListsOpenEmrTable;
 use GenericTools\Model\ListsTable;
 use Interop\Container\ContainerInterface;
 
 /*include FHIR*/
-use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRCondition;
+use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRMedicationStatement;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
 
+use OpenEMR\FHIR\R4\FHIRElement\FHIRMedicationStatusCodes;
 use function DeepCopy\deep_copy;
 
-class FhirConditionMapping extends FhirBaseMapping  implements MappingData
+class FhirMedicationStatementMapping extends FhirBaseMapping  implements MappingData
 {
 
     const OUTCOME_LIST ='outcome';
@@ -32,7 +31,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
     private $adapter = null;
     private $container = null;
-    private $FHIRCondition = null;
+    private $FHIRMedicationStatement = null;
     private $outcomeTypes= array();
     private $occurrenceTypes= array();
 
@@ -42,7 +41,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         parent::__construct($container);
         $this->container = $container;
         $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
-        $this->FHIRCondition = new FHIRCondition;
+        $this->FHIRMedicationStatement = new FHIRMedicationStatement;
 
         $ListsTable = $this->container->get(ListsTable::class);
 
@@ -180,86 +179,86 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
      * create FHIRCondition
      *
      * @param  string
-     * @return FHIRCondition
+     * @return FHIRMedicationStatement
      * @throws
      */
     public function DBToFhir(...$params)
     {
-        $conditionDataFromDb = $params[0];
 
-        $FHIRCondition =$this->FHIRCondition;
-        $FHIRCondition->getId()->setValue($conditionDataFromDb['id']);
 
-        if(!is_null($conditionDataFromDb['outcome']) && $conditionDataFromDb['outcome'] !=="" ){
+        $medicationStatementDataFromDb = $params[0];
+
+        $FHIRMedicationStatement =$this->FHIRMedicationStatement;
+        $FHIRMedicationStatement->getId()->setValue($medicationStatementDataFromDb['id']);
+
+        $FHIRMedicationStatement->getStatus()->setValue($medicationStatementDataFromDb['outcome']);
+
+
+        if(!is_null($medicationStatementDataFromDb['outcome']) && $medicationStatementDataFromDb['outcome'] !=="" ){
             $outcomeList=$this->getOutcomeTypes();
-            $outcome=$outcomeList[$conditionDataFromDb['outcome']];
-            $outcomeCoding= $FHIRCondition->getClinicalStatus()->getCoding()[0];
-            $outcomeCoding->setCode($conditionDataFromDb['outcome']);
-            $outcomeCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK.'outcome');
-            $FHIRCondition->getClinicalStatus()->setText($outcome);
+            $outcome=$outcomeList[$medicationStatementDataFromDb['outcome']];
+            $outcomeCoding= $FHIRMedicationStatement->getStatus();
+            $outcomeCoding->setId($medicationStatementDataFromDb['outcome']);
+            $outcomeCoding->setValue($outcome);
         }
 
 
-        $categoryCoding= $FHIRCondition->getCategory()[0]->getCoding()[0];
+        $categoryCoding= $FHIRMedicationStatement->getCategory()->getCoding()[0];
 
-        $categoryCoding->getCode()->setValue($conditionDataFromDb['list_option_id']);
-        $categoryCoding->getSystem()->setValue("clinikal/condition/category/".$conditionDataFromDb['type']);
-
-        $stage=$FHIRCondition->getStage()[0];
-
-        $stage->getSummary()->getText()->setValue($conditionDataFromDb['title']);
-
-        $onsetDateTime= $this->createFHIRDateTime($conditionDataFromDb['begdate']);
-        $FHIRCondition->getOnsetDateTime()->setValue($onsetDateTime);
-
-        $recordedDate= $this->createFHIRDateTime(null,null,$conditionDataFromDb['date']);
-        $FHIRCondition->getRecordedDate()->setValue($recordedDate);
-
-        $abatementDateTime=$this->createFHIRDateTime($conditionDataFromDb['enddate']);
-        $FHIRCondition->getAbatementDateTime()->setValue($abatementDateTime);
-
-        $stageCoding=$stage->getType()->getCoding()[0];
-
-        if(!is_null($conditionDataFromDb['occurrence']) && $conditionDataFromDb['occurrence'] !=="" ){
-            $occurrenceList=$this->getOccurrenceTypes();
-            $occurrence=$occurrenceList[$conditionDataFromDb['occurrence']];
-            $stageCoding->setCode($conditionDataFromDb['occurrence']);
-            $stageCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK.'occurrence');
-            $stage->getType()->setText($occurrence);
+        if(!is_null($medicationStatementDataFromDb['list_option_id'])){
+            $categoryCoding->getCode()->setValue($medicationStatementDataFromDb['list_option_id']);
+            $categoryCoding->getSystem()->setValue("clinikal/medicationStatement/category/".$medicationStatementDataFromDb['type']);
         }
 
-        $code= $FHIRCondition->getCode()->getCoding()[0];
+        if(!is_null($medicationStatementDataFromDb['title'])){
+            $FHIRMedicationStatement->getCategory()->getText()->setValue($medicationStatementDataFromDb['title']);
+        }
 
-        $codeFromDb=explode(":",$conditionDataFromDb['diagnosis']);
+        $period=$FHIRMedicationStatement->getEffectivePeriod();
+
+        if(!is_null($medicationStatementDataFromDb['begdate'])){
+            $date=$this->createFHIRDateTime($medicationStatementDataFromDb['begdate']);
+            $period->setStart($date);
+        }
+
+        if(!is_null($medicationStatementDataFromDb['enddate'])){
+            $date=$this->createFHIRDateTime($medicationStatementDataFromDb['enddate']);
+            $period->setEnd($date);
+        }
+
+        if(!is_null($medicationStatementDataFromDb['date'])){
+            $date=$this->createFHIRDateTime($medicationStatementDataFromDb['date']);
+            $FHIRMedicationStatement->setDateAsserted($date);
+        }
+
+        $codeFromDb=explode(":",$medicationStatementDataFromDb['diagnosis']);
 
         if(count($codeFromDb)>1){
+            $code= $FHIRMedicationStatement->getMedicationCodeableConcept()->getCoding()[0];
             $code->getCode()->setValue($codeFromDb[1]);
             $code->getSystem()->setValue(self::LIST_SYSTEM_LINK.$codeFromDb[0]);
         }
 
-        $FHIRCondition->getNote()[0]->setText($conditionDataFromDb['comments']);
-
-        if(!empty($conditionDataFromDb['pid'])){
-            $FHIRCondition->getSubject()->getReference()->setValue("Patient/".$conditionDataFromDb['pid']) ;
+        if(!empty($medicationStatementDataFromDb['pid'])){
+            $FHIRMedicationStatement->getSubject()->getReference()->setValue("Patient/".$medicationStatementDataFromDb['pid']) ;
         }
 
-        if(!empty($conditionDataFromDb['user'])){
-            $FHIRCondition->getRecorder()->getReference()->setValue("Practitioner/".$conditionDataFromDb['user']);
+
+        if(!empty($medicationStatementDataFromDb['user'])){
+            $FHIRMedicationStatement->getSubject()->getReference()->setValue("Patient/".$medicationStatementDataFromDb['pid']) ;
         }
 
-        $evidenceCode=$FHIRCondition->getEvidence()[0]->getCode()[0]->getCoding()[0];
-
-
-        if(!empty($conditionDataFromDb['reaction'])){
-            $evidenceCode->getCode()->setValue($conditionDataFromDb['reaction']);
-            $evidenceCode->getSystem()->setValue(self::LIST_SYSTEM_LINK.'reaction');
+        if(!empty($medicationStatementDataFromDb['user'])){
+            $FHIRMedicationStatement->getInformationSource()->getReference()->setValue("Practitioner/".$medicationStatementDataFromDb['user']);
         }
 
-        $this->FHIRCondition=$FHIRCondition;
+        $FHIRMedicationStatement->getNote()[0]->setText($medicationStatementDataFromDb['comments']);
 
-        return $FHIRCondition;
+
+        $this->FHIRMedicationStatement=$FHIRMedicationStatement;
+
+        return $FHIRMedicationStatement;
     }
-
 
     public function parsedJsonToDb($parsedData)
     {
@@ -340,42 +339,35 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
     public function initFhirObject(){
 
-        $FHIRCondition = new FHIRCondition();
+        $FHIRMedicationStatement = new FHIRMedicationStatement();
         $FhirId = $this->createFHIRId(null);
-        $FHIRCondition->setId($FhirId);
+        $FHIRMedicationStatement->setId($FhirId);
+
+        $FHIRMedicationStatement->setStatus($this->createFHIRMedicationStatusCodes());
 
         $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+        $FHIRMedicationStatement->setCategory(deep_copy($FHIRCodeableConcept));
 
-        $FHIRCondition->setClinicalStatus(deep_copy($FHIRCodeableConcept));
-
-        $FHIRCondition->addCategory($FHIRCodeableConcept);
-
-        $FHIRConditionStage=$this->createFHIRConditionStage(array());
-        $FHIRCondition->addStage($FHIRConditionStage);
+        $Period= $this->createFHIRPeriod(array());
+        $FHIRMedicationStatement->setEffectivePeriod($Period);
 
         $FHIRDateTime=  $this->createFHIRDateTime(null);
-        $FHIRCondition->setOnsetDateTime(deep_copy($FHIRDateTime));
+        $FHIRMedicationStatement->setDateAsserted($FHIRDateTime);
 
-        $FHIRCondition->setRecordedDate(deep_copy($FHIRDateTime));
+        $FHIRMedicationStatement->setMedicationCodeableConcept(deep_copy($FHIRCodeableConcept));
 
-        $FHIRCondition->setAbatementDateTime(deep_copy($FHIRDateTime));
-
-        $FHIRCondition->setCode(deep_copy($FHIRCodeableConcept));
-
-        $FHIRAnnotation = $this->createFHIRAnnotation(array());
-        $FHIRCondition->addNote($FHIRAnnotation);
+        $FHIRAnnotation= $this->createFHIRAnnotation(array());
+        $FHIRMedicationStatement->addNote($FHIRAnnotation);
 
         $FHIRReference=$this->createFHIRReference(array("reference"=>null));
-        $FHIRCondition->setSubject($FHIRReference);
 
-        $FHIRCondition->setRecorder(deep_copy($FHIRReference));
+        $FHIRMedicationStatement->setSubject(deep_copy($FHIRReference));
 
-        $FHIRConditionEvidence =$this->createFHIRConditionEvidence(array());
-        $FHIRCondition->addEvidence($FHIRConditionEvidence);
+        $FHIRMedicationStatement->setInformationSource(deep_copy($FHIRReference));
 
-        $this->FHIRCondition=$FHIRCondition;
+        $this->FHIRMedicationStatement=$FHIRMedicationStatement;
 
-        return $FHIRCondition;
+        return $FHIRMedicationStatement;
 
     }
 
@@ -422,74 +414,24 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         return false;
     }
 
-
     /**
-     * create FHIRConditionStage
+     * create FHIRMedicationStatusCodes
      *
-     * @param array
+     * @param string
+     * @param string
      *
-     * @return FHIRConditionStage | null
+     * @return FHIRMedicationStatusCodes | null
      */
-    public function createFHIRConditionStage(array $stageArr)
-    {
-        $FHIRConditionStage = new FHIRConditionStage;
+    public function createFHIRMedicationStatusCodes($id=null,$value=null){
 
-        if (key_exists('summary', $stageArr)) {
+        $FHIRMedicationStatusCodes= new FHIRMedicationStatusCodes;
+        $FHIRMedicationStatusCodes->setId($id);
+        $FHIRMedicationStatusCodes->setValue($value);
+        return $FHIRMedicationStatusCodes;
 
-            $FHIRConditionStage->setSummary($stageArr['summary']);
-        }else{
-            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
-            $FHIRConditionStage->setSummary($FHIRCodeableConcept);
-        }
-
-        if (key_exists('assessment', $stageArr)) {
-            $FHIRConditionStage->addAssessment($stageArr['assessment']);
-
-        }else{
-            $FHIRReference = $this->createFHIRReference(null);
-            $FHIRConditionStage->addAssessment($FHIRReference);
-        }
-
-        if (key_exists('type', $stageArr)) {
-            $FHIRConditionStage->setType($stageArr['type']);
-        }else{
-            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
-            $FHIRConditionStage->setType($FHIRCodeableConcept);
-        }
-
-        return $FHIRConditionStage;
     }
 
 
-    /**
-     * create FHIRConditionEvidence
-     *
-     * @param array
-     *
-     * @return FHIRConditionEvidence | null
-     */
-    public function createFHIRConditionEvidence(array $conditionEvidenceArr)
-    {
-        $FHIRConditionEvidence = new FHIRConditionEvidence;
-
-        if (key_exists('code', $conditionEvidenceArr)) {
-
-            $FHIRConditionEvidence->addCode($conditionEvidenceArr['code']);
-        }else{
-            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
-            $FHIRConditionEvidence->addCode($FHIRCodeableConcept);
-        }
-
-        if (key_exists('detail', $conditionEvidenceArr)) {
-            $FHIRConditionEvidence->addDetail($conditionEvidenceArr['detail']);
-
-        }else{
-            $FHIRReference = $this->createFHIRReference(null);
-            $FHIRConditionEvidence->addDetail($FHIRReference);
-        }
-
-        return $FHIRConditionEvidence;
-    }
 
 }
 
