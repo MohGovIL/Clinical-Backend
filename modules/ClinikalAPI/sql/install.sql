@@ -50,3 +50,18 @@ INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
 
 INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
 ('clinikal_pa_next_enc_status', 0, 'arrived');
+
+CREATE TABLE `clinikal_templates_map` (
+  `form_id` int(11) NOT NULL,
+  `form_field` varchar(50) NOT NULL,
+  `service_type` varchar(50) NOT NULL,
+  `reason_code` varchar(50) NOT NULL,
+  `message_id` varchar(50) NOT NULL,
+  `seq` smallint(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `clinikal_templates_map`
+  ADD PRIMARY KEY (`form_id`,`form_field`,`service_type`,`reason_code`,`message_id`);
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`) VALUES
+('lists', 'clinikal_templates', 'Clinikal templates', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
