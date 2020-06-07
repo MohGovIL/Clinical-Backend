@@ -41,7 +41,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRCondition = new FHIRCondition;
 
         $ListsTable = $this->container->get(ListsTable::class);
