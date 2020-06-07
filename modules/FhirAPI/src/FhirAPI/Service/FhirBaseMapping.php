@@ -70,7 +70,6 @@ class FhirBaseMapping
     private $fhirRequestParamsHandler = null;
 
     CONST   LIST_SYSTEM_LINK="http://clinikal/valueset/";
-    CONST EXTENSIONS_URL='clinikal/extensions/';
 
     use ConversionsTrait;
 

@@ -38,6 +38,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     CONST ORG_REF= 'Organization';
     CONST RCD_URL = 'reasonCodesDetail';
     CONST AW_URL='arrivalWay';
+    CONST EXTENSIONS_ENCOUNTER_URL='http://clinikal/extensions/encounter/';
 
     public function __construct(ContainerInterface $container)
     {
@@ -316,9 +317,9 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         $FHIRCodeableConcept=$this->createFHIRCodeableConcept($reason);
         $FHIREncounter->addReasonCode($FHIRCodeableConcept);
 
-        $FHIRExtensionRSD= $this->createFHIRExtension(self::EXTENSIONS_URL.self::RCD_URL,'string',null);
+        $FHIRExtensionRSD= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::RCD_URL,'string',null);
         $FHIREncounter->addExtension($FHIRExtensionRSD);
-        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_URL.self::AW_URL,'string',null);
+        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::AW_URL,'string',null);
         $FHIREncounter->addExtension($FHIRExtensionAW);
 
         $this->FHIREncounter=$FHIREncounter;
