@@ -132,6 +132,9 @@ class EncounterBuilder extends Builder
         $this->createMapping(["FHIREncounter",'service-type',1,'EncounterStatus',"","form_encounter","lr.option_id","EncounterStatus (Required)",self::EXACT,""]);
         $this->createMapping(["FHIREncounter",'service-provider',1,'EncounterStatus',"","form_encounter","facility_id","EncounterStatus (Required)",self::EXACT,""]);
 
+        $this->createMapping(["FHIREncounter",'arrival-way',1,'form_encounter',"","form_encounter","arrival_way"," ",self::PART,""]);
+        $this->createMapping(["FHIREncounter",'reason-codes-details',1,'form_encounter',"","form_encounter","reason_codes_details"," ",self::PART,""]);
+
         /////////////////////////////////////////////SORT BY id,date,appointment,patient,status    from mysql table form_encounter column id
         $this->createMapping(["FHIREncounter",'_sort',1,'token',"id,date,appointment,patient,status,priority,service-type","form_encounter","form_encounter.id,form_encounter.date,form_encounter.eid,form_encounter.pid,form_encounter.status,form_encounter.priority,service_type_seq",'A code for the type of Encounter',self::EXACT,""]);
 

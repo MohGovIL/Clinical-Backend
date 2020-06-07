@@ -138,7 +138,9 @@ ALTER TABLE `form_encounter`
              ADD `status` VARCHAR(100) NULL AFTER `parent_encounter_id`,
              ADD `eid` INT NULL AFTER `status`,
              ADD `priority` INT DEFAULT 1 AFTER `status`,
-             ADD `service_type` INT DEFAULT NULL AFTER `priority`;
+             ADD `service_type` INT DEFAULT NULL AFTER `priority`,
+             ADD `arrival_way` VARCHAR(255) NULL DEFAULT NULL AFTER `eid`,
+             ADD `reason_codes_details` TEXT NULL DEFAULT NULL AFTER `arrival_way`;
 
 
 ALTER TABLE facility
@@ -227,5 +229,4 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 ('outcome', '4', 'inactive', 20, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
 ('outcome', '5', 'resolved', 25, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
 ('outcome', '6', 'remission', 25, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44');
-
 

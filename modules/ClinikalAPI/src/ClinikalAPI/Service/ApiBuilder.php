@@ -29,6 +29,7 @@ class ApiBuilder
 
     use ApiTools;
     use LoadFormsService;
+    use FormTemplatesService;
 
     public function __construct(ContainerInterface $container)
     {
@@ -89,7 +90,16 @@ class ApiBuilder
                 $this->checkAcl("clinikal_api", "general_settings");
                 return $this->loadForms($service_type,$reason_code);
             },
+            "GET /api/templates/search" => function () {
+                $service_type=$_GET['service-type'];
+                $reason_code=$_GET['reason-code'];
+                $form_id=$_GET['form'];
+                $form_field=$_GET['form-field'];
+                //exit php or return 401 if not authorized
+                $this->checkAcl("clinikal_api", "general_settings");
 
+                return $this->getTemplatesForForm($form_id,$form_field,$service_type,$reason_code);
+            },
 
         ];
 
