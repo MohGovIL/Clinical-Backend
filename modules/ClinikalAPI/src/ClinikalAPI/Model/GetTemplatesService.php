@@ -19,7 +19,7 @@ class GetTemplatesService
     public $message_id;
     public $order;
 
-    //registry fields for join
+    //lists fields for join
     public $option_id;
     public $title;
     public $seq;
