@@ -11,6 +11,7 @@ use DateTime;
 use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use Interop\Container\ContainerInterface;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRExtension;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAnnotation;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRId;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRBoolean;
@@ -67,6 +68,7 @@ class FhirBaseMapping
     private $adapter = null;
     private $container = null;
     private $fhirRequestParamsHandler = null;
+
     CONST   LIST_SYSTEM_LINK="http://clinikal/valueset/";
 
     use ConversionsTrait;
@@ -1121,6 +1123,18 @@ class FhirBaseMapping
         return $FHIROperationOutcome;
     }
 
+    public function createFHIRExtension($url,$valueType,$value)
+    {
+        $FHIRExtension= new FHIRExtension;
+        $FHIRExtension->setUrl($url);
+        $valueType=ucfirst($valueType);
+        $valueSetter='setValue'.$valueType;
+        if(method_exists($FHIRExtension,$valueSetter)){
+            $FHIRExtension->$valueSetter($value);
+        }
+
+        return $FHIRExtension;
+    }
 
 
 
