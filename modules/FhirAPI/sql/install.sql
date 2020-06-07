@@ -138,7 +138,9 @@ ALTER TABLE `form_encounter`
              ADD `status` VARCHAR(100) NULL AFTER `parent_encounter_id`,
              ADD `eid` INT NULL AFTER `status`,
              ADD `priority` INT DEFAULT 1 AFTER `status`,
-             ADD `service_type` INT DEFAULT NULL AFTER `priority`;
+             ADD `service_type` INT DEFAULT NULL AFTER `priority`,
+             ADD `arrival_way` VARCHAR(255) NULL DEFAULT NULL AFTER `eid`,
+             ADD `reason_codes_details` TEXT NULL DEFAULT NULL AFTER `arrival_way`;
 
 
 ALTER TABLE facility

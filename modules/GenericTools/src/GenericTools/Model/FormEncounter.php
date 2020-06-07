@@ -41,6 +41,9 @@ class FormEncounter
     public $reason_code;
     public $service_type_seq;
     public $escort_id;
+    public $arrival_way;
+    public $reason_codes_details;
+
 
     public function exchangeArray($data)
     {
@@ -76,6 +79,11 @@ class FormEncounter
         $this->reason_code = (!empty($data['reason_code'])) ? $data['reason_code'] : null;
         $this->reason_code_title = (!empty($data['reason_code_title'])) ? $data['reason_code_title'] : null;
         $this->escort_id = (!empty($data['escort_id'])) ? $data['escort_id'] : null;
+        $this->arrival_way = (!empty($data['arrival_way'])) ? $data['arrival_way'] : null;
+        $this->reason_codes_details = (!empty($data['reason_codes_details'])) ? $data['reason_codes_details'] : null;
+
+
+
 
     }
 }
