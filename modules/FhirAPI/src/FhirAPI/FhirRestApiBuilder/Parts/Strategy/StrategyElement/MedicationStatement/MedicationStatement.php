@@ -111,7 +111,6 @@ class MedicationStatement Extends Restful implements  Strategy
 
     public function create()
     {
-
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
         $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);

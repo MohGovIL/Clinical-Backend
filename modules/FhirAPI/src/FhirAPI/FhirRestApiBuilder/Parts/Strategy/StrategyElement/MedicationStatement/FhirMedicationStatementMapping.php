@@ -59,12 +59,12 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
     public function setFHIR($fhir=null)
     {
         if(is_null($fhir)){
-            $this->FHIRCondition = new FHIRCondition;
-            return $this->FHIRCondition;
+            $this->FHIRMedicationStatement = new FHIRMedicationStatement;
+            return $this->FHIRMedicationStatement;
         }
         try{
-            $this->FHIRCondition = new FHIRCondition($fhir);
-            return $this->FHIRCondition;
+            $this->FHIRMedicationStatement = new FHIRMedicationStatement($fhir);
+            return $this->FHIRMedicationStatement;
         }catch(Exception $e){
             return false;
         }
@@ -75,7 +75,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
      */
     public function getFHIR()
     {
-        return $this->FHIRCondition;
+        return $this->FHIRMedicationStatement;
     }
 
     public function setOutcomeTypes($types)
@@ -165,7 +165,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
     }
 
     /**
-     * create FHIRCondition
+     * create FHIRMedicationStatement
      *
      * @param  string
      * @return FHIRMedicationStatement
@@ -351,20 +351,20 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
     public function parsedJsonToFHIR($data)
 
     {
-        $FHIRCondition =$this->FHIRCondition;
+        $FHIRMedicationStatement =$this->FHIRMedicationStatement;
 
 
-        $this->FHIRCondition=$FHIRCondition;
+        $this->FHIRMedicationStatement=$FHIRMedicationStatement;
 
-        return $FHIRCondition;
+        return $FHIRMedicationStatement;
     }
 
     public function getDbDataFromRequest($data)
     {
         $this->initFhirObject();
         //$FHIRAppointment = $this->parsedJsonToFHIR($data);
-        $this->arrayToFhirObject($this->FHIRCondition,$data);
-        $dBdata = $this->fhirToDb($this->FHIRCondition);
+        $this->arrayToFhirObject($this->FHIRMedicationStatement,$data);
+        $dBdata = $this->fhirToDb($this->FHIRMedicationStatement);
         return $dBdata;
     }
 
