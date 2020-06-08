@@ -32,6 +32,14 @@ class ConditionSearch extends BaseSearch
 
         $this->paramHandler('subject','pid');
         $this->searchParams = $this->paramsToDB;
+
+        $configureType =  array (
+            0 => array ('value' => 'medical_problem', 'operator' => NULL, 'modifier' => 'exact',),
+            1 => array ('value' => 'allergy', 'operator' => NULL, 'modifier' => 'exact',)
+        );
+        $this->searchParams['type'] =$configureType;
+        $this->paramHandler('type','type');
+        
         $this->runMysqlQuery();
         return $this->FHIRBundle;
 
