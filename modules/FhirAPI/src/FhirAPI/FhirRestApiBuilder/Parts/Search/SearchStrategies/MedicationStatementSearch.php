@@ -17,40 +17,43 @@ class MedicationStatementSearch extends BaseSearch
     use JoinBuilder;
     public $paramsToDB = array();
     public $MAIN_TABLE = 'lists';
+
     public function search()
     {
-        $this->paramHandler('_id','id');
-        $this->paramHandler('active','active');
+        $this->paramHandler('_id', 'id');
+        $this->paramHandler('active', 'active');
 
-        if(isset($this->searchParams['status'])){
-            $code= $this->searchParams['status'][0]['value'];
-            if( !ctype_digit($code) ){
+        if (isset($this->searchParams['status'])) {
+            $code = $this->searchParams['status'][0]['value'];
+
+            // to support search by status string
+            if (!ctype_digit($code)) {
                 $ListsTable = $this->container->get(ListsTable::class);
                 $listOutcome = array_flip($ListsTable->getListNormalized(self::OUTCOME_LIST));
-                $code=$listOutcome[$code];
-            if(!is_null($code))  {
-                $this->searchParams['status'][0]['value']=$code;
-            } else{
-                unset($this->searchParams['status']);
+                $code = $listOutcome[$code];
+                if (!is_null($code)) {
+                    $this->searchParams['status'][0]['value'] = $code;
+                } else {
+                    unset($this->searchParams['status']);
+                }
             }
         }
-        }
 
-        $this->paramHandler('status','outcome');
+        $this->paramHandler('status', 'outcome');
 
-        if(isset($this->searchParams['code:of-type'])){
-            $codeSearch=$this->searchParams['code:of-type'][0]['value'];     // format |system|code|identifier
-            $codeSearchArr=explode('|',$codeSearch);
-            if(count($codeSearchArr)>2){
-                $codeSearch=$codeSearchArr[1].':'.$codeSearchArr[2];
-                $this->searchParams['code:of-type'][0]['value']=$codeSearch;
+        if (isset($this->searchParams['code:of-type'])) {
+            $codeSearch = $this->searchParams['code:of-type'][0]['value'];     // format |system|code|identifier
+            $codeSearchArr = explode('|', $codeSearch);
+            if (count($codeSearchArr) > 2) {
+                $codeSearch = $codeSearchArr[1] . ':' . $codeSearchArr[2];
+                $this->searchParams['code:of-type'][0]['value'] = $codeSearch;
             }
-            $this->paramHandler('code:of-type','diagnosis');
+            $this->paramHandler('code:of-type', 'diagnosis');
         }
 
-        $this->paramHandler('patient','pid');
+        $this->paramHandler('patient', 'pid');
 
-        $this->paramsToDB[$this->MAIN_TABLE . '.' . "type"]="medication";
+        $this->paramsToDB[$this->MAIN_TABLE . '.' . "type"] = "medication";
 
         $this->searchParams = $this->paramsToDB;
         $this->runMysqlQuery();

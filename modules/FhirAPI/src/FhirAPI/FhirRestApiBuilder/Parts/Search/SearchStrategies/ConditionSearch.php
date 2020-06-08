@@ -39,7 +39,7 @@ class ConditionSearch extends BaseSearch
         );
         $this->searchParams['type'] =$configureType;
         $this->paramHandler('type','type');
-        
+
         $this->runMysqlQuery();
         return $this->FHIRBundle;
 
