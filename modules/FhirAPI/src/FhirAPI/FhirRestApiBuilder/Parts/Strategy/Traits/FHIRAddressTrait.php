@@ -28,7 +28,7 @@ trait FHIRAddressTrait
         $addressArr['state'] =( !empty($dataAddress['state']) ) ? $dataAddress['state'] : null;
         $addressArr['postalCode'] =( !empty($dataAddress['postal_code']) ) ? $dataAddress['postal_code'] : null;
         $addressArr['country'] =( !empty($dataAddress['country_code']) ) ? $dataAddress['country_code'] : null;
-        $addressArr['street'] =( !empty($dataAddress['street']) ) ? $dataAddress['street'] : "  ";
+        $addressArr['street'] =( !empty($dataAddress['street']) ) ? $dataAddress['street'] : null;
         $addressArr['streetNumber']  =( !empty($dataAddress['mh_house_no']) ) ?$dataAddress['mh_house_no'] : null;
         $addressArr['PoBox'] =( !empty($dataAddress['mh_pobox']) ) ? $dataAddress['mh_pobox'] : null;
 
@@ -86,19 +86,33 @@ trait FHIRAddressTrait
                 $street->setValue($addressArr['street']);
                 $FHIRAddress->addLine($street);
                 $flag = true;
+
+                if(!is_null($addressArr['streetNumber'])){
+                    $addressType = 1;
+                }
             }
             if (key_exists('streetNumber', $addressArr)) {
                 $streetNumber = new FHIRString();
                 $streetNumber->setValue($addressArr['streetNumber']);
                 $FHIRAddress->addLine($streetNumber);
-                $addressType = 1;
                 $flag = true;
             }
             if (key_exists('PoBox', $addressArr)) {
                 $PoBox = new FHIRString();
+
                 $PoBox->setValue($addressArr['PoBox']);
                 $FHIRAddress->addLine($PoBox);
-                $addressType = ($addressType === 0) ? 2 : 3;
+                if(!is_null($addressArr['PoBox'])){
+                    if($addressType === 1){
+                        $addressType = 3;
+                    }else{
+                        $addressType = 2;
+                        $line=$FHIRAddress->getLine();
+                        $line[0]->setValue(null);
+                        $line[1]->setValue(null);
+                    }
+                }
+
                 $flag = true;
             }
 
@@ -107,11 +121,11 @@ trait FHIRAddressTrait
 
                 switch ($addressType) {
                     case 1:
-                        $type->setValue('postal');
+                        $type->setValue('physical');
                         $FHIRAddress->setType($type);
                         break;
                     case 2:
-                        $type->setValue('physical');
+                        $type->setValue('postal');
                         $FHIRAddress->setType($type);
                         break;
                     case 3:

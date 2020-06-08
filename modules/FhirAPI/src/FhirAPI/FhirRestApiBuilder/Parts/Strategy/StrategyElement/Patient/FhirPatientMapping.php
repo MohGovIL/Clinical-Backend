@@ -106,7 +106,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $dbPatient = array();
 
         $dbPatient['pid'] = (is_null($patient->getId())) ? null : $patient->getId()->getValue();
-        
+
         $pidElement = (is_null($patient->getIdentifier()[0])) ? null : $patient->getIdentifier()[0]->getValue();
         $dbPatient['ss'] = (is_null($pidElement)) ? null : $pidElement->getValue();
 
@@ -157,7 +157,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
 
         if(!empty($line)) {
             $addressType=$mainAddress->getType()->getValue();
-            if ($addressType === "postal" || $addressType === "both") {
+            if ($addressType === "physical" || $addressType === "both") {
 
                 $street=$line[0]->getValue();
                 $dbPatient['street'] =(is_null($street)) ? "" : $street;
@@ -168,10 +168,15 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
                 if($addressType === "both"){
                     $mh_pobox=$line[2]->getValue();
                     $dbPatient['mh_pobox'] =(is_null($mh_pobox)) ? "" : $mh_pobox;
+                }else{
+                    $dbPatient['mh_pobox'] = null;
                 }
-            } elseif ($addressType === "physical") {
+
+            } elseif ($addressType === "postal") {
                 $mh_pobox=$line[0]->getValue();
                 $dbPatient['mh_pobox'] =(is_null($mh_pobox)) ? "" : $mh_pobox;
+                $dbPatient['mh_house_no'] = null;
+                $dbPatient['street'] = null;
             }
         }
 
@@ -284,14 +289,21 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $address->setCountry($FHIRAddress[0]->getCountry());
         $address->setType($FHIRAddress[0]->getType());
 
-
         $lines=$FHIRAddress[0]->getLine();
+        $counter=0;
+
         foreach($lines as $index => $line){
-                $address->getLine()[$index]->setValue($line->getValue());
+                $tempLineVal=$line->getValue();
+                if(!is_null($tempLineVal)){
+                    $address->getLine()[$counter]->setValue($tempLineVal);
+                    $counter++;
+                }
+        }
+        if($counter===0){
+            $address->getLine()[0]->setValue("  ");
         }
 
         $FHIRPatient=$this->setFHIRTelecom($patientDataFromDb,$FHIRPatient);
-
 
          $this->FHIRPatient=$FHIRPatient;
 
@@ -345,7 +357,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
      * @param array
      * @param array
      *
-     * @return bool;
+     * @return FHIRPatient;
      */
     public function setFHIRTelecom($patient,$FHIRPatient)
     {
