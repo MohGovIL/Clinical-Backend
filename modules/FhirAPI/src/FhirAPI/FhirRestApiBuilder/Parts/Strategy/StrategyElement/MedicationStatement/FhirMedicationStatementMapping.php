@@ -28,7 +28,6 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
     const OUTCOME_LIST ='outcome';
     const OCCURRENCE_LIST ='occurrence';
 
-
     private $adapter = null;
     private $container = null;
     private $FHIRMedicationStatement = null;
@@ -47,8 +46,8 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $listOutcome = $ListsTable->getListNormalized(self::OUTCOME_LIST);
         $this->setOutcomeTypes($listOutcome);
-
         $listOccurrence = $ListsTable->getListNormalized(self::OCCURRENCE_LIST);
+
         $this->setOccurrenceTypes($listOccurrence);
     }
 

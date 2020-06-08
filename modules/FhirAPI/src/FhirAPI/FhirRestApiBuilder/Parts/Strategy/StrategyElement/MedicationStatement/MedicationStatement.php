@@ -94,7 +94,6 @@ class MedicationStatement Extends Restful implements  Strategy
      */
     public function search()
     {
-
         $paramsToSearch = array(
             'tableToSearchOnOrm'=>$this->container->get(ListsOpenEmrTable::class),
             'fhirObj'=>new FhirMedicationStatementMapping($this->container),
@@ -102,7 +101,7 @@ class MedicationStatement Extends Restful implements  Strategy
             'container'=>$this->container,
             'paramsFromUrl'=>$this->paramsFromUrl,
             'paramsFromBody'=>$this->paramsFromBody,
-            'buildThisSearch' => self::SEARCHSTRATEGYPATH . 'ConditionSearch'
+            'buildThisSearch' => self::SEARCHSTRATEGYPATH . 'MedicationStatementSearch'
         );
         $searchContext = new SearchContext($paramsToSearch);
         return $searchContext->doSearch();
