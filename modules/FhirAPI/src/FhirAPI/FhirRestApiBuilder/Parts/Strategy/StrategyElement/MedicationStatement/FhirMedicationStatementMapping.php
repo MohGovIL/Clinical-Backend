@@ -102,77 +102,66 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
 
     /**
-     * convert FHIRCondition to db array
+     * convert FHIRMedicationStatement to db array
      *
-     * @param FHIRCondition
+     * @param FHIRMedicationStatement
      *
-     * @return array;
+     * @return array | void;
      */
-    public function fhirToDb($FHIRCondition)
+    public function fhirToDb($FHIRMedicationStatement)
     {
-        $dbCondition = array();
+        $dbMedicationStatement = array();
 
-        $dbCondition['id']=$FHIRCondition->getId()->getValue();
+        $dbMedicationStatement['id']=$FHIRMedicationStatement->getId()->getValue();
 
+        $outcomeList=array_flip($this->getOutcomeTypes());
+        $outcomeCoding= $FHIRMedicationStatement->getStatus();
+        $outcome= $outcomeCoding->getValue();
+        $outcomeId=$outcomeList[$outcome];
 
-        $dbCondition['outcome']=$FHIRCondition->getClinicalStatus()->getCoding()[0]->getCode()->getValue();
-
-
-        $categoryCoding= $FHIRCondition->getCategory()[0]->getCoding()[0];
-
-        $dbCondition['list_option_id']=$categoryCoding->getCode()->getValue();
-
-        $typeRef=$categoryCoding->getSystem()->getValue();
-        $dbCondition['type']=substr($typeRef, strrpos($typeRef, '/') + 1);
-
-        $stage=$FHIRCondition->getStage()[0];
-
-        $dbCondition['title']=$stage->getSummary()->getText()->getValue();
-
-        $dbCondition['begdate']=$FHIRCondition->getOnsetDateTime()->getValue();
-
-        $dbCondition['date']=$FHIRCondition->getRecordedDate()->getValue();
-
-        $dbCondition['enddate']=$FHIRCondition->getAbatementDateTime()->getValue();
-
-        $dbCondition['occurrence']=$stage->getType()->getCoding()[0]->getCode()->getValue();
-
-        $code= $FHIRCondition->getCode()->getCoding()[0];
-
-        $codFromDb=array();
-
-        $codFromDb[0]=$code->getSystem()->getValue();
-        $codFromDb[1]=substr($codFromDb[0], strrpos($codFromDb[0], '/') + 1);
-
-        $codFromDb[1]=$code->getCode()->getValue();
-
-        if(!empty($codFromDb[0]) && !empty($codFromDb[1])){
-            $codForDb=implode(":",$codFromDb);
+        if(!is_null($outcome) && is_null($outcomeId)){
+             ErrorCodes::http_response_code('400','outcome error');
+             return;
         }else{
-            $codForDb=null;
+            $medicationStatementDataFromDb['outcome']=$outcomeId;
         }
-        $dbCondition['diagnosis']=$codForDb;
 
-        $dbCondition['comments']=$FHIRCondition->getNote()[0]->getText()->getValue();
+        $categoryCoding= $FHIRMedicationStatement->getCategory()->getCoding()[0];
+        $medicationStatementDataFromDb['list_option_id']=$categoryCoding->getCode()->getValue();
 
-
-        $pidRef=$FHIRCondition->getSubject()->getReference()->getValue() ;
-        if(!empty($pidRef)){
-            $pidRef=substr($pidRef, strrpos($pidRef, '/') + 1);
+        if(!is_null($medicationStatementDataFromDb['list_option_id'])){
+            $type=$categoryCoding->getSystem()->getValue();
+            $medicationStatementDataFromDb['type']=substr($type, strrpos($type, '/') + 1);
+        }else{
+            $medicationStatementDataFromDb['type']=null;
         }
-        $dbCondition['pid']=$pidRef;
+        $medicationStatementDataFromDb['title']= $FHIRMedicationStatement->getCategory()->getText()->getValue();
 
-        $userRef=$FHIRCondition->getRecorder()->getReference()->getValue() ;
-        if(!empty($userRef)){
-            $userRef=substr($userRef, strrpos($userRef, '/') + 1);
+        $period=$FHIRMedicationStatement->getEffectivePeriod();
+
+        $medicationStatementDataFromDb['begdate'] = $period->getStart();
+
+        $medicationStatementDataFromDb['enddate'] = $period->getEnd();
+
+        $medicationStatementDataFromDb['date'] =  $FHIRMedicationStatement->getDateAsserted();
+
+        $code= $FHIRMedicationStatement->getMedicationCodeableConcept()->getCoding()[0];
+        $medicationCode = $code->getCode()->getValue();
+        $medicationSystem =  $code->getSystem()->getValue();
+        if(!is_null($medicationCode) && !is_null($medicationSystem)){
+            $medicationStatementDataFromDb['diagnosis']=$medicationSystem.":".$medicationCode;
+        }else{
+            $medicationStatementDataFromDb['diagnosis']=null;
         }
-        $dbCondition['user']=$userRef;
 
-        $evidenceCode=$FHIRCondition->getEvidence()[0]->getCode()[0]->getCoding()[0];
+        $userRef =  $FHIRMedicationStatement->getInformationSource()->getReference()->getValue();
+        if(!is_null($userRef) && $userRef!==""){
+            $medicationStatementDataFromDb['user'] = substr($userRef, strrpos($userRef, '/') + 1);
+        }
 
-        $dbCondition['reaction']= $evidenceCode->getCode()->getValue();
+        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText();
 
-        return $dbCondition;
+        return $dbMedicationStatement;
     }
 
     /**
@@ -184,15 +173,10 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
      */
     public function DBToFhir(...$params)
     {
-
-
         $medicationStatementDataFromDb = $params[0];
 
         $FHIRMedicationStatement =$this->FHIRMedicationStatement;
         $FHIRMedicationStatement->getId()->setValue($medicationStatementDataFromDb['id']);
-
-        $FHIRMedicationStatement->getStatus()->setValue($medicationStatementDataFromDb['outcome']);
-
 
         if(!is_null($medicationStatementDataFromDb['outcome']) && $medicationStatementDataFromDb['outcome'] !=="" ){
             $outcomeList=$this->getOutcomeTypes();
@@ -201,7 +185,6 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
             $outcomeCoding->setId($medicationStatementDataFromDb['outcome']);
             $outcomeCoding->setValue($outcome);
         }
-
 
         $categoryCoding= $FHIRMedicationStatement->getCategory()->getCoding()[0];
 
@@ -243,17 +226,11 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
             $FHIRMedicationStatement->getSubject()->getReference()->setValue("Patient/".$medicationStatementDataFromDb['pid']) ;
         }
 
-
-        if(!empty($medicationStatementDataFromDb['user'])){
-            $FHIRMedicationStatement->getSubject()->getReference()->setValue("Patient/".$medicationStatementDataFromDb['pid']) ;
-        }
-
         if(!empty($medicationStatementDataFromDb['user'])){
             $FHIRMedicationStatement->getInformationSource()->getReference()->setValue("Practitioner/".$medicationStatementDataFromDb['user']);
         }
 
         $FHIRMedicationStatement->getNote()[0]->setText($medicationStatementDataFromDb['comments']);
-
 
         $this->FHIRMedicationStatement=$FHIRMedicationStatement;
 
