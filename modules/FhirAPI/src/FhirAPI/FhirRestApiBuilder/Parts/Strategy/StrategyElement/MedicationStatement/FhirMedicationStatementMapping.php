@@ -109,9 +109,9 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
      */
     public function fhirToDb($FHIRMedicationStatement)
     {
-        $dbMedicationStatement = array();
+        $medicationStatementDataFromDb = array();
 
-        $dbMedicationStatement['id'] = $FHIRMedicationStatement->getId()->getValue();
+        $medicationStatementDataFromDb['id'] = $FHIRMedicationStatement->getId()->getValue();
 
         $outcomeList = array_flip($this->getOutcomeTypes());
         $outcomeCoding = $FHIRMedicationStatement->getStatus();
@@ -160,7 +160,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText();
 
-        return $dbMedicationStatement;
+        return $medicationStatementDataFromDb;
     }
 
     /**
