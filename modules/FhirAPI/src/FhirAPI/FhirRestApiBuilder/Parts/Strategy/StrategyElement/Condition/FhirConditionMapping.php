@@ -203,7 +203,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         $categoryCoding= $FHIRCondition->getCategory()[0]->getCoding()[0];
 
         $categoryCoding->getCode()->setValue($conditionDataFromDb['list_option_id']);
-        $categoryCoding->getSystem()->setValue("clinikal/condition/category/".$conditionDataFromDb['type']);
+        $categoryCoding->getSystem()->setValue("http://clinikal/condition/category/".$conditionDataFromDb['type']);
 
         $stage=$FHIRCondition->getStage()[0];
 
