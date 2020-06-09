@@ -31,14 +31,30 @@ class ConditionSearch extends BaseSearch
         }
 
         $this->paramHandler('subject','pid');
-        $this->searchParams = $this->paramsToDB;
 
-        $configureType =  array (
-            0 => array ('value' => 'medical_problem', 'operator' => NULL, 'modifier' => 'exact',),
-            1 => array ('value' => 'allergy', 'operator' => NULL, 'modifier' => 'exact',)
-        );
-        $this->searchParams['type'] =$configureType;
-        $this->paramHandler('type','type');
+        if(isset($this->searchParams['category'])){
+            $catLinkVal=$this->searchParams['category'][0]['value'];
+            $catArr=explode("|",substr($catLinkVal, strrpos($catLinkVal, '/') + 1));
+            if(!empty($catArr)){
+                $this->searchParams['category'][0]['value']=$catArr[0];
+                if(!is_null($catArr[1])){
+                    $specificCodeType= array (0 => array ('value' => $catArr[1], 'operator' => NULL, 'modifier' => 'exact'));
+                    $this->searchParams['categoryCode'] =$specificCodeType;
+                }
+            }else{
+                $configureType =  array (
+                    0 => array ('value' => 'medical_problem', 'operator' => NULL, 'modifier' => 'exact'),
+                    1 => array ('value' => 'allergy', 'operator' => NULL, 'modifier' => 'exact')
+                );
+                $this->searchParams['type'] =$configureType;
+            }
+
+        }
+
+        $this->paramHandler('category','type');
+        $this->paramHandler('categoryCode','list_option_id');
+
+        $this->searchParams = $this->paramsToDB;
 
         $this->runMysqlQuery();
         return $this->FHIRBundle;
