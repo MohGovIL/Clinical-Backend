@@ -1,3 +1,4 @@
+UPDATE globals SET gl_value = '1' WHERE gl_name = 'rest_fhir_api';
 
 CREATE TABLE `fhir_healthcare_services` (
     `id` INT NOT NULL AUTO_INCREMENT,
