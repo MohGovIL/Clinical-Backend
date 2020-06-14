@@ -10,7 +10,20 @@ unset($_SESSION['acl_setup_unique_id']);
 
 use OpenEMR\Common\Acl\AclExtended;
 
-//AclExtended::addObjectSectionAcl('pfeh', 'PatientFilterEventHook');
+AclExtended::addObjectSectionAcl('fhir_api', 'FHIR API');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'patient','Patient');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'appointment','Appointment');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'encounter','Encounter');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'practitioner','Practitioner');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'organization','Organization');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'healthcareservice','Healthcareb Service');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'valueset','Value Set');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'relatedperson','Related Person');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'documentreference','Document Reference');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'questionnaire','Questionnaire');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'questionnaireresponse','Questionnaire Response');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'condition','Condition');
+AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'medicationstatement','Medication Statement');
 
 
 ?>
