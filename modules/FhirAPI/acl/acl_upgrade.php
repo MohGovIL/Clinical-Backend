@@ -12,7 +12,7 @@ use OpenEMR\Common\Acl\AclExtended;
 
 return $ACL_UPGRADE = array(
 
-    '0.1.0' => function () {
+    '0.2.0' => function () {
 
         AclExtended::addObjectSectionAcl('fhir_api', 'FHIR API');
         AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'patient','Patient');

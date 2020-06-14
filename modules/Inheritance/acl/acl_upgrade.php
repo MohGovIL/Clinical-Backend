@@ -11,7 +11,7 @@ use OpenEMR\Common\Acl\AclExtended;
 
 return $ACL_UPGRADE = array(
 
-    '0.1.0' => function () {
+    '0.2.0' => function () {
 
     }
 );
