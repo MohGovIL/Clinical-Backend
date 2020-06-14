@@ -1,8 +1,8 @@
 <?php
 /**
  * Date: 21/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
- * This class MAPPING FOR ORGANIZATION
+ * @author  eyal wolanowski <eyalvo@matrix.co.il>
+ * This class MAPPING FOR Condition
  */
 
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Condition;

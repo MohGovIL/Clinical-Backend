@@ -194,8 +194,6 @@ abstract class BaseSearch implements SearchInt
                 if(!empty($conversion[$originalVal])){
                     $this->searchParams[$fhirSearchParam][0]['value']=$conversion[$originalVal];
                 }
-
-
             }
 
             $this->paramsToDB[$dbTable . '.' . $tableParams] = $this->searchParams[$fhirSearchParam];

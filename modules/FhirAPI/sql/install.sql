@@ -163,7 +163,9 @@ VALUES
 ( 'Questionnaire', 1),
 ('QuestionnaireResponse', 1),
 ('Practitioner', 1),
-('RelatedPerson', 1);
+('RelatedPerson', 1),
+('MedicationStatement', 1),
+('Condition', 1);
 
 INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
 ('fhir_type_validation', 0, '0');
@@ -219,15 +221,21 @@ CREATE TABLE `form_context_map` (
 );
 
 ALTER TABLE `related_person` ADD `full_name` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`;
-INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES ('Condition', 1);
 
 DELETE  FROM `list_options` WHERE `list_id` LIKE 'outcome';
 
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`, `timestamp`) VALUES
-('outcome', '1', 'active', 5, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
-('outcome', '2', 'recurrence', 10, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
-('outcome', '3', 'relapse', 15, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
-('outcome', '4', 'inactive', 20, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
-('outcome', '5', 'resolved', 25, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
-('outcome', '6', 'remission', 25, 0, 0, '', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44');
+('outcome', '1', 'active', 5, 0, 0, 'all', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '2', 'recurrence', 10, 0, 0, 'Condition', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '3', 'relapse', 15, 0, 0, 'Condition', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '4', 'inactive', 20, 0, 0, 'Condition', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '5', 'resolved', 25, 0, 0, 'Condition', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '6', 'remission', 25, 0, 0, 'Condition', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
 
+('outcome', '7', 'completed', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '8', 'entered-in-error', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '9', 'intended', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '10', 'stopped', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '11', 'on-hold', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '12', 'unknown', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
+('outcome', '13', 'not-taken', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44');
