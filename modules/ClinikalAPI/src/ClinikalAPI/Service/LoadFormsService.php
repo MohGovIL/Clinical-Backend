@@ -24,6 +24,8 @@ trait LoadFormsService
      *
      */
 
+    use ApiTools;
+
     public function loadForms($service_type,$reason_code)
     {
         $FormContextMapTable= $this->container->get(FormContextMapTable::class);
@@ -58,6 +60,15 @@ trait LoadFormsService
         $respondRecord["component"]=$form['directory'];
         $respondRecord["form_name"]=$form['name'];
         $respondRecord["order"]=$form['priority'];
+
+        $acoArr=explode("|",$form['aco_spec']);
+        if(count($acoArr)>1){
+            $respondRecord["aco"]=$this->getAclType($acoArr[0], $acoArr[1]);
+        }else{
+            $respondRecord["aco"]="none";
+        }
+
+
         return $respondRecord;
     }
 

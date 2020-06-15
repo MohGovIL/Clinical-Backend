@@ -50,6 +50,27 @@ trait ApiTools
         $sse->connect();
         return array();
     }
+
+
+    /**
+     * Check if current user has a given permission
+     *
+     * @param string $section
+     * @param string $value
+     * @return string
+     */
+    public function getAclType($section, $value)
+    {
+        $AclCheckExtendedService= $this->container->get(AclCheckExtendedService::class);
+        if($AclCheckExtendedService->authorizationCheck($section,$value,false,'write')){
+             return "write";
+        }
+        if($AclCheckExtendedService->authorizationCheck($section,$value,false,'view')){
+             return "view";
+        }
+        return "none";
+    }
+
 }
 
 
