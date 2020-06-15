@@ -22,7 +22,8 @@ class FormContextMapTable
         "priority"  => "priority",
         "category"  => "category" ,
         "nickname"  => "nickname",
-        "aco_spec" => "aco_spec"
+        "aco_spec" => "aco_spec",
+        "directory"=>"directory"
     );
     const LEFT_JOIN = "LEFT";
 
