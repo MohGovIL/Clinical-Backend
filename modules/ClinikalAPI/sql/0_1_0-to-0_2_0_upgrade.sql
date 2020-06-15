@@ -150,7 +150,7 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 ('lists', 'clinikal_templates', 'Clinikal templates', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
 #EndIf
 
-
+#IfNotRow2D list_options list_id drug_route option_id per_oris
 DELETE FROM list_options where list_id="drug_route" OR option_id="drug_route";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
 ('lists', 'drug_route', 'Drug Route', 0, 1),
@@ -159,7 +159,9 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) 
 ('drug_route', 'per_nostril', 'Per nostril', 30, 1),
 ('drug_route', 'both_ears', 'Both ears', 40, 1),
 ('drug_route', 'other', 'Other', 50, 1);
+#EndIf
 
+#IfNotRow2D list_options list_id drug_interval option_id 3_times_a_day
 DELETE FROM list_options where list_id="drug_interval" OR option_id="drug_interval";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
 ('lists', 'drug_interval', 'Drug interval', 0, 1),
@@ -179,7 +181,9 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) 
 ('drug_interval', 'afternoon', 'Afternoon', 140, 1),
 ('drug_interval', 'before_bedtime', 'Before bedtime', 150, 1),
 ('drug_interval', 'as_needed', 'As needed', 160, 1);
+#EndIf
 
+#IfNotRow2D list_options list_id drug_form option_id ointment
 DELETE FROM list_options where list_id="drug_form" OR option_id="drug_form";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
 ('lists', 'drug_form', 'Drug Form', 0, 1),
@@ -191,3 +195,4 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) 
 ('drug_form', 'cream', 'Cream', 60, 1),
 ('drug_form', 'solution', 'Solution', 70, 1),
 ('drug_form', 'suspension', 'Suspension', 80, 1);
+#EndIf
