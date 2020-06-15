@@ -70,10 +70,10 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 DELETE FROM list_options where list_id="drug_route" OR option_id="drug_route";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
 ('lists', 'drug_route', 'Drug Route', 0, 1),
-('drug_route', 'per oris', 'Per oris', 10, 1),
-('drug_route', 'to skin', 'To skin', 20, 1),
-('drug_route', 'per nostril', 'Per nostril', 30, 1),
-('drug_route', 'both ears', 'Both ears', 40, 1),
+('drug_route', 'per_oris', 'Per oris', 10, 1),
+('drug_route', 'to_skin', 'To skin', 20, 1),
+('drug_route', 'per_nostril', 'Per nostril', 30, 1),
+('drug_route', 'both_ears', 'Both ears', 40, 1),
 ('drug_route', 'other', 'Other', 50, 1);
 
 
