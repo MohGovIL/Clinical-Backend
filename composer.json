@@ -1,6 +1,6 @@
 {
   "name": "clinikal/clinikal-backend",
-  "description": "clinikal backend",
+  "description": "Useful Clinikal modules for integration in OpenEMR",
   "type": "clinikal-vertical",
   "authors": [
     {
