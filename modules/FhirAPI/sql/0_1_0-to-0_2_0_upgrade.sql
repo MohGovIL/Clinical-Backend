@@ -415,3 +415,8 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 #IfNotRow fhir_rest_elements name MedicationStatement
 INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES ('MedicationStatement', 1);
 #EndIf
+
+ALTER TABLE `questionnaires_schemas` CHANGE `qid` `qid` INT(11) NOT NULL;
+ALTER TABLE `questionnaires_schemas` DROP PRIMARY KEY;
+ALTER TABLE `questionnaires_schemas` ADD PRIMARY KEY( `qid`,`form_name`);
+ALTER TABLE `questionnaires_schemas` CHANGE `qid` `qid` INT(11) NOT NULL AUTO_INCREMENT;

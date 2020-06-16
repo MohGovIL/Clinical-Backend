@@ -50,14 +50,14 @@ CREATE TABLE form_commitment_questionnaire(
 ALTER TABLE `form_commitment_questionnaire` ADD UNIQUE `unique_index`( `form_id`, `question_id`);
 
 
-CREATE TABLE questionnaires_schemas(
+CREATE TABLE questionnaires_schemas4(
     qid int(11) NOT NULL AUTO_INCREMENT,
     form_name varchar(255) NOT NULL,
     form_table varchar(255) NOT NULL,
     column_name varchar(255) DEFAULT NULL,
     column_type varchar(255) NOT NULL,
     question varchar(255) DEFAULT NULL,
-    PRIMARY KEY (`qid`)
+    PRIMARY KEY (`qid`,`form_name`)
 );
 
 
