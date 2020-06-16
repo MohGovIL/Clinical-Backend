@@ -31,6 +31,7 @@ class ConditionSearch extends BaseSearch
         }
 
         $this->paramHandler('subject','pid');
+        $this->paramHandler('patient','pid');
 
         if(isset($this->searchParams['category'])){
             $catLinkVal=$this->searchParams['category'][0]['value'];
