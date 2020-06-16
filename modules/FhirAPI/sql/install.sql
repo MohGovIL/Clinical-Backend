@@ -185,9 +185,9 @@ VALUES
 ('gender', 'sex', 'Partial', NULL);
 
 INSERT INTO `fhir_value_set_codes` (`vss_id`, `code`) VALUES
-(LAST_INSERT_ID(), 'female'),
-(LAST_INSERT_ID(), 'male'),
-(LAST_INSERT_ID(), 'other');
+((SELECT id FROM fhir_value_set_systems WHERE vs_id = 'gender'), 'female'),
+((SELECT id FROM fhir_value_set_systems WHERE vs_id = 'gender'), 'male'),
+((SELECT id FROM fhir_value_set_systems WHERE vs_id = 'gender'), 'other');
 
 INSERT INTO fhir_value_sets (id, title, status) VALUES('gender', 'Gender', 'active');
 
