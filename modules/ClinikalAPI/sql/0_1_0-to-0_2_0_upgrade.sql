@@ -149,3 +149,50 @@ ALTER TABLE `clinikal_templates_map`
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`) VALUES
 ('lists', 'clinikal_templates', 'Clinikal templates', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
 #EndIf
+
+#IfNotRow2D list_options list_id drug_route option_id per_oris
+DELETE FROM list_options where list_id="drug_route" OR option_id="drug_route";
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
+('lists', 'drug_route', 'Drug Route', 0, 1),
+('drug_route', 'per_oris', 'Per oris', 10, 1),
+('drug_route', 'to_skin', 'To skin', 20, 1),
+('drug_route', 'per_nostril', 'Per nostril', 30, 1),
+('drug_route', 'both_ears', 'Both ears', 40, 1),
+('drug_route', 'other', 'Other', 50, 1);
+#EndIf
+
+#IfNotRow2D list_options list_id drug_interval option_id 3_times_a_day
+DELETE FROM list_options where list_id="drug_interval" OR option_id="drug_interval";
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
+('lists', 'drug_interval', 'Drug interval', 0, 1),
+('drug_interval', 'once_a_day', 'Once a day', 10, 1),
+('drug_interval', 'twice_a_day', 'Twice a day', 20, 1),
+('drug_interval', '3_times_a_day', '3 times a day', 30, 1),
+('drug_interval', '4_times_a_day', '4 times a day', 40, 1),
+('drug_interval', 'every_hour', 'Every hour', 50, 1),
+('drug_interval', 'every_3_hours', 'Every 3 hours', 60, 1),
+('drug_interval', 'every_4_hours', 'Every 4 hours', 70, 1),
+('drug_interval', 'every_5_hours', 'Every 5 hours', 80, 1),
+('drug_interval', 'every_6_hours', 'Every 6 hours', 90, 1),
+('drug_interval', 'every_8_hours', 'Every 8 hours', 100, 1),
+('drug_interval', 'before_eating', 'Before eating', 110, 1),
+('drug_interval', 'after_eating', 'After eating', 120, 1),
+('drug_interval', 'before_noon', 'Before noon', 130, 1),
+('drug_interval', 'afternoon', 'Afternoon', 140, 1),
+('drug_interval', 'before_bedtime', 'Before bedtime', 150, 1),
+('drug_interval', 'as_needed', 'As needed', 160, 1);
+#EndIf
+
+#IfNotRow2D list_options list_id drug_form option_id ointment
+DELETE FROM list_options where list_id="drug_form" OR option_id="drug_form";
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
+('lists', 'drug_form', 'Drug Form', 0, 1),
+('drug_form', 'tablet', 'Tablet', 10, 1),
+('drug_form', 'drops', 'Drops', 20, 1),
+('drug_form', 'tsp', 'Tsp', 30, 1),
+('drug_form', 'ml', 'ml', 40, 1),
+('drug_form', 'ointment', 'Ointment', 50, 1),
+('drug_form', 'cream', 'Cream', 60, 1),
+('drug_form', 'solution', 'Solution', 70, 1),
+('drug_form', 'suspension', 'Suspension', 80, 1);
+#EndIf
