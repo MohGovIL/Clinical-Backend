@@ -210,7 +210,9 @@ VALUES
 ('8', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Receipt number');
 #EndIf
 
-
+#IfRow registry directory commitment_questionnaire
+DELETE FROM `registry` WHERE `directory`="commitment_questionnaire";
+#EndIf
 
 #IfNotTable form_context_map
 CREATE TABLE `form_context_map` (
