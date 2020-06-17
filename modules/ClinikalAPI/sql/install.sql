@@ -68,4 +68,4 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 ('lists', 'clinikal_templates', 'Clinikal templates', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
 
 
-ALTER TABLE `registry` ADD `handler` VARCHAR(255) NULL AFTER `aco_spec`;
+ALTER TABLE `registry` ADD `component_name` VARCHAR(255) NULL AFTER `aco_spec`;
