@@ -156,7 +156,14 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $line=$mainAddress->getLine();
 
         if(!empty($line)) {
-            $addressType=$mainAddress->getType()->getValue();
+
+            $addressTypeElm=$mainAddress->getType();
+            if(!is_null($addressTypeElm)){
+                $addressType=$addressTypeElm->getValue();
+            }else{
+                $addressType=null;
+            }
+            
             if ($addressType === "physical" || $addressType === "both") {
 
                 $street=$line[0]->getValue();
