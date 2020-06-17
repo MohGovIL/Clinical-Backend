@@ -65,7 +65,7 @@ trait LoadFormsService
         if(count($acoArr)>1){
             $respondRecord["permission"]=$this->getAclType($acoArr[0], $acoArr[1]);
         }else{
-            $respondRecord["permission"]="none";
+            $respondRecord=array();
         }
 
 
