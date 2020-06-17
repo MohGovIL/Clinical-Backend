@@ -27,7 +27,6 @@ class ApiBuilder
     CONST MOH_CITIES="mh_cities";
     CONST MOH_STREETS="mh_streets";
 
-    use ApiTools;
     use LoadFormsService;
     use FormTemplatesService;
 

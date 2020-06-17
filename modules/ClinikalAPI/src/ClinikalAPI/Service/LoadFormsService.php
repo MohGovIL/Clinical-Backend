@@ -24,6 +24,8 @@ trait LoadFormsService
      *
      */
 
+    use ApiTools;
+
     public function loadForms($service_type,$reason_code)
     {
         $FormContextMapTable= $this->container->get(FormContextMapTable::class);
@@ -35,9 +37,16 @@ trait LoadFormsService
         foreach($dbData as $index => $record){
 
             if($record['context_type']==="reason_code"){
-                $reason_code[]=$this->getRespondRecord($record);
+                $reason_code_record=$this->getRespondRecord($record);
+                if(!empty($reason_code_record)){
+                    $reason_code[]=$reason_code_record;
+                }
+
             }elseif(empty($reason_code) && $record['context_type']==="service_type"){
-                $service_type[]=$this->getRespondRecord($record);
+                $service_type_record=$this->getRespondRecord($record);
+                if(!empty($service_type_record)){
+                    $service_type[]=$service_type_record;
+                }
             }
         }
         if(empty($reason_code)){
@@ -58,6 +67,15 @@ trait LoadFormsService
         $respondRecord["component"]=$form['component_name'];
         $respondRecord["form_name"]=$form['name'];
         $respondRecord["order"]=$form['priority'];
+
+        $acoArr=explode("|",$form['aco_spec']);
+        if(count($acoArr)>1){
+            $respondRecord["permission"]=$this->getAclType($acoArr[0], $acoArr[1]);
+        }else{
+            $respondRecord=array();
+        }
+
+
         return $respondRecord;
     }
 
