@@ -53,6 +53,9 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 ('lists', 'clinikal_templates', 'Clinikal templates', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
 
 
+ALTER TABLE `registry` ADD `component_name` VARCHAR(255) NULL AFTER `aco_spec`;
+
+
 DELETE FROM list_options where list_id="drug_route" OR option_id="drug_route";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
 ('lists', 'drug_route', 'Drug Route', 0, 1),

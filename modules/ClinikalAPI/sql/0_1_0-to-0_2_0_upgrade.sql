@@ -179,3 +179,7 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) 
 ('drug_form', 'solution', 'Solution', 70, 1),
 ('drug_form', 'suspension', 'Suspension', 80, 1);
 #EndIf
+
+#IfMissingColumn registry component_name
+ALTER TABLE `registry` ADD `component_name` VARCHAR(255) NULL AFTER `aco_spec`;
+#EndIf
