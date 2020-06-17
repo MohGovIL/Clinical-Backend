@@ -183,3 +183,41 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) 
 #IfMissingColumn registry component_name
 ALTER TABLE `registry` ADD `component_name` VARCHAR(255) NULL AFTER `aco_spec`;
 #EndIf
+
+
+#IfNotTable form_commitment_questionnaire
+CREATE TABLE form_commitment_questionnaire(
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    encounter varchar(255) DEFAULT NULL,
+    form_id bigint(20) NOT NULL,
+    question_id int(11) NOT NULL,
+    answer text,
+    PRIMARY KEY (`id`)
+);
+ALTER TABLE `form_commitment_questionnaire` ADD UNIQUE `unique_index`( `form_id`, `question_id`);
+#EndIf
+
+#IfNotRow questionnaires_schemas form_name form_commitment_questionnaire
+INSERT INTO `questionnaires_schemas` (`qid`, `form_name`,`form_table`, `column_type`, `question`)
+VALUES
+('1', 'commitment_questionnaire','form_commitment_questionnaire', 'integer', 'Commitment number'),
+('2', 'commitment_questionnaire','form_commitment_questionnaire', 'date', 'Commitment date'),
+('3', 'commitment_questionnaire','form_commitment_questionnaire', 'date', 'Commitment expiration date'),
+('4', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Signing doctor'),
+('5', 'commitment_questionnaire','form_commitment_questionnaire', 'integer', 'doctor license number'),
+('6', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment amount'),
+('7', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment method'),
+('8', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Receipt number');
+#EndIf
+
+
+
+#IfNotTable form_context_map
+CREATE TABLE `form_context_map` (
+    `form_id`           INT NOT NULL,
+    `context_type`      varchar(255) NOT NULL COMMENT 'reason_code / service_type',
+    `context_id`        INT NOT NULL,
+    PRIMARY KEY (`form_id`,`context_type`,`context_id`)
+);
+#EndIf
+
