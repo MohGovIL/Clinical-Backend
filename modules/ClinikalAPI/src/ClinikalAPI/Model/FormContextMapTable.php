@@ -23,7 +23,8 @@ class FormContextMapTable
         "category"  => "category" ,
         "nickname"  => "nickname",
         "aco_spec" => "aco_spec",
-        "directory"=>"directory"
+        "directory"=>"directory",
+        "handler"=>"handler"
     );
     const LEFT_JOIN = "LEFT";
 

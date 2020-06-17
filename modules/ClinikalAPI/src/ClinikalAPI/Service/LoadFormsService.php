@@ -55,7 +55,7 @@ trait LoadFormsService
      */
     private function getRespondRecord($form){
         $respondRecord= array();
-        $respondRecord["component"]=$form['directory'];
+        $respondRecord["component"]=$form['handler'];
         $respondRecord["form_name"]=$form['name'];
         $respondRecord["order"]=$form['priority'];
         return $respondRecord;

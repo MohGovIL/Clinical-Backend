@@ -66,3 +66,6 @@ ALTER TABLE `clinikal_templates_map`
 
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`) VALUES
 ('lists', 'clinikal_templates', 'Clinikal templates', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
+
+
+ALTER TABLE `registry` ADD `handler` VARCHAR(255) NULL AFTER `aco_spec`;

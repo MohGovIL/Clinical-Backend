@@ -25,6 +25,7 @@ class FormContextMap
     public $directory;
     public $nickname;
     public $aco_spec;
+    public $handler;
 
 
     public function exchangeArray($data)
@@ -42,5 +43,7 @@ class FormContextMap
         $this->directory = (!empty($data['directory'])) ? $data['directory'] : null;
         $this->nickname = (!empty($data['nickname'])) ? $data['nickname'] : null;
         $this->aco_spec = (!empty($data['aco_spec'])) ? $data['aco_spec'] : null;
+        $this->handler = (!empty($data['handler'])) ? $data['handler'] : null;
+
     }
 }
