@@ -37,19 +37,6 @@ CREATE TABLE encounter_reasoncode_map (
     reason_code  INT(6) UNSIGNED
 );
 
-
-CREATE TABLE form_commitment_questionnaire(
-    id bigint(20) NOT NULL AUTO_INCREMENT,
-    encounter varchar(255) DEFAULT NULL,
-    form_id bigint(20) NOT NULL,
-    question_id int(11) NOT NULL,
-    answer text,
-    PRIMARY KEY (`id`)
-);
-
-ALTER TABLE `form_commitment_questionnaire` ADD UNIQUE `unique_index`( `form_id`, `question_id`);
-
-
 CREATE TABLE questionnaires_schemas(
     qid int(11) NOT NULL AUTO_INCREMENT,
     form_name varchar(255) NOT NULL,
@@ -212,13 +199,6 @@ CREATE TABLE `fhir_questionnaire` (
     PRIMARY KEY (`id`)
 ) ;
 
-
-CREATE TABLE `form_context_map` (
-    `form_id`           INT NOT NULL,
-    `context_type`      varchar(255) NOT NULL COMMENT 'reason_code / service_type',
-    `context_id`        INT NOT NULL,
-    PRIMARY KEY (`form_id`,`context_type`,`context_id`)
-);
 
 ALTER TABLE `related_person` ADD `full_name` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`;
 
