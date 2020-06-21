@@ -119,6 +119,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 
         $Extensions= $FHIREncounter->getExtension();
 
+        $date="";
         foreach($Extensions as $exIndex => $Extension){
             $url =   $Extension->getUrl();
             $extensionName=substr($url, strrpos($url, '/') + 1);
@@ -128,6 +129,14 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
                     break;
                 case self::RCD_URL:
                         $encounter["reason_codes_details"]=trim($Extensions[$exIndex]->getValueString());
+                    break;
+                case self::SECONDARY_STATUS_URL:
+                    $encounter["secondary_status"]=trim($Extensions[$exIndex]->getValueString());
+                    break;
+                case self::STATUS_UPDATE_DATE_URL:
+                    $date=trim($Extensions[$exIndex]->getValueDateTime());
+                    $date=$this->convertToDateTime($date);
+                    $encounter["status_update_date"]=$date;
                     break;
             }
         }
@@ -245,7 +254,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
                 case self::STATUS_UPDATE_DATE_URL:
                     if(isset($encounter["status_update_date"]) && !is_null($encounter["status_update_date"])){
                         $FHIRDateTime=$this->createFHIRDateTime(null,null,$encounter["status_update_date"]);
-                        $Extensions[$exIndex]->setvalueDateTime($FHIRDateTime);
+                        $Extensions[$exIndex]->setValueDateTime($FHIRDateTime);
                     }else{
                         unset($FHIREncounter->extension[$exIndex]);
                     }
@@ -291,6 +300,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     {
         $this->initFhirObject();
         //$FHIRRelatedPerson = $this->parsedJsonToFHIR($data);
+        $data=$this->manageExtensions($data,$this->FHIREncounter);
         $this->arrayToFhirObject($this->FHIREncounter,$data);
         $dBdata = $this->fhirToDb($this->FHIREncounter);
         return $dBdata;
@@ -339,6 +349,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 
         $FHIRExtensionRSD= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::RCD_URL,'string',null);
         $FHIREncounter->addExtension($FHIRExtensionRSD);
+
         $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::AW_URL,'string',null);
         $FHIREncounter->addExtension($FHIRExtensionAW);
 

@@ -157,4 +157,24 @@ class FormEncounterTable
         }
     }
 
+    /**
+     *  Return status,secondary status, last status update date
+     * @param integer
+     * @return array
+    */
+    public function getStatusStateByEid($eid)
+    {
+        $sql="SELECT status,secondary_status,status_update_date FROM " . $this->tableGateway->table . " WHERE id = ?";
+
+        $statement = $this->tableGateway->adapter->createStatement($sql, array($eid));
+        $return = $statement->execute();
+
+        $results = array();
+        foreach ($return as $row) {
+            $results[] = $row;
+        }
+
+        return $results[0];
+    }
+
 }
