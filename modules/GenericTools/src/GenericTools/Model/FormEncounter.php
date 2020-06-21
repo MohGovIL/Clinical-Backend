@@ -43,6 +43,10 @@ class FormEncounter
     public $escort_id;
     public $arrival_way;
     public $reason_codes_details;
+    public $secondary_status;
+    public $status_update_date;
+
+
 
 
     public function exchangeArray($data)
@@ -81,6 +85,8 @@ class FormEncounter
         $this->escort_id = (!empty($data['escort_id'])) ? $data['escort_id'] : null;
         $this->arrival_way = (!empty($data['arrival_way'])) ? $data['arrival_way'] : null;
         $this->reason_codes_details = (!empty($data['reason_codes_details'])) ? $data['reason_codes_details'] : null;
+        $this->secondary_status = (!empty($data['secondary_status'])) ? $data['secondary_status'] : null;
+        $this->status_update_date = (!empty($data['status_update_date'])) ? $data['status_update_date'] : null;
 
 
 

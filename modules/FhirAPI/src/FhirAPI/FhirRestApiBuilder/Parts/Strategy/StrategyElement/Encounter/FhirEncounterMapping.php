@@ -38,6 +38,9 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     CONST ORG_REF= 'Organization';
     CONST RCD_URL = 'reasonCodesDetail';
     CONST AW_URL='arrivalWay';
+    CONST SECONDARY_STATUS_URL='secondaryStatus';
+    CONST STATUS_UPDATE_DATE_URL='statusUpdateDate';
+
     CONST EXTENSIONS_ENCOUNTER_URL='http://clinikal/extensions/encounter/';
 
     public function __construct(ContainerInterface $container)
@@ -230,6 +233,23 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
                         unset($FHIREncounter->extension[$exIndex]);
                     }
                     break;
+
+                case self::SECONDARY_STATUS_URL:
+                    if(isset($encounter["secondary_status"]) && !is_null($encounter["secondary_status"])){
+                        $Extensions[$exIndex]->setValueString($encounter["secondary_status"]);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
+
+                case self::STATUS_UPDATE_DATE_URL:
+                    if(isset($encounter["status_update_date"]) && !is_null($encounter["status_update_date"])){
+                        $FHIRDateTime=$this->createFHIRDateTime(null,null,$encounter["status_update_date"]);
+                        $Extensions[$exIndex]->setvalueDateTime($FHIRDateTime);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
             }
         }
 
@@ -320,6 +340,12 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         $FHIRExtensionRSD= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::RCD_URL,'string',null);
         $FHIREncounter->addExtension($FHIRExtensionRSD);
         $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::AW_URL,'string',null);
+        $FHIREncounter->addExtension($FHIRExtensionAW);
+
+        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::SECONDARY_STATUS_URL,'string',null);
+        $FHIREncounter->addExtension($FHIRExtensionAW);
+
+        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::STATUS_UPDATE_DATE_URL,'dateTime',null);
         $FHIREncounter->addExtension($FHIRExtensionAW);
 
         $this->FHIREncounter=$FHIREncounter;

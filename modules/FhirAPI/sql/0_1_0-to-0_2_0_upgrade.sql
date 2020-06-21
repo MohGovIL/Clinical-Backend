@@ -400,3 +400,13 @@ ALTER TABLE `questionnaires_schemas` CHANGE `qid` `qid` INT(11) NOT NULL;
 ALTER TABLE `questionnaires_schemas` DROP PRIMARY KEY;
 ALTER TABLE `questionnaires_schemas` ADD PRIMARY KEY( `qid`,`form_name`);
 ALTER TABLE `questionnaires_schemas` CHANGE `qid` `qid` INT(11) NOT NULL AUTO_INCREMENT;
+
+#IfMissingColumn form_encounter secondary_status
+ALTER TABLE `form_encounter`
+ADD `secondary_status` VARCHAR(255) NULL AFTER `reason_codes_details`;
+#EndIf
+
+#IfMissingColumn form_encounter secondary_status
+ALTER TABLE `form_encounter`
+ADD `status_update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `secondary_status`;
+#EndIf
