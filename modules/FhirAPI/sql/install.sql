@@ -137,6 +137,16 @@ ALTER TABLE facility
 ALTER TABLE `form_encounter`
              ADD `escort_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'related_person.id' AFTER `service_type`;
 
+CREATE TABLE `fhir_questionnaire` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `name`      varchar(255) NOT NULL,
+    `directory` varchar(255) NOT NULL,
+    `state`     tinyint(4)   DEFAULT NULL,
+    `aco_spec`  varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ;
+
+
 
 INSERT INTO `fhir_rest_elements` (`name`, `active`)
 VALUES
@@ -190,14 +200,12 @@ VALUES
 ('clinikal_app_statuses', 'waitlist', 'Waitlisted', 60, 0, 0, '', '', '', 0, 0, 1, '', 1);
 
 
-CREATE TABLE `fhir_questionnaire` (
-    `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `name`      varchar(255) NOT NULL,
-    `directory` varchar(255) NOT NULL,
-    `state`     tinyint(4)   DEFAULT NULL,
-    `aco_spec`  varchar(255) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-) ;
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('appointment_statuses', 'Appointment Statuses');
+
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('appointment_statuses', 'clinikal_app_statuses', 'All');
+
 
 
 ALTER TABLE `related_person` ADD `full_name` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`;
