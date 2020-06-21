@@ -1186,31 +1186,35 @@ class FhirBaseMapping
     }
 
 
-        public function manageExtensions($data,object $FHIRElm){
-
-        $extensions=$FHIRElm->getExtension();
-        $extensionArr=array();
-
-        foreach($extensions as $pointer =>$intExtension){
-            $extensionUrlFromInit= $intExtension->getUrl();
-            $extensionNotFound=true;
-            foreach($data['extension'] as $index =>$extension){
-                $extensionUrlFromRequest=$extension['url'];
-                if($extensionUrlFromRequest===$extensionUrlFromInit){
-                    $extensionArr[$pointer]=$extension;
-                    $extensionNotFound=false;
+    /*
+     * order data by extension order
+     * remove unneeded extension
+     */
+    public function manageExtensions($data, object $FHIRElm)
+    {
+        $extensions = $FHIRElm->getExtension();
+        $extensionArr = array();
+        foreach ($extensions as $pointer => $intExtension) {
+            $extensionUrlFromInit = $intExtension->getUrl();
+            $extensionNotFound = true;
+            foreach ($data['extension'] as $index => $extension) {
+                $extensionUrlFromRequest = $extension['url'];
+                if ($extensionUrlFromRequest === $extensionUrlFromInit) {
+                    $extensionArr[$pointer] = $extension;
+                    $extensionNotFound = false;
+                    break;
                 }
             }
-            if($extensionNotFound){
+            if ($extensionNotFound) {
                 unset($FHIRElm->extension[$pointer]);
             }
         }
-            $FHIRElm->extension=array_values($FHIRElm->extension); // reorder indexes
-            $data['extension']=$extensionArr;
+        $FHIRElm->extension = array_values($FHIRElm->extension); // reorder indexes
+        $data['extension'] = $extensionArr;
 
         return $data;
 
-        }
+    }
 
 
 }

@@ -230,7 +230,9 @@ trait baseTable
 
         $where = new Where();
         foreach($FilterData as $field=>$value){
-            $last = self::$AND;
+
+
+            $last = (is_null($value[0]['sqlOp'])) ? self::$AND : $value[0]['sqlOp'];
             $this->createQuery($value,$where,$field,$last,$FilterData);
         }
         $select->where($where);
