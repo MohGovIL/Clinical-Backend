@@ -36,7 +36,7 @@ class Patients
         $this->lname = (!empty($data['lname'])) ? $data['lname'] : null;
         $this->mname = (!empty($data['mname'])) ? $data['mname'] : null;
         $this->ss = (!empty($data['ss'])) ? $data['ss'] : null;
-        $this->ss = (!empty($data['sex'])) ? $data['sex'] : null;
+        $this->sex = (!empty($data['sex'])) ? $data['sex'] : null;
         $this->DOB = (!empty($data['DOB'])) ? $data['DOB'] : null;
         $this->pid = (!empty($data['pid'])) ? $data['pid'] : null;
         $this->updated_by = (!empty($data['updated_by'])) ? $data['updated_by'] : null;
