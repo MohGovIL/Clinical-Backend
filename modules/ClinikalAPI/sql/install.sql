@@ -49,6 +49,16 @@ CREATE TABLE `clinikal_templates_map` (
 ALTER TABLE `clinikal_templates_map`
   ADD PRIMARY KEY (`form_id`,`form_field`,`service_type`,`reason_code`,`message_id`);
 
+
+CREATE TABLE `form_context_map` (
+    `form_id`           INT NOT NULL,
+    `context_type`      varchar(255) NOT NULL COMMENT 'reason_code / service_type',
+    `context_id`        INT NOT NULL,
+    PRIMARY KEY (`form_id`,`context_type`,`context_id`)
+);
+
+
+
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`) VALUES
 ('lists', 'clinikal_templates', 'Clinikal templates', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
 
@@ -125,14 +135,6 @@ VALUES
 ('6', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment amount'),
 ('7', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment method'),
 ('8', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Receipt number');
-
-CREATE TABLE `form_context_map` (
-    `form_id`           INT NOT NULL,
-    `context_type`      varchar(255) NOT NULL COMMENT 'reason_code / service_type',
-    `context_id`        INT NOT NULL,
-    PRIMARY KEY (`form_id`,`context_type`,`context_id`)
-);
-
 
 
 

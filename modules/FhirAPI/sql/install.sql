@@ -137,6 +137,16 @@ ALTER TABLE facility
 ALTER TABLE `form_encounter`
              ADD `escort_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'related_person.id' AFTER `service_type`;
 
+CREATE TABLE `fhir_questionnaire` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `name`      varchar(255) NOT NULL,
+    `directory` varchar(255) NOT NULL,
+    `state`     tinyint(4)   DEFAULT NULL,
+    `aco_spec`  varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ;
+
+
 
 INSERT INTO `fhir_rest_elements` (`name`, `active`)
 VALUES
@@ -190,14 +200,12 @@ VALUES
 ('clinikal_app_statuses', 'waitlist', 'Waitlisted', 60, 0, 0, '', '', '', 0, 0, 1, '', 1);
 
 
-CREATE TABLE `fhir_questionnaire` (
-    `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `name`      varchar(255) NOT NULL,
-    `directory` varchar(255) NOT NULL,
-    `state`     tinyint(4)   DEFAULT NULL,
-    `aco_spec`  varchar(255) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-) ;
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('appointment_statuses', 'Appointment Statuses');
+
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('appointment_statuses', 'clinikal_app_statuses', 'All');
+
 
 
 ALTER TABLE `related_person` ADD `full_name` VARCHAR(255) NULL DEFAULT NULL AFTER `gender`;
@@ -219,6 +227,10 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 ('outcome', '11', 'on-hold', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
 ('outcome', '12', 'unknown', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44'),
 ('outcome', '13', 'not-taken', 25, 0, 0, 'MedicationStatement', NULL, '', 0, 0, 1, '', 1, '2021-05-26 07:07:44');
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`)
+VALUES
+('lists', 'clinikal_app_secondary_statuses', 'Clinikal Appointment Secondary Statuses', 0, 0, 0, '', 'In Progress ', '', 0, 0, 1, '', 1);
 
 
 ALTER TABLE `form_encounter`
