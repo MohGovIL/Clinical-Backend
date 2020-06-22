@@ -197,7 +197,7 @@ CREATE TABLE form_commitment_questionnaire(
 ALTER TABLE `form_commitment_questionnaire` ADD UNIQUE `unique_index`( `form_id`, `question_id`);
 #EndIf
 
-#IfNotRow questionnaires_schemas form_name form_commitment_questionnaire
+#IfNotRow questionnaires_schemas form_name commitment_questionnaire
 INSERT INTO `questionnaires_schemas` (`qid`, `form_name`,`form_table`, `column_type`, `question`)
 VALUES
 ('1', 'commitment_questionnaire','form_commitment_questionnaire', 'integer', 'Commitment number'),
