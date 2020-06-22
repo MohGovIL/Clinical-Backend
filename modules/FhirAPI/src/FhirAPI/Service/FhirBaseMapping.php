@@ -11,6 +11,7 @@ use DateTime;
 use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use Interop\Container\ContainerInterface;
+use OpenEMR\FHIR\R4\FHIRElement;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRExtension;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAnnotation;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRId;
@@ -1182,6 +1183,37 @@ class FhirBaseMapping
         }
 
         return $FHIRAnnotation;
+    }
+
+
+    /*
+     * order data by extension order
+     * remove unneeded extension
+     */
+    public function manageExtensions($data, object $FHIRElm)
+    {
+        $extensions = $FHIRElm->getExtension();
+        $extensionArr = array();
+        foreach ($extensions as $pointer => $intExtension) {
+            $extensionUrlFromInit = $intExtension->getUrl();
+            $extensionNotFound = true;
+            foreach ($data['extension'] as $index => $extension) {
+                $extensionUrlFromRequest = $extension['url'];
+                if ($extensionUrlFromRequest === $extensionUrlFromInit) {
+                    $extensionArr[$pointer] = $extension;
+                    $extensionNotFound = false;
+                    break;
+                }
+            }
+            if ($extensionNotFound) {
+                unset($FHIRElm->extension[$pointer]);
+            }
+        }
+        $FHIRElm->extension = array_values($FHIRElm->extension); // reorder indexes
+        $data['extension'] = $extensionArr;
+
+        return $data;
+
     }
 
 

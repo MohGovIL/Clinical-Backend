@@ -38,6 +38,9 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     CONST ORG_REF= 'Organization';
     CONST RCD_URL = 'reasonCodesDetail';
     CONST AW_URL='arrivalWay';
+    CONST SECONDARY_STATUS_URL='secondaryStatus';
+    CONST STATUS_UPDATE_DATE_URL='statusUpdateDate';
+
     CONST EXTENSIONS_ENCOUNTER_URL='http://clinikal/extensions/encounter/';
 
     public function __construct(ContainerInterface $container)
@@ -116,6 +119,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 
         $Extensions= $FHIREncounter->getExtension();
 
+        $date="";
         foreach($Extensions as $exIndex => $Extension){
             $url =   $Extension->getUrl();
             $extensionName=substr($url, strrpos($url, '/') + 1);
@@ -125,6 +129,14 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
                     break;
                 case self::RCD_URL:
                         $encounter["reason_codes_details"]=trim($Extensions[$exIndex]->getValueString());
+                    break;
+                case self::SECONDARY_STATUS_URL:
+                    $encounter["secondary_status"]=trim($Extensions[$exIndex]->getValueString());
+                    break;
+                case self::STATUS_UPDATE_DATE_URL:
+                    $date=trim($Extensions[$exIndex]->getValueDateTime());
+                    $date=$this->convertToDateTime($date);
+                    $encounter["status_update_date"]=$date;
                     break;
             }
         }
@@ -230,6 +242,23 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
                         unset($FHIREncounter->extension[$exIndex]);
                     }
                     break;
+
+                case self::SECONDARY_STATUS_URL:
+                    if(isset($encounter["secondary_status"]) && !is_null($encounter["secondary_status"])){
+                        $Extensions[$exIndex]->setValueString($encounter["secondary_status"]);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
+
+                case self::STATUS_UPDATE_DATE_URL:
+                    if(isset($encounter["status_update_date"]) && !is_null($encounter["status_update_date"])){
+                        $FHIRDateTime=$this->createFHIRDateTime(null,null,$encounter["status_update_date"]);
+                        $Extensions[$exIndex]->setValueDateTime($FHIRDateTime);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
             }
         }
 
@@ -271,6 +300,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     {
         $this->initFhirObject();
         //$FHIRRelatedPerson = $this->parsedJsonToFHIR($data);
+        $data=$this->manageExtensions($data,$this->FHIREncounter);
         $this->arrayToFhirObject($this->FHIREncounter,$data);
         $dBdata = $this->fhirToDb($this->FHIREncounter);
         return $dBdata;
@@ -319,7 +349,14 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 
         $FHIRExtensionRSD= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::RCD_URL,'string',null);
         $FHIREncounter->addExtension($FHIRExtensionRSD);
+
         $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::AW_URL,'string',null);
+        $FHIREncounter->addExtension($FHIRExtensionAW);
+
+        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::SECONDARY_STATUS_URL,'string',null);
+        $FHIREncounter->addExtension($FHIRExtensionAW);
+
+        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::STATUS_UPDATE_DATE_URL,'dateTime',null);
         $FHIREncounter->addExtension($FHIRExtensionAW);
 
         $this->FHIREncounter=$FHIREncounter;

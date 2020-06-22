@@ -120,12 +120,11 @@ class Encounter Extends Restful implements  Strategy
     {
         $dBdata = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
         unset($dBdata['form_encounter']['id']);
+        $dBdata["status_update_date"]= date("Y-m-d H:i:s");
         $formEncounterTable = $this->container->get(FormEncounterTable::class);
         $inserted=$formEncounterTable->safeInsertEncounter($dBdata);
         $this->paramsFromUrl[0]=$inserted[0]['id'];
         return $this-> read();
-
-
     }
 
 
@@ -140,10 +139,18 @@ class Encounter Extends Restful implements  Strategy
     {
         $dBdata = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
         $id =$this->paramsFromUrl[0];
+        $formEncounterTable = $this->container->get(FormEncounterTable::class);
+        $lastStatusState=$formEncounterTable->getStatusStateByEid($id);
+        if(
+            $dBdata['form_encounter']['secondary_status']!= $lastStatusState['secondary_status'] ||
+            $dBdata['form_encounter']['status']!= $lastStatusState['status']
+          ){
+            $dBdata['form_encounter']['status_update_date']=date("Y-m-d H:i:s");
+        }else{
+            unset($dBdata['form_encounter']['status_update_date']);
+        }
         return $this->mapping->updateDbData($dBdata,$id);
-
     }
-
 
     /**
      * update Encounter data
