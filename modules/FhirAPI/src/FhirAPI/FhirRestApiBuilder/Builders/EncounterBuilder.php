@@ -138,7 +138,7 @@ class EncounterBuilder extends Builder
         $this->createMapping(["FHIREncounter",'status-update-date',1,'form_encounter',"","form_encounter","status_update_date"," ",self::EXACT,""]);
 
         /////////////////////////////////////////////SORT BY id,date,appointment,patient,status    from mysql table form_encounter column id
-        $this->createMapping(["FHIREncounter",'_sort',1,'token',"id,date,appointment,patient,status,priority,service-type,status_update_date","form_encounter","form_encounter.id,form_encounter.date,form_encounter.eid,form_encounter.pid,form_encounter.status,form_encounter.priority,service_type_seq,form_encounter.status_update_date",'A code for the type of Encounter',self::EXACT,""]);
+        $this->createMapping(["FHIREncounter",'_sort',1,'token',"id,date,appointment,patient,status,priority,service-type,status-update-date","form_encounter","form_encounter.id,form_encounter.date,form_encounter.eid,form_encounter.pid,form_encounter.status,form_encounter.priority,service_type_seq,form_encounter.status_update_date",'A code for the type of Encounter',self::EXACT,""]);
 
         /////////////////////////////////////////////INCLUDE records from other table
         $this->createMapping(["FHIREncounter",'_include',1,'token',"Encounter:organization,Encounter:patient","Organization,Patient","",'Collect every patient fhir object  for this encounter',self::COLLECT_FHIR_OBJECT,"ServiceProvider,Subject"]);
