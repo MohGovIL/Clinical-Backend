@@ -70,7 +70,7 @@ class Settings
      */
     public function getMenuSettings($menuName)
     {
-        $file = file_get_contents($GLOBALS['fileroot'] . "/sites/default/documents/custom_menus/" . $menuName . ".json");
+        $file = file_get_contents($GLOBALS['fileroot'] . "/interface/main/tabs/menu/menus/" . $menuName . ".json");
 
         if($file!==false){
             $menu_parsed = json_decode($file, true);
