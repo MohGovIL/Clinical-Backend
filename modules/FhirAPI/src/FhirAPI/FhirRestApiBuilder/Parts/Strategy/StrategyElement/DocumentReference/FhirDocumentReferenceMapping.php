@@ -12,8 +12,9 @@ use OpenEMR\FHIR\R4\FHIRResource\FHIRDocumentReference\FHIRDocumentReferenceCont
 class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingData
 {
     const DOC_TYPE = "file_url";
-    const STORAGE_METHOD = 1;
     const CURRENT_STATUS = "current";
+    const S3_STORAGE = 10;
+    const COUCH_STORAGE = 1;
 
     private $adapter = null;
     private $container = null;
@@ -42,16 +43,22 @@ class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingDa
     }
 
     public function fhirToDb($FhirObject){
-        //Prepare array of data to be inserted into mariadb (documents + categories_to_documents tables) and couchdb
+        //Prepare array of data to be inserted into mariadb (documents + categories_to_documents tables) and storage engine
         $dbArr = array(
             "documents" => array(),
             "categories_to_documents" => array(),
-            "couchdb" => array()
+            "storage" => array()
         );
 
+        if($GLOBALS['use_s3']) {
+            $storageMethod = self::S3_STORAGE;
+        }
+        else {
+            $storageMethod = self::COUCH_STORAGE;
+        }
+
         $dbArr["documents"]["type"] = self::DOC_TYPE;
-        $dbArr["documents"]["date"] = date("Y-m-d H:i:s");
-        $dbArr["documents"]["storagemethod"] = self::STORAGE_METHOD;
+        $dbArr["documents"]["storagemethod"] = $storageMethod;
 
         $dbArr["documents"]["id"] = $FhirObject->id->getValue();
         $dbArr["documents"]["url"] = $FhirObject->content[0]->attachment->url->getValue();
@@ -61,7 +68,7 @@ class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingDa
         $dbArr["documents"]["encounter_id"] = explode("/", $FhirObject->context->encounter[0]->reference->getValue())[1];
         $dbArr['categories_to_documents']['document_id'] = $FhirObject->id->getValue();
         $dbArr["categories_to_documents"]["category_id"] = $FhirObject->category[0]->coding[0]->code->getValue();
-        $dbArr["couchdb"]["data"] = $FhirObject->content[0]->attachment->data->getValue();
+        $dbArr["storage"]["data"] = $FhirObject->content[0]->attachment->data->getValue();
 
         return $dbArr;
     }
@@ -77,7 +84,7 @@ class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingDa
         $this->FHIRDocumentReference->context->encounter[0]->reference->setValue("Encounter/{$dbData['encounterId']}");
         $this->FHIRDocumentReference->category[0]->coding[0]->code->setValue($dbData["categoryId"]);
         $this->FHIRDocumentReference->category[0]->coding[0]->display->setValue($dbData["categoryName"]);
-        $this->FHIRDocumentReference->content[0]->attachment->data->setValue($dbData["couchdbData"]);
+        $this->FHIRDocumentReference->content[0]->attachment->data->setValue($dbData["fileData"]);
 
         return $this->FHIRDocumentReference;
     }

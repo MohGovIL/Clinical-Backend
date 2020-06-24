@@ -7,10 +7,14 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Strategy;
 use GenericTools\Model\DocumentsTable;
 use GenericTools\Model\DocumentsCategoriesTable;
 use GenericTools\Service\CouchdbService;
+use GenericTools\Service\S3Service;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
 
 class DocumentReference extends Restful implements  Strategy
 {
+
+    const COUCHDB_STORAGE = 1;
+    const S3_STORAGE = 10;
 
     public function __construct($params=null)
     {
@@ -58,10 +62,25 @@ class DocumentReference extends Restful implements  Strategy
         }
         $documentsDataFromDb = $documentsDataFromDb[0];
 
-        //get data from couchdb
-        $couchdbService = new CouchdbService($this->getContainer());
-        $couchdbService->connect();
-        $documentsDataFromDb['couchdbData'] = $couchdbService->fetchDoc($documentsDataFromDb['couchDocId'], false);
+        $documentsDataFromDb['title'] = basename($documentsDataFromDb['url']);
+
+        if($GLOBALS['use_s3']) {
+            //get file from S3
+            $s3Service = new S3Service($this->getContainer());
+            $data = $s3Service->fetchObject($documentsDataFromDb['url']);
+            $encData = base64_encode($data);
+            $documentsDataFromDb['fileData'] = $encData;
+
+
+        }
+        else {
+            //get document from couchdb
+            $couchdbService = new CouchdbService($this->getContainer());
+            $couchdbService->connect();
+            $documentsDataFromDb['fileData'] = $couchdbService->fetchDoc($documentsDataFromDb['couchDocId'], false);
+        }
+
+        //TODO get basefile of $documentsDataFromDb['url']
 
         //convert data (fill empty object)
         $documentsObj = $this->mapping->DBToFhir($documentsDataFromDb);
@@ -95,8 +114,6 @@ class DocumentReference extends Restful implements  Strategy
         //get db connections
         $documentsTable = $this->container->get(DocumentsTable::class);
         $documentsCategoriesTable = $this->container->get(DocumentsCategoriesTable::class);
-        $couchdbService = new CouchdbService($this->getContainer());
-        $couchdbService->connect();
 
         $this->mapping->initFhirObject();
 
@@ -105,25 +122,33 @@ class DocumentReference extends Restful implements  Strategy
         $fhirDocumentReference = $this->mapping->parsedJsonToFhir($json);
         $dbStructuredData = $this->mapping->fhirToDb($fhirDocumentReference);
 
+        $creationDate = date("Y-m-d H:i:s");
+        $dbStructuredData['date'] = $creationDate;
+
         $valid = $this->mapping->validateDb($dbStructuredData);
         if(!$valid) {
             return self::$errorCodes::http_response_code(406);
         }
-        /*
-        // save to couchdb
-        In the new env couchdb not working and we will work with S3
-        Until it will develop the document will not saved
-        $couchdbIds = $couchdbService->saveDoc($dbStructuredData['couchdb']['data'], false);
-        if( $couchdbIds == false ) {
-            return self::$errorCodes::http_response_code(500);
+
+        if($GLOBALS['use_s3']) {
+            // save to S3
+            $creationDateUnixTs = strtotime($creationDate);
+            $dbStructuredData['documents']['url'] =
+                "s3://${GLOBALS['s3_bucket_name']}/${GLOBALS['s3_path']}/${dbStructuredData['documents']['url']}";
         }
-        */
-        // todo - replace it
-        $couchdbIds['id'] = 5;
-        $couchdbIds['rev']  = md5('string');
+        else {
+            // save to couchdb
+            $couchdbService = new CouchdbService($this->getContainer());
+            $couchdbService->connect();
+            $couchdbIds = $couchdbService->saveDoc($dbStructuredData['couchdb']['data'], false);
+            if ($couchdbIds == false) {
+                return self::$errorCodes::http_response_code(500);
+            }
+            $dbStructuredData['documents']['couch_docid'] = $couchdbIds['id'];
+            $dbStructuredData['documents']['couch_revid'] = $couchdbIds['rev'];
+        }
+
         // save to documents table
-        $dbStructuredData['documents']['couch_docid'] = $couchdbIds['id'];
-        $dbStructuredData['documents']['couch_revid'] = $couchdbIds['rev'];
         $inserted = $documentsTable->insert($dbStructuredData['documents']);
         if( $inserted == false ) {
             return self::$errorCodes::http_response_code(500);

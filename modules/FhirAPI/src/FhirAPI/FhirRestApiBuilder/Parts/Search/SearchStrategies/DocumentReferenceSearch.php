@@ -25,11 +25,14 @@ class DocumentReferenceSearch extends BaseSearch
         $documentsDataFromDb = $this->searchThisTable->buildGenericSelect($this->paramsToDB);
 
         if($summary !== "true") {
+            //TODO if S3  init S3 .. else
             $couchdbService = new CouchdbService($this->container);
             $couchdbService->connect();
         }
 
         foreach ($documentsDataFromDb as $key => $document) {
+            //TODO get basefile of $document['url'] into $document['title']
+            //TODO if S3 ... elseif ...
             if($couchdbService) {
                 $document['couchdbData'] = $couchdbService->fetchDoc($document['couchDocId'], false);
             }
