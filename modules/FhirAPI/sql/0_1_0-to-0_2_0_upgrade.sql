@@ -406,7 +406,7 @@ ALTER TABLE `form_encounter`
 ADD `secondary_status` VARCHAR(255) NULL AFTER `reason_codes_details`;
 #EndIf
 
-#IfMissingColumn form_encounter secondary_status
+#IfMissingColumn form_encounter status_update_date
 ALTER TABLE `form_encounter`
 ADD `status_update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `secondary_status`;
 #EndIf
