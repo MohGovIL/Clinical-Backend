@@ -14,8 +14,8 @@ use FhirAPI\FhirRestApiBuilder\Parts\Restful;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Strategy;
 /*************/
-
 use GenericTools\Model\ListsOpenEmrTable;
+use GenericTools\Model\FormVitalsTable;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRObservation;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRPatient;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
@@ -69,10 +69,11 @@ class Observation Extends Restful implements  Strategy
     public function read()
     {
         $eid=$this->paramsFromUrl[0];
-        $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
-        $condition =$listsOpenEmrTable->getDataByParams(array("id"=>intval($eid)));
 
-        if (!is_array($condition) || count($condition) != 1) {
+        $formVitalsTable = $this->container->get(FormVitalsTable::class);
+        $observation =$formVitalsTable->getDataByParams(array("id"=>intval($eid)));
+
+        if (!is_array($observation) || count($observation) != 1) {
             $FHIRBundle = new FHIRBundle;
             $code='404';
             $error=array(0=>array('code'=>'404','text'=>'record was not found'));
@@ -80,7 +81,7 @@ class Observation Extends Restful implements  Strategy
             return $errorBundle;
         }
         $this->mapping->initFhirObject();
-        $apt= $this->mapping->DBToFhir($condition[0], true);
+        $apt= $this->mapping->DBToFhir($observation[0], true);
         $this->mapping->initFhirObject();
         return $apt;
 

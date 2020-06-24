@@ -66,6 +66,9 @@ use GenericTools\Model\RelatedPerson;
 use GenericTools\Model\RelatedPersonTable;
 use GenericTools\Model\FormsGenericHandlerTable;
 //********************************************
+use GenericTools\Model\FormVitals;
+use GenericTools\Model\FormVitalsTable;
+
 
 
 
@@ -305,6 +308,16 @@ class Module
                     $table = new LogServiceTable($tableGateway);
                     return $table;
                 },
+                FormVitalsTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FormVitals());
+                    $tableGateway = new TableGateway('form_vitals', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FormVitalsTable($tableGateway);
+                    return $table;
+                },
+
+
             ),
         );
     }
