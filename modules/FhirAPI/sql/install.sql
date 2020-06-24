@@ -256,3 +256,11 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`,`mapping` ,`n
 ('loinc_org', '20564-1', 'Oxygen saturation in Blood', 130,'oxygen_saturation','%', 1),
 ('loinc_org', '74774-1', 'Glucose [Mass/volume] in Serum, Plasma or Blood', 140,'glucose','mg/dL', 1),
 ('loinc_org', '72514-3', 'Pain severity - 0-10 verbal numeric rating [Score] - Reported', 150,'pain_severity','', 1);
+
+
+
+ALTER TABLE `form_vitals`
+ADD `glucose` INT NULL AFTER `external_id`,
+ADD `pain_severity` INT NULL AFTER `glucose`,
+ADD `eid` INT NULL AFTER `pain_severity`,
+ADD `category` VARCHAR(255) NULL AFTER `eid`;

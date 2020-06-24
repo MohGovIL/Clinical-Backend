@@ -19,6 +19,7 @@ use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRObservation;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
 
+use OpenEMR\FHIR\R4\FHIRElement\FHIRObservationStatus;
 use function DeepCopy\deep_copy;
 
 class FhirObservationMapping extends FhirBaseMapping  implements MappingData
@@ -136,6 +137,23 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         $FhirId = $this->createFHIRId(null);
         $FHIRObservation->setId($FhirId);
 
+        $FHIRInstant = $this->createFHIRInstant(null,null);
+        $FHIRObservation->setIssued($FHIRInstant);
+
+        $FHIRReference=  $this->createFHIRReference(["reference" => null]);
+        $FHIRObservation->setSubject(deep_copy($FHIRReference));
+        $FHIRObservation->setEncounter(deep_copy($FHIRReference));
+        $FHIRObservation->addPerformer(deep_copy($FHIRReference));
+
+        $FHIRObservationStatus=$this->createFHIRObservationStatus();
+        $FHIRObservation->setStatus($FHIRObservationStatus);
+
+        $FHIRAnnotation = $this->createFHIRAnnotation(array());
+        $FHIRObservation->addNote($FHIRAnnotation);
+
+        $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+        $FHIRObservation->addCategory($FHIRCodeableConcept);
+
         $this->FHIRObservation=$FHIRObservation;
         return $FHIRObservation;
 
@@ -146,6 +164,44 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         $observationDataFromDb = $params[0];
         $FHIRObservation =$this->FHIRObservation;
         $FHIRObservation->getId()->setValue($observationDataFromDb['id']);
+
+        $FHIRInstant = $this->createFHIRInstant(null,null,$observationDataFromDb['date'])->getValue();
+        $FHIRObservation->getIssued()->setValue($FHIRInstant);
+
+        if(!is_null($observationDataFromDb['pid'])){
+            $uri = self::PATIENT_URI . $observationDataFromDb['pid'];
+            $FHIRSubjectString =$this->createFHIRString($uri);
+            $FHIRObservation->getSubject()->setReference($FHIRSubjectString);
+        }
+
+        if(!is_null($observationDataFromDb['user'])){
+            $uri = self::PRACTITIONER_URI . $observationDataFromDb['user'];
+            $FHIRPerformerString =$this->createFHIRString($uri);
+            $FHIRObservation->getPerformer()[0]->setReference($FHIRPerformerString);
+        }
+
+        if(!is_null($observationDataFromDb['eid'])){
+            $uri = self::ENCOUNTER_URI . $observationDataFromDb['eid'];
+            $FHIREncounterString =$this->createFHIRString($uri);
+            $FHIRObservation->getEncounter()->setReference($FHIREncounterString);
+        }
+
+
+        if(!is_null($observationDataFromDb['activity'])){
+            $FHIRObservation->getStatus()->setValue($observationDataFromDb['activity']);
+        }
+
+        if(!is_null($observationDataFromDb['note'])){
+            $FHIRObservation->getNote()[0]->setText($observationDataFromDb['note']);
+        }
+
+        if(!is_null($observationDataFromDb['category'])){
+            $FHIRObservation->getCategory()[0]->setText($observationDataFromDb['category']);
+        }
+
+
+
+
 
 
 
@@ -196,6 +252,26 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         //this never happens since ErrorCodes call to exit()
         return false;
     }
+
+
+    /**
+     * create FHIRObservationStatus
+     *
+     * @param string
+     *
+     * @return FHIRObservationStatus | null
+     */
+    public function createFHIRObservationStatus($code=null){
+        $FHIRObservationStatus= new FHIRObservationStatus;
+        if(!is_null($code)) {
+            $codeVal=$this->createFHIRCode($code)->getValue();
+            $FHIRObservationStatus->setValue($codeVal);
+        }
+        return $FHIRObservationStatus;
+
+    }
+
+
 
 
 }

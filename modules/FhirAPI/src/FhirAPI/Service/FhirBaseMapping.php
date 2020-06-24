@@ -71,6 +71,10 @@ class FhirBaseMapping
     private $fhirRequestParamsHandler = null;
 
     CONST   LIST_SYSTEM_LINK="http://clinikal/valueset/";
+    CONST   PATIENT_URI="Patient/";
+    CONST   PRACTITIONER_URI="Practitioner/";
+    CONST   ENCOUNTER_URI="Encounter/";
+
 
     use ConversionsTrait;
 
@@ -1215,6 +1219,7 @@ class FhirBaseMapping
         return $data;
 
     }
+
 
 
 }

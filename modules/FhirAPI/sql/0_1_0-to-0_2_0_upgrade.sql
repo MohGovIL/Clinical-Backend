@@ -445,3 +445,19 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`,`mapping` ,`n
 #IfNotRow fhir_rest_elements name Condition
 INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES ('Observation', 1);
 #EndIf
+
+#IfMissingColumn form_vitals glucose
+ALTER TABLE `form_vitals`  ADD `glucose` INT NULL AFTER `external_id`;
+#EndIf
+
+#IfMissingColumn form_vitals pain_severity
+ALTER TABLE `form_vitals` ADD `pain_severity` INT NULL AFTER `glucose`;
+#EndIf
+
+#IfMissingColumn form_vitals eid
+ALTER TABLE `form_vitals` ADD `eid` INT NULL AFTER `pain_severity`;
+#EndIf
+
+#IfMissingColumn form_vitals category
+ALTER TABLE `form_vitals` ADD `category` VARCHAR(255) NULL AFTER `eid`;
+#EndIf
