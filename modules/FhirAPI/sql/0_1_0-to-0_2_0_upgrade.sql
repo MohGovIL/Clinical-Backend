@@ -424,3 +424,6 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 VALUES
 ('lists', 'clinikal_app_secondary_statuses', 'Clinikal Appointment Secondary Statuses', 0, 0, 0, '', 'In Progress', '', 0, 0, 1, '', 1);
 #EndIf
+
+
+ALTER TABLE `encounter_reasoncode_map` CHANGE `reason_code` `reason_code` VARCHAR(255) NULL DEFAULT NULL;
