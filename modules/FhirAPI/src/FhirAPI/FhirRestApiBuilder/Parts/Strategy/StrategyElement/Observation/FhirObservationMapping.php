@@ -16,10 +16,14 @@ use GenericTools\Model\ListsTable;
 use Interop\Container\ContainerInterface;
 
 /*include FHIR*/
+
+use Laminas\Form\Annotation\Instance;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRObservation;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
 
 use OpenEMR\FHIR\R4\FHIRElement\FHIRObservationStatus;
+use OpenEMR\FHIR\R4\FHIRResource\FHIRObservation\FHIRObservationComponent;
+use phpDocumentor\Reflection\Types\Object_;
 use function DeepCopy\deep_copy;
 
 class FhirObservationMapping extends FhirBaseMapping  implements MappingData
@@ -28,9 +32,11 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
     private $container = null;
     private $FHIRObservation = null;
 
-    /*
-    private $outcomeTypes= array();
-    */
+    private $loincCodes= array();
+    private $lonicDbMappig= array();
+
+    CONST LONIC_ORG="loinc_org";
+    CONST LONIC_SYSTEM="http://loinc.org";
 
 
 
@@ -42,11 +48,11 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         $this->FHIRObservation = new FHIRObservation;
 
         $ListsTable = $this->container->get(ListsTable::class);
+        $listOutcome = $ListsTable->getList(self::LONIC_ORG);
 
-        /*
-        $listOutcome = $ListsTable->getListNormalized(self::OUTCOME_LIST);
-        $this->setOutcomeTypes($listOutcome);
-        */
+        $this->setLonicDbMappig($listOutcome);
+        $this->setLoincCodes($listOutcome);
+
 
 
     }
@@ -77,18 +83,36 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         return $this->FHIRObservation;
     }
 
-    /*
-    public function setOutcomeTypes($types)
+    public function setLonicDbMappig($list)
     {
-        $this->outcomeTypes=$types;
-        return $this->outcomeTypes;
+        foreach($list as $code =>$dataArr){
+            $this->lonicDbMappig[$code]=$dataArr['mapping'];
+        }
+        return $this->lonicDbMappig;
     }
 
-    public function getOutcomeTypes()
+    public function getLonicToDbMappig()
     {
-        return $this->outcomeTypes;
+        return $this->lonicDbMappig;
     }
-    */
+
+    public function getDbToLonicMappig()
+    {
+        return array_flip($this->lonicDbMappig);
+    }
+
+
+    public function setLoincCodes($types)
+    {
+        $this->loincCodes=$types;
+        return $this->loincCodes;
+    }
+
+    public function getLoincCodes()
+    {
+        return $this->loincCodes;
+    }
+
 
 
 
@@ -154,6 +178,9 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
         $FHIRObservation->addCategory($FHIRCodeableConcept);
 
+        $FHIRObservationComponent =$this->createFHIRObservationComponent(null,null);
+        $FHIRObservation->addComponent($FHIRObservationComponent);
+
         $this->FHIRObservation=$FHIRObservation;
         return $FHIRObservation;
 
@@ -200,8 +227,19 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         }
 
 
+        $DbToLonicMappig=$this->getDbToLonicMappig();
+
+        foreach ($DbToLonicMappig as $dbField => $code){
+            if(is_numeric($observationDataFromDb[$dbField])){
+                $FHIRElm=$this->createFHIRQuantity(array("code"=>$code,"value"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM));
+            }else{
+                $FHIRElm=$this->createFHIRCodeableConcept(array("code"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM."/".$code));
+            }
+            $FHIRObservationComponent =$this->createFHIRObservationComponent($FHIRElm,null);
+            $FHIRObservation->addComponent($FHIRObservationComponent);
 
 
+        }
 
 
 
@@ -270,6 +308,44 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         return $FHIRObservationStatus;
 
     }
+
+    /**
+     * create FHIRObservationStatus
+     *
+     * @param Instance
+     * @param string
+     *
+     * @return FHIRObservationComponent | null
+     */
+    public function createFHIRObservationComponent( $fhirElm=null,$code=null){
+        $FHIRObservationComponent= new FHIRObservationComponent;
+        //resourceType
+
+        if(is_object($fhirElm)){
+            $fhirElementName=$fhirElm->get_fhirElementName();
+            $methodName="setValue".$fhirElementName;
+        }else{
+            $fhirElementName="";
+            $methodName=null;
+        }
+
+
+        if(!is_null($fhirElm) && method_exists($FHIRObservationComponent,$methodName)){
+            $FHIRObservationComponent->$methodName($fhirElm);
+        }else{
+            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+            $FHIRObservationComponent->setValueCodeableConcept($FHIRCodeableConcept);
+            $FHIRQuantity=$this->createFHIRQuantity(array());
+            $FHIRObservationComponent->setValueQuantity($FHIRQuantity);
+        }
+
+        $FHIRObservationComponent->setCode($code);
+
+        return $FHIRObservationComponent;
+
+    }
+
+
 
 
 

@@ -12,6 +12,7 @@ use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRElement;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRDecimal;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRExtension;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAnnotation;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRId;
@@ -25,6 +26,7 @@ use OpenEMR\FHIR\R4\FHIRElement\FHIRIssueSeverity;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRIssueType;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRNarrative;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRNarrativeStatus;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRQuantity;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRString;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAddress;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRCode;
@@ -1187,6 +1189,54 @@ class FhirBaseMapping
         }
 
         return $FHIRAnnotation;
+    }
+
+
+    /**
+     * create FHIRQuantity
+     *
+     * @param string
+     *
+     * @return FHIRDecimal | null
+     */
+    public function createFHIRDecimal($value)
+    {
+        $FHIRDecimal = new FHIRDecimal;
+
+        if (empty($value)) {
+            return $FHIRDecimal;
+        }
+
+        $this->fhirRequestParamsHandler::checkByPreg($value, 'decimal', 'ALLOW_NULL_ERROR');
+        $FHIRDecimal->setValue($value);
+
+        return $FHIRDecimal;
+    }
+
+    /**
+     * create FHIRQuantity
+     *
+     * @param array
+     *
+     * @return FHIRQuantity | null
+     */
+    public function createFHIRQuantity(array $quantityArr)
+    {
+        $FHIRQuantity = new FHIRQuantity;
+
+        $FHIRCode= $this->createFHIRCode($quantityArr['code']);
+        $FHIRQuantity->setCode($FHIRCode);
+
+        $FHIRDecimal= $this->createFHIRDecimal($quantityArr['value']);
+        $FHIRQuantity->setValue($FHIRDecimal);
+
+        $FHIRUri=$this->createFHIRUri($quantityArr['system']);
+        $FHIRQuantity->setSystem($FHIRUri);
+
+        $FHIRString=$this->createFHIRString($quantityArr['unit']);
+        $FHIRQuantity->setUnit($FHIRString);
+
+        return $FHIRQuantity;
     }
 
 
