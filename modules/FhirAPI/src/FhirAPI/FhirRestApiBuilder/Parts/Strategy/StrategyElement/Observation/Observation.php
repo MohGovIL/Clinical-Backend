@@ -95,19 +95,20 @@ class Observation Extends Restful implements  Strategy
      */
     public function search()
     {
-        /*
+
         $paramsToSearch = array(
-            'tableToSearchOnOrm'=>$this->container->get(ListsOpenEmrTable::class),
-            'fhirObj'=>new FhirConditionMapping($this->container),
+            'tableToSearchOnOrm'=>$this->container->get(FormVitalsTable::class),
+            'fhirObj'=>new FhirObservationMapping($this->container),
             'paramsToSearch'=>null,
             'container'=>$this->container,
             'paramsFromUrl'=>$this->paramsFromUrl,
             'paramsFromBody'=>$this->paramsFromBody,
-            'buildThisSearch' => self::SEARCHSTRATEGYPATH . 'ConditionSearch'
+            'buildThisSearch' => self::SEARCHSTRATEGYPATH . 'ObservationSearch'
         );
+
         $searchContext = new SearchContext($paramsToSearch);
         return $searchContext->doSearch();
-        */
+
     }
 
     public function create()
@@ -136,12 +137,9 @@ class Observation Extends Restful implements  Strategy
 
     public function update()
     {
-
-         /*
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
         $eid =$this->paramsFromUrl[0];
         return $this->mapping->updateDbData($dbData,$eid);
-         */
     }
 
     /**

@@ -164,8 +164,13 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
 
         foreach($components as $index => $comp){
 
-            $code=$comp->getValueCodeableConcept()->getCoding()[0]->getCode();
-            $codeVal=$code->getValue();
+            $code=$comp->getValueCodeableConcept()->getCoding()[0];
+            $codeVal=$code->getCode()->getValue();
+            if(!is_null($codeVal)){
+                $system=$code->getSystem()->getValue();
+                $lonicCode=substr($system, strrpos($system, '/') + 1);
+                $dbObservation[$LonicToDbMappig[$lonicCode]]=$codeVal;
+            }
 
             $Quantity=$comp->getValueQuantity()->getValue();
             $QuantityVal=$Quantity->getValue();
@@ -303,7 +308,6 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
     public function getDbDataFromRequest($data)
     {
         $this->initFhirObject();
-        //$FHIRAppointment = $this->parsedJsonToFHIR($data);
         $this->arrayToFhirObject($this->FHIRObservation,$data);
         $dBdata = $this->fhirToDb($this->FHIRObservation);
         return $dBdata;
