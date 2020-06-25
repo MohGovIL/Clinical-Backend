@@ -112,19 +112,16 @@ class Observation Extends Restful implements  Strategy
 
     public function create()
     {
-
-        /*
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
-        $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
+        $formVitalsTable = $this->container->get(FormVitalsTable::class);
         $flag=$this->mapping->validateDb($dbData);
         if($flag){
             unset($dbData['id']);
-            $dbData['reaction']= is_null($dbData['reaction']) ? "" : $dbData['reaction'];
-            $rez=$listsOpenEmrTable->safeInsert($dbData,'id');
+            $rez=$formVitalsTable->safeInsert($dbData,'id');
             if(is_array($rez)){
-                $patient=$this->mapping->DBToFhir($rez);
-                return $patient;
+                $observation=$this->mapping->DBToFhir($rez);
+                return $observation;
             }else{ //insert failed
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
@@ -133,7 +130,7 @@ class Observation Extends Restful implements  Strategy
         }
         //this never happens since ErrorCodes call to exit()
         return false;
-        */
+
 
     }
 

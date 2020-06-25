@@ -1224,16 +1224,20 @@ class FhirBaseMapping
     {
         $FHIRQuantity = new FHIRQuantity;
 
-        $FHIRCode= $this->createFHIRCode($quantityArr['code']);
+        $code= key_exists('code',$quantityArr) ? $quantityArr['code'] : null;
+        $FHIRCode= $this->createFHIRCode($code);
         $FHIRQuantity->setCode($FHIRCode);
 
-        $FHIRDecimal= $this->createFHIRDecimal($quantityArr['value']);
+        $value= key_exists('value',$quantityArr) ? $quantityArr['value'] : null;
+        $FHIRDecimal= $this->createFHIRDecimal($value);
         $FHIRQuantity->setValue($FHIRDecimal);
 
-        $FHIRUri=$this->createFHIRUri($quantityArr['system']);
+        $system= key_exists('system',$quantityArr) ? $quantityArr['system'] : null;
+        $FHIRUri=$this->createFHIRUri($system);
         $FHIRQuantity->setSystem($FHIRUri);
 
-        $FHIRString=$this->createFHIRString($quantityArr['unit']);
+        $unit= key_exists('unit',$quantityArr) ? $quantityArr['unit'] : null;
+        $FHIRString=$this->createFHIRString($unit);
         $FHIRQuantity->setUnit($FHIRString);
 
         return $FHIRQuantity;

@@ -126,19 +126,63 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
      */
     public function fhirToDb($FHIRObservation)
     {
-        $dbCondition = array();
+        $dbObservation = array();
 
-        $dbCondition['id']=$FHIRObservation->getId()->getValue();
+        $dbObservation['id']=$FHIRObservation->getId()->getValue();
 
+        $FHIRdate= $FHIRObservation->getIssued()->getValue();
+        $dbObservation['date']= $this->convertToDateTime($FHIRdate);
 
-        return $dbCondition;
+        $pidRef=$FHIRObservation->getSubject()->getReference()->getValue();
+        if (strpos($pidRef, self::PATIENT_URI) !== false ) {
+            $dbObservation['pid']= (!empty($pidRef)) ? substr($pidRef,strlen(self::PATIENT_URI),20) : null;
+        }else{
+            $dbObservation['pid']=null;
+        }
+
+        $userRef=$FHIRObservation->getPerformer()[0]->getReference()->getValue();
+        if (strpos($userRef, self::PRACTITIONER_URI) !== false ) {
+            $dbObservation['user']= (!empty($userRef)) ? substr($userRef,strlen(self::PRACTITIONER_URI),20) : null;
+        }else{
+            $dbObservation['user']=null;
+        }
+
+        $eidRef=$FHIRObservation->getEncounter()->getReference()->getValue();
+        if (strpos($eidRef, self::ENCOUNTER_URI) !== false ) {
+            $dbObservation['eid']= (!empty($eidRef)) ? substr($eidRef,strlen(self::ENCOUNTER_URI),20) : null;
+        }else{
+            $dbObservation['eid'] = null;
+        }
+
+        $dbObservation['activity'] =  $FHIRObservation->getStatus()->getValue();
+        $dbObservation['note'] = $FHIRObservation->getNote()[0]->getText()->getValue();
+        $dbObservation['category'] = $FHIRObservation->getCategory()[0]->getText()->getValue();
+
+        $components=$FHIRObservation->getComponent();
+
+        $LonicToDbMappig=$this->getLonicToDbMappig();
+
+        foreach($components as $index => $comp){
+
+            $code=$comp->getValueCodeableConcept()->getCoding()[0]->getCode();
+            $codeVal=$code->getValue();
+
+            $Quantity=$comp->getValueQuantity()->getValue();
+            $QuantityVal=$Quantity->getValue();
+            if(!is_null($QuantityVal)){
+                $lonicCode=$comp->getValueQuantity()->getCode()->getValue();
+                $dbObservation[$LonicToDbMappig[$lonicCode]]=$QuantityVal;
+            }
+        }
+
+        return $dbObservation;
     }
 
     /**
      * create FHIRObservation
      *
      * @param  string
-     * @return FHIRObservation
+     * @return array
      * @throws
      */
 
@@ -146,7 +190,6 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
     public function parsedJsonToDb($parsedData)
     {
         $dbObservation = array();
-
         return $dbObservation;
     }
 
@@ -190,58 +233,56 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
     {
         $observationDataFromDb = $params[0];
         $FHIRObservation =$this->FHIRObservation;
-        $FHIRObservation->getId()->setValue($observationDataFromDb['id']);
 
-        $FHIRInstant = $this->createFHIRInstant(null,null,$observationDataFromDb['date'])->getValue();
-        $FHIRObservation->getIssued()->setValue($FHIRInstant);
+        if(!empty($observationDataFromDb)){
 
-        if(!is_null($observationDataFromDb['pid'])){
-            $uri = self::PATIENT_URI . $observationDataFromDb['pid'];
-            $FHIRSubjectString =$this->createFHIRString($uri);
-            $FHIRObservation->getSubject()->setReference($FHIRSubjectString);
-        }
+            $FHIRObservation->getId()->setValue($observationDataFromDb['id']);
 
-        if(!is_null($observationDataFromDb['user'])){
-            $uri = self::PRACTITIONER_URI . $observationDataFromDb['user'];
-            $FHIRPerformerString =$this->createFHIRString($uri);
-            $FHIRObservation->getPerformer()[0]->setReference($FHIRPerformerString);
-        }
+            $FHIRInstant = $this->createFHIRInstant(null,null,$observationDataFromDb['date'])->getValue();
+            $FHIRObservation->getIssued()->setValue($FHIRInstant);
 
-        if(!is_null($observationDataFromDb['eid'])){
-            $uri = self::ENCOUNTER_URI . $observationDataFromDb['eid'];
-            $FHIREncounterString =$this->createFHIRString($uri);
-            $FHIRObservation->getEncounter()->setReference($FHIREncounterString);
-        }
-
-
-        if(!is_null($observationDataFromDb['activity'])){
-            $FHIRObservation->getStatus()->setValue($observationDataFromDb['activity']);
-        }
-
-        if(!is_null($observationDataFromDb['note'])){
-            $FHIRObservation->getNote()[0]->setText($observationDataFromDb['note']);
-        }
-
-        if(!is_null($observationDataFromDb['category'])){
-            $FHIRObservation->getCategory()[0]->setText($observationDataFromDb['category']);
-        }
-
-
-        $DbToLonicMappig=$this->getDbToLonicMappig();
-
-        foreach ($DbToLonicMappig as $dbField => $code){
-            if(is_numeric($observationDataFromDb[$dbField])){
-                $FHIRElm=$this->createFHIRQuantity(array("code"=>$code,"value"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM));
-            }else{
-                $FHIRElm=$this->createFHIRCodeableConcept(array("code"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM."/".$code));
+            if(!is_null($observationDataFromDb['pid'])){
+                $uri = self::PATIENT_URI . $observationDataFromDb['pid'];
+                $FHIRSubjectString =$this->createFHIRString($uri);
+                $FHIRObservation->getSubject()->setReference($FHIRSubjectString);
             }
-            $FHIRObservationComponent =$this->createFHIRObservationComponent($FHIRElm,null);
-            $FHIRObservation->addComponent($FHIRObservationComponent);
 
+            if(!is_null($observationDataFromDb['user'])){
+                $uri = self::PRACTITIONER_URI . $observationDataFromDb['user'];
+                $FHIRPerformerString =$this->createFHIRString($uri);
+                $FHIRObservation->getPerformer()[0]->setReference($FHIRPerformerString);
+            }
 
+            if(!is_null($observationDataFromDb['eid'])){
+                $uri = self::ENCOUNTER_URI . $observationDataFromDb['eid'];
+                $FHIREncounterString =$this->createFHIRString($uri);
+                $FHIRObservation->getEncounter()->setReference($FHIREncounterString);
+            }
+
+            if(!is_null($observationDataFromDb['activity'])){
+                $FHIRObservation->getStatus()->setValue($observationDataFromDb['activity']);
+            }
+
+            if(!is_null($observationDataFromDb['note'])){
+                $FHIRObservation->getNote()[0]->setText($observationDataFromDb['note']);
+            }
+
+            if(!is_null($observationDataFromDb['category'])){
+                $FHIRObservation->getCategory()[0]->setText($observationDataFromDb['category']);
+            }
+
+            $DbToLonicMappig=$this->getDbToLonicMappig();
+
+            foreach ($DbToLonicMappig as $dbField => $code){
+                if(is_numeric($observationDataFromDb[$dbField])){
+                    $FHIRElm=$this->createFHIRQuantity(array("code"=>$code,"value"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM));
+                }else{
+                    $FHIRElm=$this->createFHIRCodeableConcept(array("code"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM."/".$code));
+                }
+                $FHIRObservationComponent =$this->createFHIRObservationComponent($FHIRElm,null);
+                $FHIRObservation->addComponent($FHIRObservationComponent);
+            }
         }
-
-
 
         $this->FHIRObservation=$FHIRObservation;
 
