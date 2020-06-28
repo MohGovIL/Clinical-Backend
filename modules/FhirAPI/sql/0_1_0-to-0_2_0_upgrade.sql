@@ -419,10 +419,10 @@ VALUES
 ('lists', 'clinikal_enc_statuses', 'Clinikal Encounter Statuses', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
 #EndIf
 
-#IfNotRow2D list_options list_id lists option_id clinikal_app_secondary_statuses
+#IfNotRow2D list_options list_id lists option_id clinikal_enc_secondary_statuses
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`)
 VALUES
-('lists', 'clinikal_app_secondary_statuses', 'Clinikal Appointment Secondary Statuses', 0, 0, 0, '', 'In Progress', '', 0, 0, 1, '', 1);
+('lists', 'clinikal_enc_secondary_statuses', 'Clinikal Appointment Secondary Statuses', 0, 0, 0, '', 'In Progress', '', 0, 0, 1, '', 1);
 #EndIf
 
 
