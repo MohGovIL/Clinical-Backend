@@ -427,3 +427,11 @@ VALUES
 
 
 ALTER TABLE `encounter_reasoncode_map` CHANGE `reason_code` `reason_code` VARCHAR(255) NULL DEFAULT NULL;
+
+
+
+#IfRow2D list_options list_id lists option_id clinikal_app_secondary_statuses
+
+DELETE FROM list_options WHERE list_id = "clinikal_app_secondary_statuses" OR option_id ="clinikal_app_secondary_statuses";
+
+#EndIf
