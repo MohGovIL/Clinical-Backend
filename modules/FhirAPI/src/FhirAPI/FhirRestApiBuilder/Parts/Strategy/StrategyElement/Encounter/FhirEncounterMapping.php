@@ -201,7 +201,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         }
 
 
-       if(isset($encounter["reason_code"]) && intval($encounter["reason_code"]) > 0){
+       if(isset($encounter["reason_code"])){
 
            $reasons_codes =explode(",",$encounter["reason_code"]);
            $reasons_codes_titles =explode(",",$encounter["reason_code_title"]);

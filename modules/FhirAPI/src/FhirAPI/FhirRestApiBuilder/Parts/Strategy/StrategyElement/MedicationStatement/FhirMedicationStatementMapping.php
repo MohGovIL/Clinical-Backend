@@ -138,19 +138,26 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $period = $FHIRMedicationStatement->getEffectivePeriod();
 
-        $medicationStatementDataFromDb['begdate'] = $period->getStart();
+        $medicationStatementDataFromDb['begdate'] = $period->getStart()->getValue();;
 
-        $medicationStatementDataFromDb['enddate'] = $period->getEnd();
+        $medicationStatementDataFromDb['enddate'] = $period->getEnd()->getValue();;
 
-        $medicationStatementDataFromDb['date'] = $FHIRMedicationStatement->getDateAsserted();
+        $medicationStatementDataFromDb['date'] = $FHIRMedicationStatement->getDateAsserted()->getValue();;
 
         $code = $FHIRMedicationStatement->getMedicationCodeableConcept()->getCoding()[0];
         $medicationCode = $code->getCode()->getValue();
         $medicationSystem = $code->getSystem()->getValue();
+        $medicationSystem = substr($medicationSystem, strrpos($medicationSystem, '/') + 1);
+
         if (!is_null($medicationCode) && !is_null($medicationSystem)) {
             $medicationStatementDataFromDb['diagnosis'] = $medicationSystem . ":" . $medicationCode;
         } else {
             $medicationStatementDataFromDb['diagnosis'] = null;
+        }
+
+        $pidRef = $FHIRMedicationStatement->getSubject()->getReference()->getValue();
+        if (!is_null($pidRef) && $pidRef !== "") {
+            $medicationStatementDataFromDb['pid'] = substr($pidRef, strrpos($pidRef, '/') + 1);
         }
 
         $userRef = $FHIRMedicationStatement->getInformationSource()->getReference()->getValue();
@@ -158,7 +165,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
             $medicationStatementDataFromDb['user'] = substr($userRef, strrpos($userRef, '/') + 1);
         }
 
-        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText();
+        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText()->getValue();;
 
         return $medicationStatementDataFromDb;
     }
