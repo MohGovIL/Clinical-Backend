@@ -13,8 +13,6 @@ class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingDa
 {
     const DOC_TYPE = "file_url";
     const CURRENT_STATUS = "current";
-    const S3_STORAGE = 10;
-    const COUCH_STORAGE = 1;
 
     private $adapter = null;
     private $container = null;
@@ -51,10 +49,10 @@ class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingDa
         );
 
         if($GLOBALS['use_s3']) {
-            $storageMethod = self::S3_STORAGE;
+            $storageMethod = DocumentReference::S3_STORAGE;
         }
         else {
-            $storageMethod = self::COUCH_STORAGE;
+            $storageMethod = DocumentReference::COUCH_STORAGE;
         }
 
         $dbArr["documents"]["type"] = self::DOC_TYPE;

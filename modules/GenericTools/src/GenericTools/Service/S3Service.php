@@ -31,21 +31,13 @@ class S3Service
         }
     }
 
-    public function saveDoc($data, $encoded = true)
+    public function saveObject($data, $url)
     {
-        if($encoded) {
-            $data =  base64_encode($data);
-        }
         try {
-            $couch  = $this->connection->postDocument(array(
-                'data' => $data,
-                'encounter' => '',
-                'mimetype' => 'application/pdf',
-                'pid' => isset($_SESSION['pid']) ? $_SESSION['pid'] : ''
-            ));
-            return array('id' => $couch[0], 'rev' => $couch[1]);
-        } catch (HTTPException $e) {
-            error_log('Save doc error : ' . json_encode((array)$e));
+            $result = file_put_contents($url, $data);
+            return $result;
+        }catch (AwsException $e) {
+            echo $e->getMessage() . "\n";
             return false;
         }
     }

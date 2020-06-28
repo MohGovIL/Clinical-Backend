@@ -62,16 +62,19 @@ class DocumentReference extends Restful implements  Strategy
         }
         $documentsDataFromDb = $documentsDataFromDb[0];
 
-        $documentsDataFromDb['title'] = basename($documentsDataFromDb['url']);
+        $fullUrl = $documentsDataFromDb['url'];
+
+        // get the displayable file name (in case url is a full path or has the unix ts prefixed to it)
+        $creationDateUnixTs = strtotime($documentsDataFromDb['date']);
+        $documentsDataFromDb['url'] = ltrim(basename($documentsDataFromDb['url']), $creationDateUnixTs . "_");
 
         if($GLOBALS['use_s3']) {
             //get file from S3
             $s3Service = new S3Service($this->getContainer());
-            $data = $s3Service->fetchObject($documentsDataFromDb['url']);
+            $s3Service->connect();
+            $data = $s3Service->fetchObject($fullUrl);
             $encData = base64_encode($data);
             $documentsDataFromDb['fileData'] = $encData;
-
-
         }
         else {
             //get document from couchdb
@@ -79,8 +82,6 @@ class DocumentReference extends Restful implements  Strategy
             $couchdbService->connect();
             $documentsDataFromDb['fileData'] = $couchdbService->fetchDoc($documentsDataFromDb['couchDocId'], false);
         }
-
-        //TODO get basefile of $documentsDataFromDb['url']
 
         //convert data (fill empty object)
         $documentsObj = $this->mapping->DBToFhir($documentsDataFromDb);
@@ -133,14 +134,25 @@ class DocumentReference extends Restful implements  Strategy
         if($GLOBALS['use_s3']) {
             // save to S3
             $creationDateUnixTs = strtotime($creationDate);
-            $dbStructuredData['documents']['url'] =
-                "s3://${GLOBALS['s3_bucket_name']}/${GLOBALS['s3_path']}/${dbStructuredData['documents']['url']}";
+            $dbStructuredData['documents']['url'] = $this->createS3Url(
+                $GLOBALS['s3_bucket_name'],
+                $GLOBALS['s3_path'],
+                $dbStructuredData['documents']['url'],
+                $creationDateUnixTs
+            );
+            $s3Service = new S3Service($this->getContainer());
+            $s3Service->connect();
+            $decoData = base64_decode($dbStructuredData['storage']['data']);
+            $result = $s3Service->saveObject($fullUrl, $decoData);
+            if ($result == false) {
+                return self::$errorCodes::http_response_code(500);
+            }
         }
         else {
             // save to couchdb
             $couchdbService = new CouchdbService($this->getContainer());
             $couchdbService->connect();
-            $couchdbIds = $couchdbService->saveDoc($dbStructuredData['couchdb']['data'], false);
+            $couchdbIds = $couchdbService->saveDoc($dbStructuredData['storage']['data'], false);
             if ($couchdbIds == false) {
                 return self::$errorCodes::http_response_code(500);
             }
@@ -205,5 +217,18 @@ class DocumentReference extends Restful implements  Strategy
 
         }
 
+    }
+
+    private function createS3Url($bucket, $path, $filename, $unixtime)
+    {
+        $separator = "_";
+        return "s3://${$bucket}/${$path}/${unixtime}${separator}${filename}";
+    }
+
+    private function parseS3Url($url)
+    {
+        $url = ltrim($url, "s3://");
+        $arr = explode("/", $url);
+        return $arr;
     }
 }

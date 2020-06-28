@@ -5,6 +5,7 @@ namespace FhirAPI\FhirRestApiBuilder\Parts\Search\SearchStrategies;
 
 use GenericTools\Model\UtilsTraits\JoinBuilder;
 use GenericTools\Service\CouchdbService;
+use GenericTools\Service\S3Service;
 use OpenEMR\FHIR\R4\FHIRResourceContainer;
 
 class DocumentReferenceSearch extends BaseSearch
@@ -25,16 +26,30 @@ class DocumentReferenceSearch extends BaseSearch
         $documentsDataFromDb = $this->searchThisTable->buildGenericSelect($this->paramsToDB);
 
         if($summary !== "true") {
-            //TODO if S3  init S3 .. else
-            $couchdbService = new CouchdbService($this->container);
-            $couchdbService->connect();
+            if($GLOBALS['use_s3']) {
+                $s3Service = new S3Service($this->getContainer());
+                $s3Service->connect();
+            }
+            else {
+                $couchdbService = new CouchdbService($this->container);
+                $couchdbService->connect();
+            }
         }
 
         foreach ($documentsDataFromDb as $key => $document) {
-            //TODO get basefile of $document['url'] into $document['title']
-            //TODO if S3 ... elseif ...
-            if($couchdbService) {
-                $document['couchdbData'] = $couchdbService->fetchDoc($document['couchDocId'], false);
+            $fullUrl = $document['url'];
+
+            // get the displayable file name (in case url is a full path or has the unix ts prefixed to it)
+            $creationDateUnixTs = strtotime($document['date']);
+            $document['url'] = ltrim(basename($document['url']), $creationDateUnixTs . "_");
+
+            if($s3Service) {
+                $data = $s3Service->fetchObject($fullUrl);
+                $encData = base64_encode($data);
+                $document['fileData'] = $encData;
+            }
+            elseif($couchdbService) {
+                $document['fileData'] = $couchdbService->fetchDoc($document['couchDocId'], false);
             }
             $this->fhirObj->initFhirObject();
             $FHIRResourceContainer = new FHIRResourceContainer($this->fhirObj->DBToFhir($document));
