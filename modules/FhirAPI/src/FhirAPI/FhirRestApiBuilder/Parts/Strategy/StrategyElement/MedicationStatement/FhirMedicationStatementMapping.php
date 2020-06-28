@@ -147,10 +147,17 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         $code = $FHIRMedicationStatement->getMedicationCodeableConcept()->getCoding()[0];
         $medicationCode = $code->getCode()->getValue();
         $medicationSystem = $code->getSystem()->getValue();
+        $medicationSystem = substr($medicationSystem, strrpos($medicationSystem, '/') + 1);
+
         if (!is_null($medicationCode) && !is_null($medicationSystem)) {
             $medicationStatementDataFromDb['diagnosis'] = $medicationSystem . ":" . $medicationCode;
         } else {
             $medicationStatementDataFromDb['diagnosis'] = null;
+        }
+
+        $pidRef = $FHIRMedicationStatement->getSubject()->getReference()->getValue();
+        if (!is_null($pidRef) && $pidRef !== "") {
+            $medicationStatementDataFromDb['pid'] = substr($pidRef, strrpos($pidRef, '/') + 1);
         }
 
         $userRef = $FHIRMedicationStatement->getInformationSource()->getReference()->getValue();
