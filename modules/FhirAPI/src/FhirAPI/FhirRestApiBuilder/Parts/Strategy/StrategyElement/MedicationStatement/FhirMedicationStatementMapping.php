@@ -138,11 +138,11 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $period = $FHIRMedicationStatement->getEffectivePeriod();
 
-        $medicationStatementDataFromDb['begdate'] = $period->getStart();
+        $medicationStatementDataFromDb['begdate'] = $period->getStart()->getValue();;
 
-        $medicationStatementDataFromDb['enddate'] = $period->getEnd();
+        $medicationStatementDataFromDb['enddate'] = $period->getEnd()->getValue();;
 
-        $medicationStatementDataFromDb['date'] = $FHIRMedicationStatement->getDateAsserted();
+        $medicationStatementDataFromDb['date'] = $FHIRMedicationStatement->getDateAsserted()->getValue();;
 
         $code = $FHIRMedicationStatement->getMedicationCodeableConcept()->getCoding()[0];
         $medicationCode = $code->getCode()->getValue();
@@ -158,7 +158,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
             $medicationStatementDataFromDb['user'] = substr($userRef, strrpos($userRef, '/') + 1);
         }
 
-        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText();
+        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText()->getValue();;
 
         return $medicationStatementDataFromDb;
     }
