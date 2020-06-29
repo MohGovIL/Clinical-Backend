@@ -13,7 +13,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
 class DocumentReference extends Restful implements  Strategy
 {
 
-    const COUCHDB_STORAGE = 1;
+    const COUCH_STORAGE = 1;
     const S3_STORAGE = 10;
 
     public function __construct($params=null)
@@ -68,7 +68,11 @@ class DocumentReference extends Restful implements  Strategy
         $creationDateUnixTs = strtotime($documentsDataFromDb['date']);
         $documentsDataFromDb['url'] = ltrim(basename($documentsDataFromDb['url']), $creationDateUnixTs . "_");
 
-        if($GLOBALS['use_s3']) {
+        if (
+            $GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE
+            &&
+            $documentsDataFromDb['storageMethod'] == S3Service::STORAGE_METHOD_CODE
+        ) {
             //get file from S3
             $s3Service = new S3Service($this->getContainer());
             $s3Service->connect();
@@ -76,7 +80,11 @@ class DocumentReference extends Restful implements  Strategy
             $encData = base64_encode($data);
             $documentsDataFromDb['fileData'] = $encData;
         }
-        else {
+        elseif (
+            $GLOBALS['clinikal_storage_method'] == CouchdbService::STORAGE_METHOD_CODE
+            &&
+            $documentsDataFromDb['storageMethod'] == CouchdbService::STORAGE_METHOD_CODE
+        ) {
             //get document from couchdb
             $couchdbService = new CouchdbService($this->getContainer());
             $couchdbService->connect();
@@ -124,14 +132,18 @@ class DocumentReference extends Restful implements  Strategy
         $dbStructuredData = $this->mapping->fhirToDb($fhirDocumentReference);
 
         $creationDate = date("Y-m-d H:i:s");
-        $dbStructuredData['date'] = $creationDate;
+        $dbStructuredData['documents']['date'] = $creationDate;
 
         $valid = $this->mapping->validateDb($dbStructuredData);
         if(!$valid) {
             return self::$errorCodes::http_response_code(406);
         }
 
-        if($GLOBALS['use_s3']) {
+        if (
+            $GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE
+            &&
+            $dbStructuredData['documents']['storagemethod'] == S3Service::STORAGE_METHOD_CODE
+        ) {
             // save to S3
             $creationDateUnixTs = strtotime($creationDate);
             $dbStructuredData['documents']['url'] = $this->createS3Url(
@@ -143,12 +155,16 @@ class DocumentReference extends Restful implements  Strategy
             $s3Service = new S3Service($this->getContainer());
             $s3Service->connect();
             $decoData = base64_decode($dbStructuredData['storage']['data']);
-            $result = $s3Service->saveObject($fullUrl, $decoData);
+            $result = $s3Service->saveObject($dbStructuredData['documents']['url'], $decoData);
             if ($result == false) {
                 return self::$errorCodes::http_response_code(500);
             }
         }
-        else {
+        elseif (
+            $GLOBALS['clinikal_storage_method'] == CouchdbService::STORAGE_METHOD_CODE
+            &&
+            $dbStructuredData['documents']['storageMethod'] == CouchdbService::STORAGE_METHOD_CODE
+        ) {
             // save to couchdb
             $couchdbService = new CouchdbService($this->getContainer());
             $couchdbService->connect();
@@ -222,7 +238,7 @@ class DocumentReference extends Restful implements  Strategy
     private function createS3Url($bucket, $path, $filename, $unixtime)
     {
         $separator = "_";
-        return "s3://${$bucket}/${$path}/${unixtime}${separator}${filename}";
+        return "s3://${bucket}/${path}/${unixtime}${separator}${filename}";
     }
 
     private function parseS3Url($url)

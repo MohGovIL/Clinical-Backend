@@ -26,11 +26,11 @@ class DocumentReferenceSearch extends BaseSearch
         $documentsDataFromDb = $this->searchThisTable->buildGenericSelect($this->paramsToDB);
 
         if($summary !== "true") {
-            if($GLOBALS['use_s3']) {
-                $s3Service = new S3Service($this->getContainer());
+            if($GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE) {
+                $s3Service = new S3Service($this->container);
                 $s3Service->connect();
             }
-            else {
+            elseif ($GLOBALS['clinikal_storage_method'] == CouchdbService::STORAGE_METHOD_CODE) {
                 $couchdbService = new CouchdbService($this->container);
                 $couchdbService->connect();
             }
@@ -43,12 +43,12 @@ class DocumentReferenceSearch extends BaseSearch
             $creationDateUnixTs = strtotime($document['date']);
             $document['url'] = ltrim(basename($document['url']), $creationDateUnixTs . "_");
 
-            if($s3Service) {
+            if($s3Service && $document['storageMethod'] == S3Service::STORAGE_METHOD_CODE) {
                 $data = $s3Service->fetchObject($fullUrl);
                 $encData = base64_encode($data);
                 $document['fileData'] = $encData;
             }
-            elseif($couchdbService) {
+            elseif($couchdbService && $document['storageMethod'] == CouchdbService::STORAGE_METHOD_CODE) {
                 $document['fileData'] = $couchdbService->fetchDoc($document['couchDocId'], false);
             }
             $this->fhirObj->initFhirObject();

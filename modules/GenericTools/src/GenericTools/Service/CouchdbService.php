@@ -11,6 +11,8 @@ use Interop\Container\ContainerInterface;
 class CouchdbService
 {
 
+    const STORAGE_METHOD_CODE = 1;
+
     private $connection;
 
 

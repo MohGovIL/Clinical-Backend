@@ -11,6 +11,8 @@ use Aws\Exception\AwsException;
 class S3Service
 {
 
+    const STORAGE_METHOD_CODE = 10;
+
     private $connection;
 
     public function __construct(ContainerInterface $container)
@@ -21,7 +23,7 @@ class S3Service
     public function connect()
     {
         try {
-            $this->connection = new Aws\S3\S3Client([
+            $this->connection = new S3Client([
                 'version' => $GLOBALS['s3_version'],
                 'region' => $GLOBALS['s3_region']
             ]);
@@ -31,7 +33,7 @@ class S3Service
         }
     }
 
-    public function saveObject($data, $url)
+    public function saveObject($url, $data)
     {
         try {
             $result = file_put_contents($url, $data);
