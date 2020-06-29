@@ -143,7 +143,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         $codFromDb=array();
 
         $codFromDb[0]=$code->getSystem()->getValue();
-        $codFromDb[1]=substr($codFromDb[0], strrpos($codFromDb[0], '/') + 1);
+        $codFromDb[0]=substr($codFromDb[0], strrpos($codFromDb[0], '/') + 1);
 
         $codFromDb[1]=$code->getCode()->getValue();
 

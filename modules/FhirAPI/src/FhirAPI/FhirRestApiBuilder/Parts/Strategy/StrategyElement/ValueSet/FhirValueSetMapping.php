@@ -44,7 +44,7 @@ class FhirValueSetMapping extends FhirBaseMapping  implements MappingData
             $contains = [];
             foreach ($data as $row) {
                 $contains[] = array(
-                    'system' =>  $this->createFHIRUri($row['system']),
+                    'system' =>  self::LIST_SYSTEM_LINK . $this->createFHIRUri($row['system']),
                     'code' => $this->createFHIRCode($row['code']),
                     'display' => $this->createFHIRString($row['display'])
                 );
