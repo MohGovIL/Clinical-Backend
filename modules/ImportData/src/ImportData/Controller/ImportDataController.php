@@ -50,6 +50,7 @@ class ImportDataController extends  BaseController /*AbstractActionController*/
     const CODE_TABLE = 'codes';
     const ICD9_CODE = '9909';
     const ICD10_CODE = '9910';
+    const MOH_DRUGS = '9911';
 
     public function __construct(ContainerInterface $container)
     {
@@ -155,7 +156,19 @@ class ImportDataController extends  BaseController /*AbstractActionController*/
                     $this->getListOptionsTable()->truncateList($tableData->clinikal_name);
                     break;
                 case self::CODE_TABLE:
-                   $icdType = $tableData->static_name == 'icd9' ? self::ICD9_CODE : self::ICD10_CODE;
+
+                    switch($tableData->static_name){
+                        case "icd9":
+                            $icdType =self::ICD9_CODE ;
+                            break;
+                        case "icd10":
+                            $icdType = self::ICD10_CODE;
+                            break;
+                        case "moh_drugs":
+                            $icdType = self::MOH_DRUGS;
+                            break;
+                    }
+
                    $this->getCodesTable()->truncate($icdType);
             }
 
@@ -507,6 +520,9 @@ class ImportDataController extends  BaseController /*AbstractActionController*/
             case 'healthdistrict':
                 $this->listController = 'ImportData\Lists\HealthDistrict';
                 break;
+            case 'moh_drugs':
+                $this->listController = 'ImportData\Lists\MohDrugs';
+                break;
             //if not found code for this result
             default:
                 return false;
@@ -581,6 +597,7 @@ class ImportDataController extends  BaseController /*AbstractActionController*/
     private function createLogObject($table, $status, $affected_records = 0){
 
         $log = new ImportDataLog();
+        $log->id= time();
         $log->table = $table;
         $log->status = $status;
         $log->affected_records = $affected_records;
