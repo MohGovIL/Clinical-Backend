@@ -161,6 +161,38 @@ class Module {
         $setting = new GlobalSetting( "clinikal - patient admission - first status of the encounter", 'text', "arrived", "Define next status" );
         $event->getGlobalsService()->appendToSection( "clinikal settings", "clinikal_pa_next_enc_status", $setting );
         /*******************************************************************/
+
+
+
+        // ADD S3 STORAGE //
+        /*******************************************************************/
+        $event->getGlobalsService()->createSection("Clinikal Storage", "Connectors");
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "Clinikal storage method", array('1' => xl('CouchDB'), '10' => xl('S3')), "10", "Whether to store uploaded files in a Couchdb instance or an S3 instance" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "clinikal_storage_method", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "S3 API version", 'text', "2006-03-01", "Version of S3 API to use, e.g. 2006-03-01" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "s3_version", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "S3 bucket region", 'text', "eu-west-1", "Region of bucket with which we will be interacting" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "s3_region", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "S3 bucket name", 'text', "clinikal-dev", "Name of bucket where files will be stored" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "s3_bucket_name", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "S3 files path", 'text', "", "Path inside bucket where files will be stored" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "s3_path", $setting );
+        /*******************************************************************/
     }
 
 
