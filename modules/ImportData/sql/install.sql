@@ -10,7 +10,10 @@ CREATE TABLE `moh_import_data_log` (
   `update_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+ALTER TABLE `moh_import_data_log`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `moh_import_data_log`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Table structure for table `moh_import_data`
@@ -25,6 +28,12 @@ CREATE TABLE `moh_import_data` (
   `source` enum('EDM','CSV') NOT NULL,
   `update_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `moh_import_data`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `moh_import_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Dumping data for table `moh_import_data`
