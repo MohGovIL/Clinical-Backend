@@ -8,8 +8,6 @@ use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRDocumentReference;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRDocumentReference\FHIRDocumentReferenceContent;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRDocumentReference\FHIRDocumentReferenceContext;
-use GenericTools\Service\CouchdbService;
-use GenericTools\Service\S3Service;
 
 class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingData
 {
@@ -50,15 +48,8 @@ class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingDa
             "storage" => array()
         );
 
-        if($GLOBALS['use_s3']) {
-            $storageMethod = S3Service::STORAGE_METHOD_CODE;
-        }
-        else {
-            $storageMethod = CouchdbService::STORAGE_METHOD_CODE;
-        }
-
         $dbArr["documents"]["type"] = self::DOC_TYPE;
-        $dbArr["documents"]["storagemethod"] = $storageMethod;
+        $dbArr["documents"]["storagemethod"] = $GLOBALS['clinikal_storage_method'];
 
         $dbArr["documents"]["id"] = $FhirObject->id->getValue();
         $dbArr["documents"]["url"] = $FhirObject->content[0]->attachment->url->getValue();
