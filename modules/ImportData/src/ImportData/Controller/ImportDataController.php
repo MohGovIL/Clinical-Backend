@@ -597,7 +597,7 @@ class ImportDataController extends  BaseController /*AbstractActionController*/
     private function createLogObject($table, $status, $affected_records = 0){
 
         $log = new ImportDataLog();
-        $log->id= time();
+        $log->id= null;
         $log->table = $table;
         $log->status = $status;
         $log->affected_records = $affected_records;
