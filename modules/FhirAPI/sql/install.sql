@@ -34,7 +34,7 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 CREATE TABLE encounter_reasoncode_map (
     eid INT(6) UNSIGNED,
-    reason_code  VARCHAR(255) NULL DEFAULT NULL;
+    reason_code  VARCHAR(255) NULL DEFAULT NULL
 );
 
 CREATE TABLE questionnaires_schemas(
