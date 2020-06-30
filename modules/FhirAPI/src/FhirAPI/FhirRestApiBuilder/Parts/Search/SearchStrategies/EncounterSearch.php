@@ -19,8 +19,8 @@ use Laminas\Db\Sql\Expression;
 
 class EncounterSearch extends BaseSearch
 {
-    CONST STATUSES="clinikal_app_statuses";
-    CONST SECONDARY_STATUSES="clinikal_app_secondary_statuses";
+    CONST STATUSES="clinikal_enc_statuses";
+    CONST SECONDARY_STATUSES="clinikal_enc_secondary_statuses";
 
     public function runMysqlQuery(){
 
