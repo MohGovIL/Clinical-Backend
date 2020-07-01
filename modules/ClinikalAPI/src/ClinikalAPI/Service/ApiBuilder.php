@@ -99,6 +99,11 @@ class ApiBuilder
 
                 return $this->getTemplatesForForm($form_id,$form_field,$service_type,$reason_code);
             },
+            "GET apis/api/indicator-settings" => function () {
+                //exit php or return 401 if not authorized
+                $this->checkAcl("clinikal_api", "general_settings");
+                return $this->getIndicators();
+            },
 
         ];
 
