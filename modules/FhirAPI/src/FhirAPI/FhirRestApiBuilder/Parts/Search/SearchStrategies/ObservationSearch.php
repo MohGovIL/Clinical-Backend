@@ -18,7 +18,7 @@ class ObservationSearch extends BaseSearch
     {
         $this->paramHandler('_id','id');
         $this->paramHandler('issued','outcome');
-        $this->paramHandler('patient','active');
+        $this->paramHandler('patient','pid');
         $this->paramHandler('performer','user');
         $this->paramHandler('status','activity');
         $this->paramHandler('encounter','eid');
