@@ -26,16 +26,17 @@ class ApiBuilder
     CONST MOH_COUNTRY="moh country";
     CONST MOH_CITIES="mh_cities";
     CONST MOH_STREETS="mh_streets";
+    CONST LIONIC_CODES="loinc_org";
 
     use LoadFormsService;
     use FormTemplatesService;
+    use IndicatorSettingsService;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
        // $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
           $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
-
     }
 
 
@@ -99,10 +100,11 @@ class ApiBuilder
 
                 return $this->getTemplatesForForm($form_id,$form_field,$service_type,$reason_code);
             },
-            "GET apis/api/indicator-settings" => function () {
+            "GET /api/indicator-settings" => function () {
                 //exit php or return 401 if not authorized
+                xdebug_break();
                 $this->checkAcl("clinikal_api", "general_settings");
-                return $this->getIndicators();
+                return $this->getIndicatorSettings(self::LIONIC_CODES);
             },
 
         ];
