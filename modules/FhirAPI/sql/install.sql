@@ -163,7 +163,8 @@ VALUES
 ('RelatedPerson', 1),
 ('MedicationStatement', 1),
 ('Condition', 1),
-('Observation', 1);
+('Observation', 1),
+('MedicationRequest', 1);
 
 INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
 ('fhir_type_validation', 0, '0');

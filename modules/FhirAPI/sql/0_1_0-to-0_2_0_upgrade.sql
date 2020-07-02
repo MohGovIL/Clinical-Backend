@@ -268,14 +268,6 @@ ALTER TABLE `openemr_postcalendar_events` ADD `pc_service_type` INT NULL DEFAULT
 ALTER TABLE `openemr_postcalendar_events` ADD `pc_healthcare_service_id` INT NULL DEFAULT NULL AFTER `pc_service_type`;
 #EndIf
 
-
-
-
-
-
-
-
-
 #IfNotRow fhir_rest_elements name Organization
 INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES
 ('Organization', 1);
@@ -476,4 +468,9 @@ ALTER TABLE `form_vitals` ADD `eid` INT NULL AFTER `pain_severity`;
 
 #IfMissingColumn form_vitals category
 ALTER TABLE `form_vitals` ADD `category` VARCHAR(255) NULL AFTER `eid`;
+#EndIf
+
+#IfNotRow fhir_rest_elements name MedicationRequest
+INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES
+('MedicationRequest', 1);
 #EndIf
