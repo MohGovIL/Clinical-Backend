@@ -32,9 +32,9 @@ ALTER TABLE `fhir_rest_elements`
 MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 
-CREATE TABLE encounter_reasoncode_map(
-    eid INT(6) UNSIGNED,
-    reason_code  VARCHAR(255) NULL DEFAULT NULL
+CREATE TABLE encounter_reasoncode_map (
+eid INT(6) UNSIGNED,
+reason_code  INT(6) UNSIGNED
 );
 
 CREATE TABLE questionnaires_schemas(
