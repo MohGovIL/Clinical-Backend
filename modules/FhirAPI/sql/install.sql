@@ -162,7 +162,8 @@ VALUES
 ('Practitioner', 1),
 ('RelatedPerson', 1),
 ('MedicationStatement', 1),
-('Condition', 1);
+('Condition', 1),
+('Observation', 1);
 
 INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
 ('fhir_type_validation', 0, '0');
@@ -239,3 +240,30 @@ VALUES
 ALTER TABLE `form_encounter`
 ADD `secondary_status` VARCHAR(255) NULL AFTER `reason_codes_details`,
 ADD `status_update_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `secondary_status`;
+
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`,`mapping` ,`notes`, `activity`,`subtype`) VALUES
+('lists', 'loinc_org', 'http://loinc.org', 0,'','', 1,''),
+('loinc_org', '8480-6', 'Systolic blood pressure', 10,'bps','', 1,'mmHg'),
+('loinc_org', '8462-4', 'Diastolic blood pressure', 20,'bpd','', 1,'mmHg'),
+('loinc_org', '8335-2', 'Body weight Estimated', 30,'weight','', 1,'Kg'),
+('loinc_org', '8308-9', 'Body height --standing', 40,'height','', 1,'cm'),
+('loinc_org', '8310-5', 'Body temperature', 50,'temperature','', 1,'C'),
+('loinc_org', '8327-9', 'Body temperature measurement site', 60,'temp_method','', 1,''),
+('loinc_org', '69000-8','Heart rate --sitting', 70,'pulse','', 1,'PRA'),
+('loinc_org', '9303-9', 'Respiratory rate --resting', 80,'respiration','', 1,'BPM'),
+('loinc_org', '39156-5', 'Body mass index (BMI) [Ratio]', 90,'BMI','', 1,'kg/m2'),
+('loinc_org', '59574-4', 'Body mass index (BMI) [Percentile]', 100,'BMI_status','', 1,''),
+('loinc_org', '8280-0', 'Waist Circumference at umbilicus by Tape measure', 110,'waist_circ','', 1,'cm'),
+('loinc_org', '8287-5', 'Head Occipital-frontal circumference by Tape measure', 120,'head_circ','', 1,'cm'),
+('loinc_org', '20564-1', 'Oxygen saturation in Blood', 130,'oxygen_saturation','', 1,'%'),
+('loinc_org', '74774-1', 'Glucose [Mass/volume] in Serum, Plasma or Blood', 140,'glucose','', 1,'mg/dL'),
+('loinc_org', '72514-3', 'Pain severity - 0-10 verbal numeric rating [Score] - Reported', 150,'pain_severity','', 1,'');
+
+
+
+ALTER TABLE `form_vitals`
+ADD `glucose` INT NULL AFTER `external_id`,
+ADD `pain_severity` INT NULL AFTER `glucose`,
+ADD `eid` INT NULL AFTER `pain_severity`,
+ADD `category` VARCHAR(255) NULL AFTER `eid`;

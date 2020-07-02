@@ -422,7 +422,7 @@ VALUES
 #IfNotRow2D list_options list_id lists option_id clinikal_enc_secondary_statuses
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`)
 VALUES
-('lists', 'clinikal_enc_secondary_statuses', 'Clinikal Appointment Secondary Statuses', 0, 0, 0, '', 'In Progress', '', 0, 0, 1, '', 1);
+('lists', 'clinikal_enc_secondary_statuses', 'Clinikal Encounter Secondary Statuses', 0, 0, 0, '', 'In Progress', '', 0, 0, 1, '', 1);
 #EndIf
 
 
@@ -434,4 +434,46 @@ ALTER TABLE `encounter_reasoncode_map` CHANGE `reason_code` `reason_code` VARCHA
 
 DELETE FROM list_options WHERE list_id = "clinikal_app_secondary_statuses" OR option_id ="clinikal_app_secondary_statuses";
 
+#EndIf
+
+
+#IfNotRow2D list_options list_id lists option_id loinc_org
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`,`mapping` ,`notes`, `activity`,`subtype`) VALUES
+('lists', 'loinc_org', 'http://loinc.org', 0,'','', 1,''),
+('loinc_org', '8480-6', 'Systolic blood pressure', 10,'bps','', 1,'mmHg'),
+('loinc_org', '8462-4', 'Diastolic blood pressure', 20,'bpd','', 1,'mmHg'),
+('loinc_org', '8335-2', 'Body weight Estimated', 30,'weight','', 1,'Kg'),
+('loinc_org', '8308-9', 'Body height --standing', 40,'height','', 1,'cm'),
+('loinc_org', '8310-5', 'Body temperature', 50,'temperature','', 1,'C'),
+('loinc_org', '8327-9', 'Body temperature measurement site', 60,'temp_method','', 1,''),
+('loinc_org', '69000-8','Heart rate --sitting', 70,'pulse','', 1,'PRA'),
+('loinc_org', '9303-9', 'Respiratory rate --resting', 80,'respiration','', 1,'BPM'),
+('loinc_org', '39156-5', 'Body mass index (BMI) [Ratio]', 90,'BMI','', 1,'kg/m2'),
+('loinc_org', '59574-4', 'Body mass index (BMI) [Percentile]', 100,'BMI_status','', 1,''),
+('loinc_org', '8280-0', 'Waist Circumference at umbilicus by Tape measure', 110,'waist_circ','', 1,'cm'),
+('loinc_org', '8287-5', 'Head Occipital-frontal circumference by Tape measure', 120,'head_circ','', 1,'cm'),
+('loinc_org', '20564-1', 'Oxygen saturation in Blood', 130,'oxygen_saturation','', 1,'%'),
+('loinc_org', '74774-1', 'Glucose [Mass/volume] in Serum, Plasma or Blood', 140,'glucose','', 1,'mg/dL'),
+('loinc_org', '72514-3', 'Pain severity - 0-10 verbal numeric rating [Score] - Reported', 150,'pain_severity','', 1,'');
+#EndIf
+
+
+#IfNotRow fhir_rest_elements name Condition
+INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES ('Observation', 1);
+#EndIf
+
+#IfMissingColumn form_vitals glucose
+ALTER TABLE `form_vitals`  ADD `glucose` INT NULL AFTER `external_id`;
+#EndIf
+
+#IfMissingColumn form_vitals pain_severity
+ALTER TABLE `form_vitals` ADD `pain_severity` INT NULL AFTER `glucose`;
+#EndIf
+
+#IfMissingColumn form_vitals eid
+ALTER TABLE `form_vitals` ADD `eid` INT NULL AFTER `pain_severity`;
+#EndIf
+
+#IfMissingColumn form_vitals category
+ALTER TABLE `form_vitals` ADD `category` VARCHAR(255) NULL AFTER `eid`;
 #EndIf

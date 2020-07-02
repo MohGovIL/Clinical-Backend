@@ -14,10 +14,6 @@ return $ACL_UPGRADE = array(
     '0.2.0' => function () {
 
         AclExtended::addObjectSectionAcl('client_app', 'Client Application');
-        AclExtended::addObjectAcl('client_app', 'Client Application', 'PatientTrackingInvited','Patient Tracking Invited');
-        AclExtended::addObjectAcl('client_app', 'Client Application', 'PatientTrackingWaitingForExamination','Patient Tracking Waiting for Examination');
-        AclExtended::addObjectAcl('client_app', 'Client Application', 'PatientTrackingWaitingForDecoding','Patient Tracking Waiting for Decoding');
-        AclExtended::addObjectAcl('client_app', 'Client Application', 'PatientTrackingFinished','Patient Tracking Finished');
         AclExtended::addObjectAcl('client_app', 'Client Application', 'PatientAdmission','Patient Admission');
         AclExtended::addObjectAcl('client_app', 'Client Application', 'AddPatient','Add Patient');
         AclExtended::addObjectAcl('client_app', 'Client Application', 'AppointmentsAndEncounters','Appointments And Encounters');
