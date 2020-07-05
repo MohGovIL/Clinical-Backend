@@ -458,7 +458,7 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`,`mapping` ,`n
 #EndIf
 
 
-#IfNotRow fhir_rest_elements name Condition
+#IfNotRow fhir_rest_elements name Observation
 INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES ('Observation', 1);
 #EndIf
 
