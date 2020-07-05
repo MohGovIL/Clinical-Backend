@@ -41,10 +41,10 @@ trait IndicatorSettingsService
                         $notes = json_decode($val['notes']);
                         $arrTemp['label'] =  $notes->label;
                         $arrTemp['mask'] = $notes->mask;
-                        $indicators['variant'][]=$arrTemp;
+                        $indicators['variant'][$key]=$arrTemp;
                     }else{
                         $arrTemp['label'] = $val['mapping'];
-                        $indicators['variant'][]=$arrTemp;
+                        $indicators['variant'][$key]=$arrTemp;
                     }
                 break;
                 case "Body height --standing":
@@ -57,10 +57,10 @@ trait IndicatorSettingsService
                     $notes = json_decode($val['notes']);
                     $arrTemp['label'] =  $notes->label;
                     $arrTemp['mask'] = $notes->mask;
-                    $indicators['constant'][]=$arrTemp;
+                    $indicators['constant'][$key]=$arrTemp;
                 }else{
                     $arrTemp['label'] = $val['mapping'];
-                    $indicators['constant'][]=$arrTemp;
+                    $indicators['constant'][$key]=$arrTemp;
                 }
                 break;
             }
