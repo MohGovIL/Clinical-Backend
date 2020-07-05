@@ -39,6 +39,7 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
 
     CONST LONIC_ORG="loinc_org";
     CONST LONIC_SYSTEM="http://loinc.org";
+    CONST DRUG_SYSTEM="http://clinikal/valueset/drugs";
 
 
 
@@ -266,8 +267,44 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
             $bool=($medicationRequestDataFromDb['substitute']==1) ? true : false;
             $FHIRBoolean=$this->createFHIRBoolean($bool);
             $FHIRMedicationRequest->getSubstitution()->getAllowedBoolean()->setValue($FHIRBoolean);
-
         }
+
+        $drugCode=$medicationRequestDataFromDb['drug_id'];
+        $drugDisplay=$medicationRequestDataFromDb['drug'];
+        $drugSystem=self::DRUG_SYSTEM;
+
+        $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>$drugCode,"display"=>$drugDisplay,"system"=>$drugSystem));
+        $FHIRMedicationRequest->setMedicationCodeableConcept($FHIRCodeableConcept);
+
+
+        //*************************************************************************************************************
+
+        $dosageInstruction=$FHIRMedicationRequest->getDosageInstruction()[0];
+        $timing=$dosageInstruction->getTiming();
+
+        $boundsPeriod=$timing->getRepeat()->getBoundsPeriod();
+
+
+        if(!empty($medicationRequestDataFromDb['end_date'])){
+            $end= $this->createFHIRDateTime($medicationRequestDataFromDb['end_date'],null,null,false);
+            $boundsPeriod->getEnd()->setValue($end);
+        }
+
+        if(!empty($medicationRequestDataFromDb['start_date'])){
+            $start= $this->createFHIRDateTime($medicationRequestDataFromDb['start_date'],null,null,false);
+            $boundsPeriod->getStart()->setValue($start);
+        }
+
+        $methodCode=$medicationRequestDataFromDb['form'];
+        if(!empty($methodCode)){
+            $methodText="3";
+            $methodSystem="2";
+            $method=$this->createFHIRCodeableConcept(array("code"=>$methodCode,"text"=>$methodText,"system"=>$methodSystem));
+            $dosageInstruction->setMethod($method);
+        }
+
+
+        //*************************************************************************************************************
 
         $this->FHIRMedicationRequest=$FHIRMedicationRequest;
 
