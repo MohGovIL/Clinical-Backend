@@ -80,10 +80,11 @@ class MedicationRequest Extends Restful implements  Strategy
             $errorBundle = $this->mapping->createErrorBundle($FHIRBundle, array(),$error,$code);
             return $errorBundle;
         }
-        $this->mapping->initFhirObject();
-        $apt= $this->mapping->DBToFhir($medicationRequest[0], true);
-        $this->mapping->initFhirObject();
-        return $apt;
+        $l=$this->mapping->initFhirObject();
+        //$apt= $this->mapping->DBToFhir($medicationRequest[0], true);
+        //$this->mapping->initFhirObject();
+        return $l;
+        //return $this->mapping->initFhirObject();
 
     }
 

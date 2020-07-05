@@ -22,6 +22,8 @@ use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRMedicationRequest;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
 
 use OpenEMR\FHIR\R4\FHIRElement\FHIRMedicationRequestStatus;
+use OpenEMR\FHIR\R4\FHIRResource\FHIRDosage;
+use OpenEMR\FHIR\R4\FHIRResource\FHIRDosage\FHIRDosageDoseAndRate;
 use phpDocumentor\Reflection\Types\Object_;
 use function DeepCopy\deep_copy;
 
@@ -205,6 +207,15 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
         $FhirId = $this->createFHIRId(null);
         $FHIRMedicationRequest->setId($FhirId);
 
+        $FHIRReference=  $this->createFHIRReference(["reference" => null]);
+
+        $FHIRMedicationRequest->setSubject(deep_copy($FHIRReference));
+        $FHIRMedicationRequest->setEncounter(deep_copy($FHIRReference));
+
+        $FHIRDosage= $this->createFHIRDosage(array());
+        $FHIRMedicationRequest->addDosageInstruction($FHIRDosage);
+
+
         $this->FHIRMedicationRequest=$FHIRMedicationRequest;
         return $FHIRMedicationRequest;
 
@@ -286,44 +297,95 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
 
     }
 
+
     /**
-     * create FHIRMedicationRequestStatus
-     *
-     * @param Instance
-     * @param string
-     *
-     * @return FHIRMedicationRequestComponent | null
+     * @param $data
+     * @return FHIRDosage
      */
-    public function createFHIRMedicationRequestComponent( $fhirElm=null,$code=null){
-        $FHIRMedicationRequestComponent= new FHIRMedicationRequestComponent;
-        //resourceType
 
-        if(is_object($fhirElm)){
-            $fhirElementName=$fhirElm->get_fhirElementName();
-            $methodName="setValue".$fhirElementName;
+    public function createFHIRDosage($data){
+
+        $FHIRDosage= new FHIRDosage;
+        $FHIRCodeableConcept= $this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+
+        $dataNotEmpty=!(empty($data));
+
+        if($dataNotEmpty && isset($data['dosagedoseandrate']) && $this->checkFHIRType($data['dosagedoseandrate'],'FHIRDosageDoseAndRate')){
+            $FHIRDosage->addDoseAndRate($data['dosagedoseandrate']);
         }else{
-            $fhirElementName="";
-            $methodName=null;
+            $FHIRDosageDoseAndRate=$this->createFHIRDosageDoseAndRate(array());
+            $FHIRDosage->addDoseAndRate($FHIRDosageDoseAndRate);
         }
 
 
-        if(!is_null($fhirElm) && method_exists($FHIRMedicationRequestComponent,$methodName)){
-            $FHIRMedicationRequestComponent->$methodName($fhirElm);
+        if($dataNotEmpty && isset($data['timing']) && $this->checkFHIRType($data['timing'],'timing')){
+            $FHIRDosage->setTiming($data['timing']);
         }else{
-            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
-            $FHIRMedicationRequestComponent->setValueCodeableConcept($FHIRCodeableConcept);
+            $FHIRTiming=$this->createFHIRTiming(array());
+            $FHIRDosage->setTiming($FHIRTiming);
+        }
+
+        if($dataNotEmpty && isset($data['maxdoseperadministration']) && $this->checkFHIRType($data['maxdoseperadministration'],'FHIRQuantity')){
+            $FHIRDosage->setMaxDosePerAdministration($data['maxdoseperadministration']);
+        }else{
             $FHIRQuantity=$this->createFHIRQuantity(array());
-            $FHIRMedicationRequestComponent->setValueQuantity($FHIRQuantity);
+            $FHIRDosage->setMaxDosePerAdministration($FHIRQuantity);
         }
 
-        $FHIRMedicationRequestComponent->setCode($code);
+        if($dataNotEmpty && isset($data['site']) && $this->checkFHIRType($data['site'],'FHIRCodeableConcept')){
+            $FHIRDosage->setSite($data['site']);
+        }else{
+            $FHIRDosage->setSite(deep_copy($FHIRCodeableConcept));
+        }
 
-        return $FHIRMedicationRequestComponent;
+        if($dataNotEmpty && isset($data['method']) && $this->checkFHIRType($data['method'],'FHIRCodeableConcept')){
+            $FHIRDosage->setMethod($data['method']);
+        }else{
+            $FHIRDosage->setMethod(deep_copy($FHIRCodeableConcept));
+        }
 
+        if($dataNotEmpty && isset($data['rote']) && $this->checkFHIRType($data['route'],'FHIRCodeableConcept')){
+            $FHIRDosage->setRoute($data['rote']);
+        }else{
+            $FHIRDosage->setRoute(deep_copy($FHIRCodeableConcept));
+        }
+
+        return $FHIRDosage;
     }
 
 
 
+    /**
+     * @param $data
+     * @return FHIRDosageDoseAndRate
+     */
+
+    public function createFHIRDosageDoseAndRate($data){
+
+        $FHIRDosageDoseAndRate= new FHIRDosageDoseAndRate;
+
+
+        if(is_array($data['quantity'])){
+            $FHIRQuantity=$this->createFHIRQuantity($data['quantity']);
+        }else{
+            $FHIRQuantity=$this->createFHIRQuantity(array());
+        }
+        $FHIRDosageDoseAndRate->setDoseQuantity($FHIRQuantity);
+
+
+        if(is_array($data['quantity'])){
+            $FHIRCodeableConcept=$this->createFHIRCodeableConcept($data['type']);
+        }else{
+            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+        }
+
+        $FHIRDosageDoseAndRate->setType($FHIRCodeableConcept);
+
+
+        return $FHIRDosageDoseAndRate;
+
+
+    }
 
 
 
