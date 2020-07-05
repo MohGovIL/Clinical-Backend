@@ -160,7 +160,7 @@ class FhirBaseMapping
      *
      * @return FHIRDateTime
      */
-    public function createFHIRDateTime($date, $time = null, $dateTime = null)
+    public function createFHIRDateTime($date, $time = null, $dateTime = null,$completeTime=true)
     {
         $FHIRDateTime = new FHIRDateTime;
 
@@ -180,10 +180,14 @@ class FhirBaseMapping
                 return null;
             }
         } else {
-            if (is_null($time)) {
-                $FHIRDateTime->setValue($date . "T" . date('H:i:s') . ".000Z");
-            } else {
-                $FHIRDateTime->setValue($date . "T" . $time . ".000Z");
+            if($completeTime){
+                if (is_null($time)) {
+                    $FHIRDateTime->setValue($date . "T" . date('H:i:s') . ".000Z");
+                } else {
+                    $FHIRDateTime->setValue($date . "T" . $time . ".000Z");
+                }
+            }else{
+                $FHIRDateTime->setValue($date);
             }
         }
 
@@ -567,7 +571,7 @@ class FhirBaseMapping
         $FHIRBoolean = new FHIRBoolean;
 
         if(!is_null($bool)){
-            $bool= ($bool && $bool!='false') ? "true" : "false";
+            $bool= ($bool && $bool!=='false') ? "true" : "false";
         }
 
         $this->fhirRequestParamsHandler::checkByPreg($bool, 'boolean', 'ALLOW_NULL_ERROR');
@@ -1422,8 +1426,6 @@ class FhirBaseMapping
 
         return $FHIRDuration;
     }
-
-
 
 
 }

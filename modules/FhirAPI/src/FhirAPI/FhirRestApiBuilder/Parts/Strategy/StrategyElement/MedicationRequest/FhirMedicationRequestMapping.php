@@ -24,6 +24,7 @@ use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRMedicationRequestStatus;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRDosage;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRDosage\FHIRDosageDoseAndRate;
+use OpenEMR\FHIR\R4\FHIRResource\FHIRMedicationRequest\FHIRMedicationRequestSubstitution;
 use phpDocumentor\Reflection\Types\Object_;
 use function DeepCopy\deep_copy;
 
@@ -211,6 +212,16 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
 
         $FHIRMedicationRequest->setSubject(deep_copy($FHIRReference));
         $FHIRMedicationRequest->setEncounter(deep_copy($FHIRReference));
+        $FHIRMedicationRequest->setRecorder(deep_copy($FHIRReference));
+
+        $FHIRDateTime=$this->createFHIRDateTime(null);
+        $FHIRMedicationRequest->setAuthoredOn($FHIRDateTime);
+
+        $note=$this->createFHIRAnnotation(array());
+        $FHIRMedicationRequest->addNote($note);
+
+        $FHIRMedicationRequestSubstitution=$this->createFHIRMedicationRequestSubstitution(array());
+        $FHIRMedicationRequest->setSubstitution($FHIRMedicationRequestSubstitution);
 
         $FHIRDosage= $this->createFHIRDosage(array());
         $FHIRMedicationRequest->addDosageInstruction($FHIRDosage);
@@ -223,12 +234,38 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
 
     public function DBToFhir(...$params)
     {
-        $observationDataFromDb = $params[0];
+        $medicationRequestDataFromDb = $params[0];
         $FHIRMedicationRequest =$this->FHIRMedicationRequest;
 
-        if(!empty($observationDataFromDb)){
+        if(!empty($medicationRequestDataFromDb)){
 
-            $FHIRMedicationRequest->getId()->setValue($observationDataFromDb['id']);
+            $FHIRMedicationRequest->getId()->setValue($medicationRequestDataFromDb['id']);
+
+            if(!empty($medicationRequestDataFromDb['patient_id'])){
+                $patientRef=self::PATIENT_URI . $medicationRequestDataFromDb['patient_id'];
+                $FHIRMedicationRequest->getSubject()->getReference()->setValue($patientRef);
+            }
+
+            if(!empty($medicationRequestDataFromDb['encounter'])){
+                $encRef=self::ENCOUNTER_URI . $medicationRequestDataFromDb['encounter'];
+                $FHIRMedicationRequest->getEncounter()->getReference()->setValue($encRef);
+            }
+
+            if(!empty($medicationRequestDataFromDb['provider_id'])){
+                $recorderRef=self::PRACTITIONER_URI . $medicationRequestDataFromDb['provider_id'];
+                $FHIRMedicationRequest->getRecorder()->getReference()->setValue($recorderRef);
+            }
+
+            if(!empty($medicationRequestDataFromDb['filled_date'])){
+                $authoredOnDate=$this->createFHIRDateTime($medicationRequestDataFromDb['filled_date'],null,null,false);
+                $FHIRMedicationRequest->getAuthoredOn()->setValue($authoredOnDate);
+            }
+
+            $FHIRMedicationRequest->getNote()[0]->getText()->setValue($medicationRequestDataFromDb['note']);
+
+            $bool=($medicationRequestDataFromDb['substitute']==1) ? true : false;
+            $FHIRBoolean=$this->createFHIRBoolean($bool);
+            $FHIRMedicationRequest->getSubstitution()->getAllowedBoolean()->setValue($FHIRBoolean);
 
         }
 
@@ -241,7 +278,6 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
 
     {
         $FHIRMedicationRequest =$this->FHIRMedicationRequest;
-
 
         $this->FHIRMedicationRequest=$FHIRMedicationRequest;
 
@@ -302,7 +338,6 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
      * @param $data
      * @return FHIRDosage
      */
-
     public function createFHIRDosage($data){
 
         $FHIRDosage= new FHIRDosage;
@@ -353,17 +388,13 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
         return $FHIRDosage;
     }
 
-
-
     /**
      * @param $data
      * @return FHIRDosageDoseAndRate
      */
-
     public function createFHIRDosageDoseAndRate($data){
 
         $FHIRDosageDoseAndRate= new FHIRDosageDoseAndRate;
-
 
         if(is_array($data['quantity'])){
             $FHIRQuantity=$this->createFHIRQuantity($data['quantity']);
@@ -381,13 +412,46 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
 
         $FHIRDosageDoseAndRate->setType($FHIRCodeableConcept);
 
-
         return $FHIRDosageDoseAndRate;
-
 
     }
 
 
+    /**
+     * create FHIRMedicationRequestSubstitution
+     *
+     * @param $data
+     *
+     * @return FHIRMedicationRequestSubstitution | null
+     */
+    public function createFHIRMedicationRequestSubstitution( array $data)
+    {
+        $FHIRMedicationRequestSubstitution= new FHIRMedicationRequestSubstitution;
+
+         if(!empty($data['allowed'])){
+             $FHIRBoolean=$this->createFHIRBoolean($data['allowed']);
+         }else{
+             $FHIRBoolean=$this->createFHIRBoolean(null);
+         }
+        $FHIRMedicationRequestSubstitution->setAllowedBoolean($FHIRBoolean);
+
+        if(!empty($data['allowed'])){
+            $allowed=$this->createFHIRCodeableConcept($data['allowed']);
+        }else{
+            $allowed=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+        }
+        $FHIRMedicationRequestSubstitution->setAllowedCodeableConcept($allowed);
+
+        if(!empty($data['reason'])){
+            $reason=$this->createFHIRCodeableConcept($data['reason']);
+        }else{
+            $reason=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+        }
+        $FHIRMedicationRequestSubstitution->setReason($reason);
+
+        return $FHIRMedicationRequestSubstitution;
+
+    }
 
 }
 
