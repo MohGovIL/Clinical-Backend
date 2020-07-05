@@ -278,14 +278,31 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
 
             $DbToLonicMappig=$this->getDbToLonicMappig();
 
+            $firstComp=true;
             foreach ($DbToLonicMappig as $dbField => $code){
                 if(is_numeric($observationDataFromDb[$dbField])){
                     $FHIRElm=$this->createFHIRQuantity(array("code"=>$code,"value"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM));
                 }else{
                     $FHIRElm=$this->createFHIRCodeableConcept(array("code"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM."/".$code));
                 }
-                $FHIRObservationComponent =$this->createFHIRObservationComponent($FHIRElm,null);
-                $FHIRObservation->addComponent($FHIRObservationComponent);
+
+                if ($firstComp){
+                    if(is_object($FHIRElm)){
+                        $fhirElementName=$FHIRElm->get_fhirElementName();
+                        $methodName="setValue".$fhirElementName;
+                        $FHIRObservationComponent=$FHIRObservation->getComponent()[0];
+                        if(!is_null($FHIRElm) && method_exists($FHIRObservationComponent,$methodName)){
+                            $FHIRObservationComponent->$methodName($FHIRElm);
+                        }
+                    }
+                    $firstComp=false;
+                }else{
+                    $FHIRObservationComponent =$this->createFHIRObservationComponent($FHIRElm,null);
+                    $FHIRObservation->addComponent($FHIRObservationComponent);
+                }
+
+
+
             }
         }
 
