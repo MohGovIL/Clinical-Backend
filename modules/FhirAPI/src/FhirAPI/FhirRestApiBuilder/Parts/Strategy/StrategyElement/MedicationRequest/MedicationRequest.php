@@ -118,10 +118,12 @@ class MedicationRequest Extends Restful implements  Strategy
         $flag=$this->mapping->validateDb($dbData);
         if($flag){
             unset($dbData['id']);
-            $rez=$formVitalsTable->safeInsert($dbData,'id');
+            $rez=array();
+            //$rez=$formVitalsTable->safeInsert($dbData,'id');
             if(is_array($rez)){
-                $medicationRequest=$this->mapping->DBToFhir($rez);
-                return $medicationRequest;
+                //$medicationRequest=$this->mapping->DBToFhir($rez);
+                //return $medicationRequest;
+                return array();
             }else{ //insert failed
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }

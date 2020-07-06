@@ -187,61 +187,44 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
      */
     public function fhirToDb($FHIRMedicationRequest)
     {
-        $dbObservation = array();
+        $dbMedicationRequest = array();
 
-        $dbObservation['id'] = $FHIRMedicationRequest->getId()->getValue();
+        $dbMedicationRequest['id']=$FHIRMedicationRequest->getId()->getValue();
 
-        $FHIRdate = $FHIRMedicationRequest->getIssued()->getValue();
-        $dbObservation['date'] = $this->convertToDateTime($FHIRdate);
-
-        $pidRef = $FHIRMedicationRequest->getSubject()->getReference()->getValue();
-        if (strpos($pidRef, self::PATIENT_URI) !== false) {
-            $dbObservation['pid'] = (!empty($pidRef)) ? substr($pidRef, strlen(self::PATIENT_URI), 20) : null;
-        } else {
-            $dbObservation['pid'] = null;
+        $patientRef=$FHIRMedicationRequest->getSubject()->getReference()->getValue();
+        if (strpos($patientRef, self::PATIENT_URI) !== false ) {
+            $pid=substr($patientRef,strlen(self::PATIENT_URI),20);
+            $dbMedicationRequest['patient_id']= (!empty($pid)) ? $pid : null ;
+        }else{
+            $dbMedicationRequest['patient_id']=null;
         }
 
-        $userRef = $FHIRMedicationRequest->getPerformer()[0]->getReference()->getValue();
-        if (strpos($userRef, self::PRACTITIONER_URI) !== false) {
-            $dbObservation['user'] = (!empty($userRef)) ? substr($userRef, strlen(self::PRACTITIONER_URI), 20) : null;
-        } else {
-            $dbObservation['user'] = null;
+        $encounterRef=$FHIRMedicationRequest->getEncounter()->getReference()->getValue();
+        if (strpos($encounterRef, self::ENCOUNTER_URI) !== false ) {
+            $encounter=substr($encounterRef,strlen(self::ENCOUNTER_URI),20);
+            $dbMedicationRequest['encounter']= (!empty($encounter)) ? $encounter : null ;
+        }else{
+            $dbMedicationRequest['encounter']=null;
         }
 
-        $eidRef = $FHIRMedicationRequest->getEncounter()->getReference()->getValue();
-        if (strpos($eidRef, self::ENCOUNTER_URI) !== false) {
-            $dbObservation['eid'] = (!empty($eidRef)) ? substr($eidRef, strlen(self::ENCOUNTER_URI), 20) : null;
-        } else {
-            $dbObservation['eid'] = null;
+        $recorderRef=$FHIRMedicationRequest->getRecorder()->getReference()->getValue();
+        if (strpos($recorderRef, self::PRACTITIONER_URI) !== false ) {
+            $recorder=substr($recorderRef,strlen(self::PRACTITIONER_URI),20);
+            $dbMedicationRequest['provider_id']= (!empty($recorder)) ? $recorder : null ;
+        }else{
+            $dbMedicationRequest['provider_id']=null;
         }
 
-        $dbObservation['activity'] = $FHIRMedicationRequest->getStatus()->getValue();
-        $dbObservation['note'] = $FHIRMedicationRequest->getNote()[0]->getText()->getValue();
-        $dbObservation['category'] = $FHIRMedicationRequest->getCategory()[0]->getText()->getValue();
-
-        $components = $FHIRMedicationRequest->getComponent();
-
-        $LonicToDbMappig = $this->getLonicToDbMappig();
-
-        foreach ($components as $index => $comp) {
-
-            $code = $comp->getValueCodeableConcept()->getCoding()[0];
-            $codeVal = $code->getCode()->getValue();
-            if (!is_null($codeVal)) {
-                $system = $code->getSystem()->getValue();
-                $lonicCode = substr($system, strrpos($system, '/') + 1);
-                $dbObservation[$LonicToDbMappig[$lonicCode]] = $codeVal;
-            }
-
-            $Quantity = $comp->getValueQuantity()->getValue();
-            $QuantityVal = $Quantity->getValue();
-            if (!is_null($QuantityVal)) {
-                $lonicCode = $comp->getValueQuantity()->getCode()->getValue();
-                $dbObservation[$LonicToDbMappig[$lonicCode]] = $QuantityVal;
-            }
+        $authoredOn=$FHIRMedicationRequest->getAuthoredOn();
+        $authoredOnDate= (is_object($authoredOn)) ? $authoredOn->getValue() : null;
+        if(!empty($authoredOnDate)){
+            $dbMedicationRequest['datetime']=$this->convertToDateTime($authoredOnDate);
+        }else{
+            $dbMedicationRequest['datetime']=null;
         }
 
-        return $dbObservation;
+
+        return $dbMedicationRequest;
     }
 
     /**
@@ -322,7 +305,7 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
             }
 
             if (!is_null($medicationRequestDataFromDb['datetime'])) {
-                $authoredOnDate = $this->createFHIRDateTime(null, null, $medicationRequestDataFromDb['datetime '], false);
+                $authoredOnDate = $this->createFHIRDateTime(null, null, $medicationRequestDataFromDb['datetime'], false);
                 $FHIRMedicationRequest->getAuthoredOn()->setValue($authoredOnDate);
             }
 
