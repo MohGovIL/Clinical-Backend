@@ -262,6 +262,8 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
             }
         }
 
+        $FHIREncounter->extension=array_values($FHIREncounter->getExtension());
+
         $this->FHIREncounter=$FHIREncounter;
 
         return $FHIREncounter;

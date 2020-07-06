@@ -458,7 +458,7 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`,`mapping` ,`n
 #EndIf
 
 
-#IfNotRow fhir_rest_elements name Condition
+#IfNotRow fhir_rest_elements name Observation
 INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES ('Observation', 1);
 #EndIf
 
@@ -476,4 +476,19 @@ ALTER TABLE `form_vitals` ADD `eid` INT NULL AFTER `pain_severity`;
 
 #IfMissingColumn form_vitals category
 ALTER TABLE `form_vitals` ADD `category` VARCHAR(255) NULL AFTER `eid`;
+#EndIf
+
+#IfNotRow2D list_options list_id lists option_id observation-category
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`)
+VALUES
+('lists', 'observation-category', 'Observation category', 0, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'social-history', 'Social History', 10, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'vital-signs', 'Vital Signs', 20, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'imaging', 'Imaging', 30, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'laboratory', 'Laboratory', 40, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'procedure', 'Procedure', 50, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'survey', 'Survey', 60, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'exam', 'Exam', 70, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'therapy', 'Therapy', 80, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'activity', 'Activity', 90, 0, 0, '', '', '', 0, 0, 1, '', 1);
 #EndIf
