@@ -223,8 +223,126 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
             $dbMedicationRequest['datetime']=null;
         }
 
+        $dbMedicationRequest['note']=$FHIRMedicationRequest->getNote()[0]->getText()->getValue();
+
+        $dbMedicationRequest['substitute']=null;
+        $allowedBoolean=$FHIRMedicationRequest->getSubstitution()->getAllowedBoolean();
+        if(is_object($allowedBoolean)){
+            $bullVal=$allowedBoolean->getValue();
+            if(!is_null($bullVal)){
+                $dbMedicationRequest['substitute'] = (in_array($bullVal,array("true",true,1))) ? 1 : 0 ;
+            }
+        }
+
+        $medicationCodeableConcept=$FHIRMedicationRequest->getMedicationCodeableConcept();
+        $dbMedicationRequest['drug_id']=null;
+        $dbMedicationRequest['drug']= null;
+        if(is_object($medicationCodeableConcept)){
+            $coding=$medicationCodeableConcept->getCoding()[0];
+            if(is_object($coding)){
+                $dbMedicationRequest['drug_id']= $coding->getCode()->getValue();
+                $dbMedicationRequest['drug']=$coding->getDisplay()->getValue();
+            }
+        }
+
+        $status=$FHIRMedicationRequest->getStatus()->getValue();
+        if(!empty($status)){
+            $statusList = array_flip($this->getStatusList());
+            $dbMedicationRequest['active']=$statusList[$status];
+        }else{
+            $dbMedicationRequest['active'] =null;
+        }
+
+        $dosageInstruction = $FHIRMedicationRequest->getDosageInstruction()[0];
+        if(is_object($dosageInstruction)){
+            $maxDosePerAdministration = $dosageInstruction->getMaxDosePerAdministration();
+            $timing = $dosageInstruction->getTiming();
+            if(is_object($timing)){
+                $boundsPeriod = $timing->getRepeat()->getBoundsPeriod();
+            }else{
+                $boundsPeriod= null;
+            }
+        }else{
+            $maxDosePerAdministration = null;
+            $timing = null;
+            $boundsPeriod = null;
+        }
+
+        $dbMedicationRequest['dosage']=null;
+        $doseAndRate=$dosageInstruction->getDoseAndRate()[0];
+        if(is_object($doseAndRate)){
+            $doseQuantity=$doseAndRate->getDoseQuantity()->getValue();
+            if(is_object($doseQuantity)){
+                $dbMedicationRequest['dosage']=$doseQuantity->getValue();
+            }
+        }
+
+        $dbMedicationRequest['quantity']=null;
+        $dbMedicationRequest['size']=null;
+        $dbMedicationRequest['unit']=null;
+
+        if(is_object($maxDosePerAdministration)){
+
+            $maxVal=$maxDosePerAdministration->getValue();
+            if(is_object($maxVal)){
+                $dbMedicationRequest['quantity']=$maxVal->getValue();
+            }
+
+            $maxcode=$maxDosePerAdministration->getCode();
+            if(is_object($maxcode)){
+                $dbMedicationRequest['size']=$maxcode->getValue();
+            }
+
+            $maxUnit=$maxDosePerAdministration->getUnit();
+            if(is_object($maxUnit)){
+                $dbMedicationRequest['unit']=$maxUnit->getValue();
+            }
+        }
+        $dbMedicationRequest['start_date']=null;
+        $dbMedicationRequest['end_date']=null;
+        if(is_object($boundsPeriod)){
+
+            $end= $boundsPeriod->getEnd();
+            if(is_object($end)){
+                $dbMedicationRequest['end_date']=$end->getValue();
+            }
+
+            $start= $boundsPeriod->getStart();
+            if(is_object($start)){
+                $dbMedicationRequest['start_date']=$start->getValue();
+            }
+        }
+
+        $medicationRequestDataFromDb['site']=null;
+        $site=$dosageInstruction->getSite();
+        $dbMedicationRequest['site']=$this->extractCode($site);
+
+        $medicationRequestDataFromDb['form']=null;
+        $form=$dosageInstruction->getMethod();
+        $dbMedicationRequest['form']=$this->extractCode($form);
+
+        $medicationRequestDataFromDb['route']=null;
+        $route=$dosageInstruction->getRoute();
+        $dbMedicationRequest['route']=$this->extractCode($route);
+
+        $medicationRequestDataFromDb['interval']=null;
+        $interval=$timing->getCode();
+        $dbMedicationRequest['interval']=$this->extractCode($interval);
 
         return $dbMedicationRequest;
+    }
+
+    public function extractCode($codable){
+        if(is_object($codable)){
+            $codableCoding=$codable->getCoding()[0];
+            if(is_object($codableCoding)){
+                $codableCode=$codableCoding->getCode();
+                if(is_object($codableCode)){
+                    return $codableCode->getValue();
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -248,7 +366,6 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
 
     public function initFhirObject()
     {
-
         $FHIRMedicationRequest = new FHIRMedicationRequest();
         $FhirId = $this->createFHIRId(null);
         $FHIRMedicationRequest->setId($FhirId);
@@ -274,6 +391,8 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
         $FHIRDosage = $this->createFHIRDosage(array());
         $FHIRMedicationRequest->addDosageInstruction($FHIRDosage);
 
+        $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+        $FHIRMedicationRequest->setMedicationCodeableConcept($FHIRCodeableConcept);
 
         $this->FHIRMedicationRequest = $FHIRMedicationRequest;
         return $FHIRMedicationRequest;
@@ -516,7 +635,6 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
      */
     public function createFHIRDosage($data)
     {
-
         $FHIRDosage = new FHIRDosage;
         $FHIRCodeableConcept = $this->createFHIRCodeableConcept(array("code" => null, "text" => "", "system" => ""));
 
@@ -528,7 +646,6 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
             $FHIRDosageDoseAndRate = $this->createFHIRDosageDoseAndRate(array());
             $FHIRDosage->addDoseAndRate($FHIRDosageDoseAndRate);
         }
-
 
         if ($dataNotEmpty && isset($data['timing']) && $this->checkFHIRType($data['timing'], 'timing')) {
             $FHIRDosage->setTiming($data['timing']);

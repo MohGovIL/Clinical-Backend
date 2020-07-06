@@ -114,16 +114,15 @@ class MedicationRequest Extends Restful implements  Strategy
     {
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
-        $formVitalsTable = $this->container->get(PrescriptionsTable::class);
+        $prescriptionsTable = $this->container->get(PrescriptionsTable::class);
         $flag=$this->mapping->validateDb($dbData);
         if($flag){
             unset($dbData['id']);
-            $rez=array();
-            //$rez=$formVitalsTable->safeInsert($dbData,'id');
+            $rez=$prescriptionsTable->safeInsert($dbData,'id');
             if(is_array($rez)){
-                //$medicationRequest=$this->mapping->DBToFhir($rez);
-                //return $medicationRequest;
-                return array();
+                $medicationRequest=$this->mapping->DBToFhir($rez);
+                return $medicationRequest;
+
             }else{ //insert failed
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
