@@ -21,7 +21,7 @@ use Laminas\Form\Annotation\Instance;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRMedicationRequest;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
 
-use OpenEMR\FHIR\R4\FHIRElement\FHIRMedicationRequestStatus;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRMedicationrequestStatus;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRDosage;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRDosage\FHIRDosageDoseAndRate;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRMedicationRequest\FHIRMedicationRequestSubstitution;
@@ -34,27 +34,50 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
     private $container = null;
     private $FHIRMedicationRequest = null;
 
-    private $loincCodes= array();
-    private $lonicDbMappig= array();
-
-    CONST LONIC_ORG="loinc_org";
-    CONST LONIC_SYSTEM="http://loinc.org";
+    private $route_list=array();
+    private $interval_list=array();
+    private $form_list=array();
+    private $site_list=array();
+    private $status_list=array();
     CONST DRUG_SYSTEM="http://clinikal/valueset/drugs";
+
+    CONST DRUG_ROUTE_LIST = "drug_route";
+    CONST DRUG_INTERVAL_LIST = "drug_interval";
+    CONST DRUG_FORM_LIST = "drug_form";
+    CONST DRUG_SITE_LIST = "drug_site";
+    CONST STATUS_LIST = "medicationrequest_status";
+    CONST DOSAGE_UNIT_SYSTEM = "http://clinikal/valueset/units";
+
 
 
 
     public function __construct(ContainerInterface $container)
     {
+
         parent::__construct($container);
         $this->container = $container;
         $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRMedicationRequest = new FHIRMedicationRequest;
 
         $ListsTable = $this->container->get(ListsTable::class);
-        $listOutcome = $ListsTable->getList(self::LONIC_ORG);
 
-        $this->setLonicDbMappig($listOutcome);
-        $this->setLoincCodes($listOutcome);
+
+        $listForm = $ListsTable->getList(self::DRUG_FORM_LIST);
+        $this->setFormList($listForm);
+
+        $listInterval = $ListsTable->getList(self::DRUG_INTERVAL_LIST);
+        $this->setIntervalList($listInterval);
+
+
+        $listRoute = $ListsTable->getList(self::DRUG_ROUTE_LIST);
+        $this->setRouteList($listRoute);
+
+        $listSite = $ListsTable->getList(self::DRUG_SITE_LIST);
+        $this->setSiteList($listSite);
+
+        $listStatus = $ListsTable->getList(self::STATUS_LIST);
+        $this->setStatusList($listStatus);
+
     }
 
 
@@ -83,38 +106,70 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
         return $this->FHIRMedicationRequest;
     }
 
-    public function setLonicDbMappig($list)
+    public function setRouteList($list)
     {
         foreach($list as $code =>$dataArr){
-            $this->lonicDbMappig[$code]=$dataArr['mapping'];
+            $this->route_list[$code]=$dataArr['title'];
         }
-        return $this->lonicDbMappig;
+        return $this->route_list;
     }
 
-    public function getLonicToDbMappig()
+    public function getRouteList()
     {
-        return $this->lonicDbMappig;
+        return $this->route_list;
     }
 
-    public function getDbToLonicMappig()
+    public function setIntervalList($list)
     {
-        return array_flip($this->lonicDbMappig);
+        foreach($list as $code =>$dataArr){
+            $this->interval_list[$code]=$dataArr['title'];
+        }
+        return $this->interval_list;
     }
 
-
-    public function setLoincCodes($types)
+    public function getIntervalList()
     {
-        $this->loincCodes=$types;
-        return $this->loincCodes;
+        return $this->interval_list;
     }
 
-    public function getLoincCodes()
+    public function setFormList($list)
     {
-        return $this->loincCodes;
+        foreach($list as $code =>$dataArr){
+            $this->form_list[$code]=$dataArr['title'];
+        }
+        return $this->form_list;
     }
 
+    public function getFormList()
+    {
+        return $this->form_list;
+    }
 
+    public function setSiteList($list)
+    {
+        foreach($list as $code =>$dataArr){
+            $this->site_list[$code]=$dataArr['title'];
+        }
+        return $this->site_list;
+    }
 
+    public function getSiteList()
+    {
+        return $this->site_list;
+    }
+
+    public function setStatusList($list)
+    {
+        foreach($list as $code =>$dataArr){
+            $this->status_list[$code]=$dataArr['title'];
+        }
+        return $this->status_list;
+    }
+
+    public function getStatusList()
+    {
+        return $this->status_list;
+    }
 
 
     /**
@@ -215,6 +270,9 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
         $FHIRMedicationRequest->setEncounter(deep_copy($FHIRReference));
         $FHIRMedicationRequest->setRecorder(deep_copy($FHIRReference));
 
+        $FHIRMedicationrequestStatus=$this->createFHIRMedicationRequestStatus();
+        $FHIRMedicationRequest->setStatus($FHIRMedicationrequestStatus);
+
         $FHIRDateTime=$this->createFHIRDateTime(null);
         $FHIRMedicationRequest->setAuthoredOn($FHIRDateTime);
 
@@ -242,23 +300,23 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
 
             $FHIRMedicationRequest->getId()->setValue($medicationRequestDataFromDb['id']);
 
-            if(!empty($medicationRequestDataFromDb['patient_id'])){
+            if(!is_null($medicationRequestDataFromDb['patient_id'])){
                 $patientRef=self::PATIENT_URI . $medicationRequestDataFromDb['patient_id'];
                 $FHIRMedicationRequest->getSubject()->getReference()->setValue($patientRef);
             }
 
-            if(!empty($medicationRequestDataFromDb['encounter'])){
+            if(!is_null($medicationRequestDataFromDb['encounter'])){
                 $encRef=self::ENCOUNTER_URI . $medicationRequestDataFromDb['encounter'];
                 $FHIRMedicationRequest->getEncounter()->getReference()->setValue($encRef);
             }
 
-            if(!empty($medicationRequestDataFromDb['provider_id'])){
+            if(!is_null($medicationRequestDataFromDb['provider_id'])){
                 $recorderRef=self::PRACTITIONER_URI . $medicationRequestDataFromDb['provider_id'];
                 $FHIRMedicationRequest->getRecorder()->getReference()->setValue($recorderRef);
             }
 
-            if(!empty($medicationRequestDataFromDb['filled_date'])){
-                $authoredOnDate=$this->createFHIRDateTime($medicationRequestDataFromDb['filled_date'],null,null,false);
+            if(!is_null($medicationRequestDataFromDb['datetime'])){
+                $authoredOnDate=$this->createFHIRDateTime(null,null,$medicationRequestDataFromDb['datetime '],false);
                 $FHIRMedicationRequest->getAuthoredOn()->setValue($authoredOnDate);
             }
 
@@ -276,6 +334,20 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
         $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>$drugCode,"display"=>$drugDisplay,"system"=>$drugSystem));
         $FHIRMedicationRequest->setMedicationCodeableConcept($FHIRCodeableConcept);
 
+        $substituteDbVal=$medicationRequestDataFromDb['substitute'];
+          if(!is_null($substituteDbVal)) {
+              $bool= (in_array($substituteDbVal,array(1,true,"1")) ) ? true : false;
+              $FHIRBoolean = $this->createFHIRBoolean($bool);
+              $FHIRMedicationRequest->getSubstitution()->setAllowedBoolean($FHIRBoolean);
+          }
+
+        if(!is_null($medicationRequestDataFromDb['active'])) {
+                $statusList = $this->getStatusList();
+                $fhirStatus=$statusList[$medicationRequestDataFromDb['active']];
+                $FHIRMedicationRequest->getStatus()->setValue($fhirStatus);
+        }
+
+
 
         //*************************************************************************************************************
 
@@ -284,25 +356,77 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
 
         $boundsPeriod=$timing->getRepeat()->getBoundsPeriod();
 
+        if(!is_null($medicationRequestDataFromDb['dosage'])){
+            $FHIRDecimal=$this->createFHIRDecimal($medicationRequestDataFromDb['dosage']);
+            $dosageInstruction->getDoseAndRate()[0]->getDoseQuantity()->setValue($FHIRDecimal);
+        }
 
-        if(!empty($medicationRequestDataFromDb['end_date'])){
+        $maxDosePerAdministration=$dosageInstruction->getMaxDosePerAdministration();
+
+        if(!is_null($medicationRequestDataFromDb['quantity'])){
+            $FHIRDecimal=$this->createFHIRDecimal($medicationRequestDataFromDb['quantity']);
+            $maxDosePerAdministration->setValue($FHIRDecimal);
+        }
+
+        if(!is_null($medicationRequestDataFromDb['size'])){
+            $FHIRCode=$this->createFHIRCode($medicationRequestDataFromDb['size']);
+            $maxDosePerAdministration->setCode($FHIRCode);
+        }
+
+        if(!is_null($medicationRequestDataFromDb['unit'])){
+            $FHIRString=$this->createFHIRString($medicationRequestDataFromDb['unit']);
+            $maxDosePerAdministration->setUnit($FHIRString);
+            $maxDosePerAdministration->setSystem(self::DOSAGE_UNIT_SYSTEM);
+
+        }
+
+        if(!is_null($medicationRequestDataFromDb['end_date'])){
             $end= $this->createFHIRDateTime($medicationRequestDataFromDb['end_date'],null,null,false);
             $boundsPeriod->getEnd()->setValue($end);
         }
 
-        if(!empty($medicationRequestDataFromDb['start_date'])){
+        if(!is_null($medicationRequestDataFromDb['start_date'])){
             $start= $this->createFHIRDateTime($medicationRequestDataFromDb['start_date'],null,null,false);
             $boundsPeriod->getStart()->setValue($start);
         }
 
-        $methodCode=$medicationRequestDataFromDb['form'];
-        if(!empty($methodCode)){
-            $methodText="3";
-            $methodSystem="2";
-            $method=$this->createFHIRCodeableConcept(array("code"=>$methodCode,"text"=>$methodText,"system"=>$methodSystem));
+
+        $siteCode=$medicationRequestDataFromDb['site'];
+        if(!is_null($siteCode)){
+            $formList=$this->getSiteList();
+            $methodText=$formList[$siteCode];
+            $methodSystem=self::LIST_SYSTEM_LINK.self::DRUG_SITE_LIST;
+            $method=$this->createFHIRCodeableConcept(array("code"=>$siteCode,"text"=>$methodText,"system"=>$methodSystem));
+            $dosageInstruction->setSite($method);
+        }
+
+        $formCode=$medicationRequestDataFromDb['form'];
+        if(!is_null($formCode)){
+            $formList=$this->getFormList();
+            $methodText=$formList[$formCode];
+            $methodSystem=self::LIST_SYSTEM_LINK.self::DRUG_FORM_LIST;
+            $method=$this->createFHIRCodeableConcept(array("code"=>$formCode,"text"=>$methodText,"system"=>$methodSystem));
             $dosageInstruction->setMethod($method);
         }
 
+        $routeCode=$medicationRequestDataFromDb['route'];
+        if(!is_null($routeCode)){
+            $routeList=$this->getRouteList();
+            $methodText=$routeList[$routeCode];
+            $methodSystem=self::LIST_SYSTEM_LINK.self::DRUG_ROUTE_LIST;
+            $route=$this->createFHIRCodeableConcept(array("code"=>$routeCode,"text"=>$methodText,"system"=>$methodSystem));
+            $dosageInstruction->setRoute($route);
+        }
+
+        $intervalCode=$medicationRequestDataFromDb['interval'];
+        if(!is_null($intervalCode)){
+
+            $intervalList=$this->getIntervalList();
+            $methodText=$intervalList[$intervalCode];
+            $methodSystem=self::LIST_SYSTEM_LINK.self::DRUG_INTERVAL_LIST;
+            $interval=$this->createFHIRCodeableConcept(array("code"=>$intervalCode,"text"=>$methodText,"system"=>$methodSystem));
+            $timing->setCode($interval);
+        }
 
         //*************************************************************************************************************
 
@@ -366,6 +490,7 @@ class FhirMedicationRequestMapping extends FhirBaseMapping  implements MappingDa
             $codeVal=$this->createFHIRCode($code)->getValue();
             $FHIRMedicationRequestStatus->setValue($codeVal);
         }
+
         return $FHIRMedicationRequestStatus;
 
     }
