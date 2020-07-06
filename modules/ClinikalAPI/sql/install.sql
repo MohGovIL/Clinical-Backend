@@ -38,7 +38,7 @@ CREATE TABLE `clinikal_patient_tracking_changes` (
 ) ;
 
 CREATE TABLE `clinikal_templates_map` (
-  `form_id` int(11) NOT NULL,
+  `form_id` varchar(50) NOT NULL COMMENT 'FK registry -> directory',
   `form_field` varchar(50) NOT NULL,
   `service_type` varchar(50) NOT NULL,
   `reason_code` varchar(50) NOT NULL,
