@@ -88,8 +88,7 @@ class MedicationRequest Extends Restful implements  Strategy
     }
 
     /**
-     * set FHIRAddress element
-     *
+     * search in FHIRMedicationRequest elements
      *
      * @return FHIRBundle
      */
@@ -103,7 +102,7 @@ class MedicationRequest Extends Restful implements  Strategy
             'container'=>$this->container,
             'paramsFromUrl'=>$this->paramsFromUrl,
             'paramsFromBody'=>$this->paramsFromBody,
-            'buildThisSearch' => self::SEARCHSTRATEGYPATH . 'PrescriptionsSearch'
+            'buildThisSearch' => self::SEARCHSTRATEGYPATH . 'MedicationRequestSearch'
         );
 
         $searchContext = new SearchContext($paramsToSearch);
