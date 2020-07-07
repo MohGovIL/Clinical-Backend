@@ -219,7 +219,7 @@ class DocumentReference extends Restful implements  Strategy
         $docId =$this->paramsFromUrl[0];
         $result = $this->updateDbData($dbData,$docId);
         if($result) {
-            return $this->mapping->DBToFhir($dbData);
+            return $this->mapping->parsedJsonToFHIR($this->paramsFromBody['POST_PARSED_JSON']);
         }
         else {
             return self::$errorCodes::http_response_code(500);
@@ -233,7 +233,7 @@ class DocumentReference extends Restful implements  Strategy
         $documentsCategoriesTable = $this->container->get(DocumentsCategoriesTable::class);
 
         $params = array('documents.id' => $id);
-        $documentsDataFromDb = $documentsTable->buildGenericSelect($params);
+        $documentsDataFromDb = $documentsTable->buildGenericSelect($params)[0];
 
         if ($data['documents']["storagemethod"] == $documentsDataFromDb['storageMethod']) {
             $creationDate = date("Y-m-d H:i:s");
@@ -261,11 +261,11 @@ class DocumentReference extends Restful implements  Strategy
                 $data['documents']['couch_revid'] = $uploadResult['rev'];
             }
         }
-        $docsResult = $documentsTable->safeUpdate($data, array('id' => $id));
+        $docsResult = $documentsTable->safeUpdate($data['documents'], array('id' => $id));
         if (!$docsResult) {
             return false;
         }
-        $catResult = $documentsCategoriesTable->safeUpdate($data, array('document_id' => $id));
+        $catResult = $documentsCategoriesTable->safeUpdate($data['categories_to_documents'], array('document_id' => $id));
         if (!$catResult) {
             return false;
         }
