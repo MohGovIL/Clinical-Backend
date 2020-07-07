@@ -243,6 +243,10 @@ class DocumentReference extends Restful implements  Strategy
                 $updateArray['id'] = $documentsDataFromDb['couchDocId'];
                 $updateArray['rev'] = $documentsDataFromDb['couchRevId'];
             }
+            /*
+            For couchdb this is an update.
+            For S3 it is a delete and insert (can't rename an S3 object so can't just update).
+            */
             $uploadResult = $this->uploadToStorage($data, $updateArray);
             if ($data['documents']["storagemethod"] == self::S3_STORAGE) {
                 $s3Service = new S3Service($this->getContainer());
@@ -274,7 +278,7 @@ class DocumentReference extends Restful implements  Strategy
     {
         if ($GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE) {
             // save to S3
-            $creationDateUnixTs = strtotime($creationDate);
+            $creationDateUnixTs = strtotime($arr['documents']['date']);
             $url = $this->createS3Url(
                 $GLOBALS['s3_bucket_name'],
                 $GLOBALS['s3_path'],
@@ -284,7 +288,7 @@ class DocumentReference extends Restful implements  Strategy
             $s3Service = new S3Service($this->getContainer());
             $s3Service->connect();
             $decoData = base64_decode($arr['storage']['data']);
-            $result = $s3Service->saveObject($url, $decoData);
+            $result['success'] = $s3Service->saveObject($url, $decoData);
             if ($result != false) {
                 $result['url'] = $url;
             }
@@ -299,9 +303,9 @@ class DocumentReference extends Restful implements  Strategy
             else {
                 $result = $couchdbService->saveDoc($arr['storage']['data'], false);
             }
-
-            return $result;
         }
+
+        return $result;
     }
 
 

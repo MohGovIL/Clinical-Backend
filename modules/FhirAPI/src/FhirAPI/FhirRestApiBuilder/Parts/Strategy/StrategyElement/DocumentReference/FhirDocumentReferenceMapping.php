@@ -51,7 +51,7 @@ class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingDa
         $dbArr["documents"]["type"] = self::DOC_TYPE;
         $dbArr["documents"]["storagemethod"] = $GLOBALS['clinikal_storage_method'];
 
-        if(isset($FhirObject->id)) {
+        if($FhirObject->id->getValue()) {
             $dbArr["documents"]["id"] = $FhirObject->id->getValue();
         }
         $dbArr["documents"]["url"] = $FhirObject->content[0]->attachment->url->getValue();
@@ -60,7 +60,7 @@ class FhirDocumentReferenceMapping extends FhirBaseMapping  implements MappingDa
         $dbArr["documents"]["foreign_id"] = explode("/", $FhirObject->context->sourcePatientInfo->reference->getValue())[1];
         $dbArr["documents"]["encounter_id"] = explode("/", $FhirObject->context->encounter[0]->reference->getValue())[1];
 
-        if(isset($FhirObject->id)) {
+        if($FhirObject->id->getValue()) {
             $dbArr['categories_to_documents']['document_id'] = $FhirObject->id->getValue();
         }
         $dbArr["categories_to_documents"]["category_id"] = $FhirObject->category[0]->coding[0]->code->getValue();
