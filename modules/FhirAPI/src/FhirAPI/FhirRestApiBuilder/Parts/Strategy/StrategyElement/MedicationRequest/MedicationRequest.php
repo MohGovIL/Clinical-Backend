@@ -161,4 +161,19 @@ class MedicationRequest Extends Restful implements  Strategy
         return $patch->patch();
     }
 
+
+    public function delete()
+    {
+        $id=$this->paramsFromUrl[0];
+        $prescriptionsTable = $this->container->get(PrescriptionsTable::class);
+        $delete=$prescriptionsTable->deleteDataByParams(array("id"=>$id));
+        if($delete===1){
+            return $this->mapping->createDeleteSuccessRespond();
+        }else{
+            $explanation="failed to delete from db ";
+            return $this->mapping->createDeleteFailRespond($id,$explanation);
+        }
+
+    }
+
 }
