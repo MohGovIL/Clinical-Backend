@@ -34,9 +34,12 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
 
     private $loincCodes= array();
     private $lonicDbMappig= array();
+    private $categoryList= array();
 
     CONST LONIC_ORG="loinc_org";
     CONST LONIC_SYSTEM="http://loinc.org";
+    CONST CATEGORY_SYSTEM="http://hl7.org/fhir/ValueSet/observation-category";
+    CONST CATEGORY_LIST="observation-category";
 
 
 
@@ -53,6 +56,8 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         $this->setLonicDbMappig($listOutcome);
         $this->setLoincCodes($listOutcome);
 
+        $categoryList = $ListsTable->getList(self::CATEGORY_LIST);
+        $this->setCategoryList($categoryList);
 
 
     }
@@ -113,7 +118,18 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         return $this->loincCodes;
     }
 
+    public function setCategoryList($list)
+    {
+        foreach($list as $code =>$dataArr){
+            $this->categoryList[$code]=$dataArr['title'];
+        }
+        return $this->categoryList;
+    }
 
+    public function getCategoryList()
+    {
+        return $this->categoryList;
+    }
 
 
 
@@ -156,7 +172,7 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
 
         $dbObservation['activity'] =  $FHIRObservation->getStatus()->getValue();
         $dbObservation['note'] = $FHIRObservation->getNote()[0]->getText()->getValue();
-        $dbObservation['category'] = $FHIRObservation->getCategory()[0]->getText()->getValue();
+        $dbObservation['category'] = $FHIRObservation->getCategory()[0]->getCoding()[0]->getCode()->getValue();
 
         $components=$FHIRObservation->getComponent();
 
@@ -273,7 +289,18 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
             }
 
             if(!is_null($observationDataFromDb['category'])){
-                $FHIRObservation->getCategory()[0]->setText($observationDataFromDb['category']);
+
+                $category=$FHIRObservation->getCategory()[0];
+                $categoryCoding=$category->getCoding()[0];
+
+                $FHIRCode=$this->createFHIRCode($observationDataFromDb['category']);
+                $categoryCoding->setCode($FHIRCode);
+
+                $FHIRUri=$this->createFHIRUri(self::CATEGORY_SYSTEM);
+                $categoryCoding->setSystem($FHIRUri);
+
+                $categoryCodeList=$this->getCategoryList();
+                $category->setText($categoryCodeList[$observationDataFromDb['category']]);
             }
 
             $DbToLonicMappig=$this->getDbToLonicMappig();

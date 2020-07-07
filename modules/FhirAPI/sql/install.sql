@@ -267,3 +267,17 @@ ADD `glucose` INT NULL AFTER `external_id`,
 ADD `pain_severity` INT NULL AFTER `glucose`,
 ADD `eid` INT NULL AFTER `pain_severity`,
 ADD `category` VARCHAR(255) NULL AFTER `eid`;
+
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`)
+VALUES
+('lists', 'observation-category', 'Observation category', 0, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'social-history', 'Social History', 10, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'vital-signs', 'Vital Signs', 20, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'imaging', 'Imaging', 30, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'laboratory', 'Laboratory', 40, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'procedure', 'Procedure', 50, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'survey', 'Survey', 60, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'exam', 'Exam', 70, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'therapy', 'Therapy', 80, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('observation-category', 'activity', 'Activity', 90, 0, 0, '', '', '', 0, 0, 1, '', 1);
