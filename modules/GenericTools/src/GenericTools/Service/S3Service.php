@@ -55,16 +55,14 @@ class S3Service
         }
     }
 
-    public function deleteDocument($id, $rev)
+    public function deleteObject($url)
     {
-        try{
-            $response = $this->connection->deleteDocument($id, $rev);
-
-        } catch(HTTPException $e){
-            $message=$e->getMessage();
-            return $message;
+        try {
+            $result = unlink($url);
+            return $result;
+        }catch (AwsException $e) {
+            echo $e->getMessage() . "\n";
+            return false;
         }
-
-        return true;
     }
 }

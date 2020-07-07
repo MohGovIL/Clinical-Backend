@@ -64,6 +64,27 @@ class CouchdbService
 
     }
 
+
+    public function putDocument($data, $id, $rev, $encode = true)
+    {
+        if($encode) {
+            $data =  base64_encode($data);
+        }
+        try {
+            $dataArr = array(
+                'data' => $data,
+                'encounter' => '',
+                'mimetype' => 'application/pdf',
+                'pid' => isset($_SESSION['pid']) ? $_SESSION['pid'] : ''
+            );
+            $couch  = $this->connection->putDocument($dataArr, $id, $rev);
+            return array('id' => $couch[0], 'rev' => $couch[1]);
+        } catch (HTTPException $e) {
+            error_log('Update doc error : ' . json_encode((array)$e));
+            return false;
+        }
+    }
+
     public function deleteDocument($id, $rev)
     {
         try{

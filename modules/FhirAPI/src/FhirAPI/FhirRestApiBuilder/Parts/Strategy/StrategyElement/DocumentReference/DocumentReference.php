@@ -68,29 +68,22 @@ class DocumentReference extends Restful implements  Strategy
         $creationDateUnixTs = strtotime($documentsDataFromDb['date']);
         $documentsDataFromDb['url'] = ltrim(basename($documentsDataFromDb['url']), $creationDateUnixTs . "_");
 
-        if (
-            $GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE
-            &&
-            $documentsDataFromDb['storageMethod'] == S3Service::STORAGE_METHOD_CODE
-        ) {
-            //get file from S3
-            $s3Service = new S3Service($this->getContainer());
-            $s3Service->connect();
-            $data = $s3Service->fetchObject($fullUrl);
-            $encData = base64_encode($data);
-            $documentsDataFromDb['fileData'] = $encData;
-        }
-        elseif (
-            $GLOBALS['clinikal_storage_method'] == CouchdbService::STORAGE_METHOD_CODE
-            &&
-            $documentsDataFromDb['storageMethod'] == CouchdbService::STORAGE_METHOD_CODE
-        ) {
-            //get document from couchdb
-            $couchdbService = new CouchdbService($this->getContainer());
-            $couchdbService->connect();
-            $documentsDataFromDb['fileData'] = $couchdbService->fetchDoc($documentsDataFromDb['couchDocId'], false);
-        }
+        if ($GLOBALS['clinikal_storage_method'] == $documentsDataFromDb['storageMethod']) {
 
+            if ($documentsDataFromDb['storageMethod'] == S3Service::STORAGE_METHOD_CODE) {
+                //get file from S3
+                $s3Service = new S3Service($this->getContainer());
+                $s3Service->connect();
+                $data = $s3Service->fetchObject($fullUrl);
+                $encData = base64_encode($data);
+                $documentsDataFromDb['fileData'] = $encData;
+            } elseif ($documentsDataFromDb['storageMethod'] == CouchdbService::STORAGE_METHOD_CODE) {
+                //get document from couchdb
+                $couchdbService = new CouchdbService($this->getContainer());
+                $couchdbService->connect();
+                $documentsDataFromDb['fileData'] = $couchdbService->fetchDoc($documentsDataFromDb['couchDocId'], false);
+            }
+        }
         //convert data (fill empty object)
         $documentsObj = $this->mapping->DBToFhir($documentsDataFromDb);
 
@@ -120,7 +113,6 @@ class DocumentReference extends Restful implements  Strategy
 
         //todo :what happens if insert db success and couch fails and vice versa
 
-        //get db connections
         $documentsTable = $this->container->get(DocumentsTable::class);
         $documentsCategoriesTable = $this->container->get(DocumentsCategoriesTable::class);
 
@@ -134,46 +126,17 @@ class DocumentReference extends Restful implements  Strategy
         $creationDate = date("Y-m-d H:i:s");
         $dbStructuredData['documents']['date'] = $creationDate;
 
-        $valid = $this->mapping->validateDb($dbStructuredData);
-        if(!$valid) {
-            return self::$errorCodes::http_response_code(406);
+        // upload to storage
+        $result = $this->uploadToStorage($dbStructuredData);
+        if ($result == false) {
+            return self::$errorCodes::http_response_code(500);
         }
-
-        if (
-            $GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE
-            &&
-            $dbStructuredData['documents']['storagemethod'] == S3Service::STORAGE_METHOD_CODE
-        ) {
-            // save to S3
-            $creationDateUnixTs = strtotime($creationDate);
-            $dbStructuredData['documents']['url'] = $this->createS3Url(
-                $GLOBALS['s3_bucket_name'],
-                $GLOBALS['s3_path'],
-                $dbStructuredData['documents']['url'],
-                $creationDateUnixTs
-            );
-            $s3Service = new S3Service($this->getContainer());
-            $s3Service->connect();
-            $decoData = base64_decode($dbStructuredData['storage']['data']);
-            $result = $s3Service->saveObject($dbStructuredData['documents']['url'], $decoData);
-            if ($result == false) {
-                return self::$errorCodes::http_response_code(500);
-            }
+        if($dbStructuredData["documents"]["storagemethod"] == self::S3_STORAGE) {
+            $dbStructuredData['documents']['url'] = $result['url'];
         }
-        elseif (
-            $GLOBALS['clinikal_storage_method'] == CouchdbService::STORAGE_METHOD_CODE
-            &&
-            $dbStructuredData['documents']['storageMethod'] == CouchdbService::STORAGE_METHOD_CODE
-        ) {
-            // save to couchdb
-            $couchdbService = new CouchdbService($this->getContainer());
-            $couchdbService->connect();
-            $couchdbIds = $couchdbService->saveDoc($dbStructuredData['storage']['data'], false);
-            if ($couchdbIds == false) {
-                return self::$errorCodes::http_response_code(500);
-            }
-            $dbStructuredData['documents']['couch_docid'] = $couchdbIds['id'];
-            $dbStructuredData['documents']['couch_revid'] = $couchdbIds['rev'];
+        elseif($dbStructuredData["documents"]["storagemethod"] == self::COUCH_STORAGE) {
+            $dbStructuredData['documents']['couch_docid'] = $result['id'];
+            $dbStructuredData['documents']['couch_revid'] = $result['rev'];
         }
 
         // save to documents table
@@ -199,6 +162,7 @@ class DocumentReference extends Restful implements  Strategy
 
         //get data from mariadb
         $documentsTable = $this->container->get(DocumentsTable::class);
+        $documentsCategoriesTable = $this->container->get(DocumentsCategoriesTable::class);
         $docId=$this->paramsFromUrl[0];
         $params = array('documents.id' => $docId);
         $documentsDataFromDb = $documentsTable->buildGenericSelect($params);
@@ -209,22 +173,35 @@ class DocumentReference extends Restful implements  Strategy
             return $this->mapping->createDeleteFailRespond($docId,$explanation,$moreInfo);
         }
         $documentsDataFromDb = $documentsDataFromDb[0];
-        $couchDocId=$documentsDataFromDb['couchDocId'];
-        $couchRevId=$documentsDataFromDb['couchRevId'];
         $mysqlID=$documentsDataFromDb['id'];
-
-        //get data from couchdb
-        $couchdbService = new CouchdbService($this->getContainer());
-        $couchdbService->connect();
-        $rez = $couchdbService->deleteDocument($couchDocId, $couchRevId);
-
+        if (
+            $GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE
+            &&
+            $documentsDataFromDb['storageMethod'] == S3Service::STORAGE_METHOD_CODE
+        ) {
+            $s3Service = new S3Service($this->getContainer());
+            $s3Service->connect();
+            $rez = $s3Service->deleteObject($documentsDataFromDb['url']);
+        }
+        elseif (
+            $GLOBALS['clinikal_storage_method'] == CouchdbService::STORAGE_METHOD_CODE
+            &&
+            $documentsDataFromDb['storageMethod'] == CouchdbService::STORAGE_METHOD_CODE
+        ) {
+            $couchDocId = $documentsDataFromDb['couchDocId'];
+            $couchRevId = $documentsDataFromDb['couchRevId'];
+            $couchdbService = new CouchdbService($this->getContainer());
+            $couchdbService->connect();
+            $rez = $couchdbService->deleteDocument($couchDocId, $couchRevId);
+        }
         if($rez!==true){
-            $explanation="failed to delete from doc db";
+            $explanation="failed to delete from storage";
             return $this->mapping->createDeleteFailRespond($docId,$explanation,$rez);
         }else{
 
-            $delete=$documentsTable->deleteDataByParams(array("id"=>$mysqlID));
-            if($delete===1){
+            $deleteDoc=$documentsTable->deleteDataByParams(array("id"=>$mysqlID));
+            $deleteCat=$documentsCategoriesTable->deleteDataByParams(array("document_id"=>$mysqlID));
+            if($deleteDoc===1 && $deleteCat===1){
                 return $this->mapping->createDeleteSuccessRespond();
             }else{
                 $explanation="failed to delete from db ";
@@ -235,11 +212,105 @@ class DocumentReference extends Restful implements  Strategy
 
     }
 
+
+    public function update()
+    {
+        $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
+        $docId =$this->paramsFromUrl[0];
+        $result = $this->updateDbData($dbData,$docId);
+        if($result) {
+            return $this->mapping->DBToFhir($dbData);
+        }
+        else {
+            return self::$errorCodes::http_response_code(500);
+        }
+    }
+
+
+    private function updateDbData($data, $id)
+    {
+        $documentsTable = $this->container->get(DocumentsTable::class);
+        $documentsCategoriesTable = $this->container->get(DocumentsCategoriesTable::class);
+
+        $params = array('documents.id' => $id);
+        $documentsDataFromDb = $documentsTable->buildGenericSelect($params);
+
+        if ($data['documents']["storagemethod"] == $documentsDataFromDb['storageMethod']) {
+            $creationDate = date("Y-m-d H:i:s");
+            $data['documents']['date'] = $creationDate;
+            $updateArray = array();
+            if ($data['documents']["storagemethod"] == self::COUCH_STORAGE) {
+                $updateArray['id'] = $documentsDataFromDb['couchDocId'];
+                $updateArray['rev'] = $documentsDataFromDb['couchRevId'];
+            }
+            $uploadResult = $this->uploadToStorage($data, $updateArray);
+            if ($data['documents']["storagemethod"] == self::S3_STORAGE) {
+                $s3Service = new S3Service($this->getContainer());
+                $s3Service->connect();
+                $deleteResult = $s3Service->deleteObject($documentsDataFromDb['url']);
+                if (!$deleteResult) {
+                    return false;
+                }
+                $data['documents']['url'] = $uploadResult['url'];
+            } elseif ($data['documents']["storagemethod"] == self::COUCH_STORAGE) {
+                $data['documents']['couch_docid'] = $uploadResult['id'];
+                $data['documents']['couch_revid'] = $uploadResult['rev'];
+            }
+        }
+        $docsResult = $documentsTable->safeUpdate($data, array('id' => $id));
+        if (!$docsResult) {
+            return false;
+        }
+        $catResult = $documentsCategoriesTable->safeUpdate($data, array('document_id' => $id));
+        if (!$catResult) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    private function uploadToStorage($arr, $updateArr = array())
+    {
+        if ($GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE) {
+            // save to S3
+            $creationDateUnixTs = strtotime($creationDate);
+            $url = $this->createS3Url(
+                $GLOBALS['s3_bucket_name'],
+                $GLOBALS['s3_path'],
+                $arr['documents']['url'],
+                $creationDateUnixTs
+            );
+            $s3Service = new S3Service($this->getContainer());
+            $s3Service->connect();
+            $decoData = base64_decode($arr['storage']['data']);
+            $result = $s3Service->saveObject($url, $decoData);
+            if ($result != false) {
+                $result['url'] = $url;
+            }
+        }
+        elseif ($GLOBALS['clinikal_storage_method'] == CouchdbService::STORAGE_METHOD_CODE) {
+            // save to couchdb
+            $couchdbService = new CouchdbService($this->getContainer());
+            $couchdbService->connect();
+            if(empty($updateArr)) {
+                $result = $couchdbService->putDoc($arr['storage']['data'], $updateArr['id'], $updateArr['rev'], false);
+            }
+            else {
+                $result = $couchdbService->saveDoc($arr['storage']['data'], false);
+            }
+
+            return $result;
+        }
+    }
+
+
     private function createS3Url($bucket, $path, $filename, $unixtime)
     {
         $separator = "_";
         return "s3://${bucket}/${path}/${unixtime}${separator}${filename}";
     }
+
 
     private function parseS3Url($url)
     {
@@ -247,4 +318,5 @@ class DocumentReference extends Restful implements  Strategy
         $arr = explode("/", $url);
         return $arr;
     }
+
 }
