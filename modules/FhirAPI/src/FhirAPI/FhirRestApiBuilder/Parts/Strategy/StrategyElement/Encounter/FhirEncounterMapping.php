@@ -262,6 +262,8 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
             }
         }
 
+        $FHIREncounter->extension=array_values($FHIREncounter->getExtension());
+
         $this->FHIREncounter=$FHIREncounter;
 
         return $FHIREncounter;
@@ -367,6 +369,17 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 
     public function updateDbData($data,$id)
     {
+        $formEncounterTable = $this->container->get(FormEncounterTable::class);
+        $lastStatusState=$formEncounterTable->getStatusStateByEid($id);
+        if(
+            $data['form_encounter']['secondary_status']!= $lastStatusState['secondary_status'] ||
+            $data['form_encounter']['status']!= $lastStatusState['status']
+        ){
+            $data['form_encounter']['status_update_date']=date("Y-m-d H:i:s");
+        }else{
+            unset($data['form_encounter']['status_update_date']);
+        }
+        
         $formEncounterTable = $this->container->get(FormEncounterTable::class);
         $data['form_encounter']['id']=$id;
         $encounterReasonCodeMapTable = $this->container->get(EncounterReasonCodeMapTable::class);

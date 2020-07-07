@@ -24,7 +24,7 @@ trait ConversionsTrait
                 }
             }
             else {
-                if($obj->$key && method_exists($obj->$key, "setValue")) {
+                if(property_exists($obj,$key) && method_exists($obj->$key, "setValue")) {
                     $obj->$key->setValue($value);
                 }else{
                     $methodName='set'.ucfirst($key);

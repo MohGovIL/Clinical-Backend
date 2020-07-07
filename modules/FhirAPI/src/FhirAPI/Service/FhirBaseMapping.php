@@ -12,6 +12,7 @@ use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRElement;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRDecimal;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRExtension;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAnnotation;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRId;
@@ -25,6 +26,7 @@ use OpenEMR\FHIR\R4\FHIRElement\FHIRIssueSeverity;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRIssueType;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRNarrative;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRNarrativeStatus;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRQuantity;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRString;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAddress;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRCode;
@@ -71,6 +73,10 @@ class FhirBaseMapping
     private $fhirRequestParamsHandler = null;
 
     CONST   LIST_SYSTEM_LINK="http://clinikal/valueset/";
+    CONST   PATIENT_URI="Patient/";
+    CONST   PRACTITIONER_URI="Practitioner/";
+    CONST   ENCOUNTER_URI="Encounter/";
+
 
     use ConversionsTrait;
 
@@ -1186,6 +1192,58 @@ class FhirBaseMapping
     }
 
 
+    /**
+     * create FHIRQuantity
+     *
+     * @param string
+     *
+     * @return FHIRDecimal | null
+     */
+    public function createFHIRDecimal($value)
+    {
+        $FHIRDecimal = new FHIRDecimal;
+
+        if (empty($value)) {
+            return $FHIRDecimal;
+        }
+
+        $this->fhirRequestParamsHandler::checkByPreg($value, 'decimal', 'ALLOW_NULL_ERROR');
+        $FHIRDecimal->setValue($value);
+
+        return $FHIRDecimal;
+    }
+
+    /**
+     * create FHIRQuantity
+     *
+     * @param array
+     *
+     * @return FHIRQuantity | null
+     */
+    public function createFHIRQuantity(array $quantityArr)
+    {
+        $FHIRQuantity = new FHIRQuantity;
+
+        $code= key_exists('code',$quantityArr) ? $quantityArr['code'] : null;
+        $FHIRCode= $this->createFHIRCode($code);
+        $FHIRQuantity->setCode($FHIRCode);
+
+        $value= key_exists('value',$quantityArr) ? $quantityArr['value'] : null;
+        $FHIRDecimal= $this->createFHIRDecimal($value);
+        $FHIRQuantity->setValue($FHIRDecimal);
+
+        $system= key_exists('system',$quantityArr) ? $quantityArr['system'] : null;
+        $FHIRUri=$this->createFHIRUri($system);
+        $FHIRQuantity->setSystem($FHIRUri);
+
+        $unit= key_exists('unit',$quantityArr) ? $quantityArr['unit'] : null;
+        $FHIRString=$this->createFHIRString($unit);
+        $FHIRQuantity->setUnit($FHIRString);
+
+        return $FHIRQuantity;
+    }
+
+
     /*
      * order data by extension order
      * remove unneeded extension
@@ -1215,6 +1273,7 @@ class FhirBaseMapping
         return $data;
 
     }
+
 
 
 }

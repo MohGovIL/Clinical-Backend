@@ -6,22 +6,28 @@ namespace FhirAPI\FhirRestApiBuilder\Parts;
 
 class Registry
 {
-    protected static $data = [];
+    protected static $data =[];
     protected static $function = "function";
     static function setPart( $builder,$type,$operation,$key, $value){
-        if(is_null( self::$data[$builder])){
-            self::$data[$builder]  = [];
+
+        if(!is_null($builder)){
+            if(!key_exists($builder, self::$data)){
+                self::$data[$builder]  = [];
+            }
+            if(!is_null($operation)){
+                if(!key_exists($operation, self::$data[$builder])){
+                    self::$data[$builder][$operation]  = [];
+                }
+                if(!empty($type)  && !key_exists($type,self::$data[$builder][$operation])){
+                    self::$data[$builder][$operation][$type]  = [];
+                    self::$data[$builder][$operation][$type][$key]=$value;
+                }
+                else{
+                    self::$data[$builder][$operation][$key]=$value;
+                }
+            }
         }
-        if(is_null( self::$data[$builder][$operation])){
-            self::$data[$builder][$operation]  = [];
-        }
-        if($type != "" && is_null( self::$data[$builder][$operation][$type])){
-            self::$data[$builder][$operation][$type]  = [];
-            self::$data[$builder][$operation][$type][$key]=$value;
-        }
-        else{
-            self::$data[$builder][$operation][$key]=$value;
-        }
+
 
 
     }
