@@ -223,3 +223,6 @@ CREATE TABLE `form_context_map` (
 );
 #EndIf
 
+#IfNotColumnType clinikal_templates_map form_id varchar(50)
+ALTER TABLE `clinikal_templates_map` CHANGE `form_id` `form_id` VARCHAR(50) NOT NULL COMMENT 'FK registry -> directory';
+#EndIf
