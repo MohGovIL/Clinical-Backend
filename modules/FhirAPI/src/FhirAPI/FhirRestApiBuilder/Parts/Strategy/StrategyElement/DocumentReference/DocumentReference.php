@@ -68,6 +68,7 @@ class DocumentReference extends Restful implements  Strategy
         $creationDateUnixTs = strtotime($documentsDataFromDb['date']);
         $documentsDataFromDb['url'] = ltrim(basename($documentsDataFromDb['url']), $creationDateUnixTs . "_");
 
+        // only try to fetch if the global storage method matches this storage method used to store this object
         if ($GLOBALS['clinikal_storage_method'] == $documentsDataFromDb['storageMethod']) {
 
             if ($documentsDataFromDb['storageMethod'] == S3Service::STORAGE_METHOD_CODE) {
@@ -174,25 +175,20 @@ class DocumentReference extends Restful implements  Strategy
         }
         $documentsDataFromDb = $documentsDataFromDb[0];
         $mysqlID=$documentsDataFromDb['id'];
-        if (
-            $GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE
-            &&
-            $documentsDataFromDb['storageMethod'] == S3Service::STORAGE_METHOD_CODE
-        ) {
-            $s3Service = new S3Service($this->getContainer());
-            $s3Service->connect();
-            $rez = $s3Service->deleteObject($documentsDataFromDb['url']);
-        }
-        elseif (
-            $GLOBALS['clinikal_storage_method'] == CouchdbService::STORAGE_METHOD_CODE
-            &&
-            $documentsDataFromDb['storageMethod'] == CouchdbService::STORAGE_METHOD_CODE
-        ) {
-            $couchDocId = $documentsDataFromDb['couchDocId'];
-            $couchRevId = $documentsDataFromDb['couchRevId'];
-            $couchdbService = new CouchdbService($this->getContainer());
-            $couchdbService->connect();
-            $rez = $couchdbService->deleteDocument($couchDocId, $couchRevId);
+
+        // only try to delete if the global storage method matches this storage method used to store this object
+        if($GLOBALS['clinikal_storage_method'] == $documentsDataFromDb['storageMethod']) {
+            if ($documentsDataFromDb['storageMethod'] == S3Service::STORAGE_METHOD_CODE) {
+                $s3Service = new S3Service($this->getContainer());
+                $s3Service->connect();
+                $rez = $s3Service->deleteObject($documentsDataFromDb['url']);
+            } elseif ($documentsDataFromDb['storageMethod'] == CouchdbService::STORAGE_METHOD_CODE) {
+                $couchDocId = $documentsDataFromDb['couchDocId'];
+                $couchRevId = $documentsDataFromDb['couchRevId'];
+                $couchdbService = new CouchdbService($this->getContainer());
+                $couchdbService->connect();
+                $rez = $couchdbService->deleteDocument($couchDocId, $couchRevId);
+            }
         }
         if($rez!==true){
             $explanation="failed to delete from storage";
@@ -235,6 +231,10 @@ class DocumentReference extends Restful implements  Strategy
         $params = array('documents.id' => $id);
         $documentsDataFromDb = $documentsTable->buildGenericSelect($params)[0];
 
+        /*
+        Only try to update if the storage method of the new object matches this storage method used to store old object
+        (this means that it also matches the global storage method because it's used to set the method in the new object)
+        */
         if ($data['documents']["storagemethod"] == $documentsDataFromDb['storageMethod']) {
             $creationDate = date("Y-m-d H:i:s");
             $data['documents']['date'] = $creationDate;
@@ -244,7 +244,7 @@ class DocumentReference extends Restful implements  Strategy
                 $updateArray['rev'] = $documentsDataFromDb['couchRevId'];
             }
             /*
-            For couchdb this is an update.
+            For couchdb this an actual update is performed.
             For S3 it is a delete and insert (can't rename an S3 object so can't just update).
             */
             $uploadResult = $this->uploadToStorage($data, $updateArray);
@@ -261,6 +261,8 @@ class DocumentReference extends Restful implements  Strategy
                 $data['documents']['couch_revid'] = $uploadResult['rev'];
             }
         }
+
+        //update mariadb
         $docsResult = $documentsTable->safeUpdate($data['documents'], array('id' => $id));
         if (!$docsResult) {
             return false;
@@ -274,11 +276,15 @@ class DocumentReference extends Restful implements  Strategy
     }
 
 
+    // Uploads to the storage engine/service in use (e.g. couchdb or S3).
+    // In case of an update, can pass required params to $updateArr.
+    // Note that an S3 update is actually a delete + insert.
     private function uploadToStorage($arr, $updateArr = array())
     {
         if ($GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE) {
             // save to S3
             $creationDateUnixTs = strtotime($arr['documents']['date']);
+            // create full url for s3
             $url = $this->createS3Url(
                 $GLOBALS['s3_bucket_name'],
                 $GLOBALS['s3_path'],

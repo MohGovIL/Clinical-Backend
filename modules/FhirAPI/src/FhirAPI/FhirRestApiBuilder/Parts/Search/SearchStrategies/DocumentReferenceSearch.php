@@ -26,6 +26,7 @@ class DocumentReferenceSearch extends BaseSearch
         $documentsDataFromDb = $this->searchThisTable->buildGenericSelect($this->paramsToDB);
 
         if($summary !== "true") {
+            //create service objects
             if($GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE) {
                 $s3Service = new S3Service($this->container);
                 $s3Service->connect();
@@ -43,6 +44,7 @@ class DocumentReferenceSearch extends BaseSearch
             $creationDateUnixTs = strtotime($document['date']);
             $document['url'] = ltrim(basename($document['url']), $creationDateUnixTs . "_");
 
+            // only try to fetch if the global storage method matches this storage method used to store this object
             if($s3Service && $document['storageMethod'] == S3Service::STORAGE_METHOD_CODE) {
                 $data = $s3Service->fetchObject($fullUrl);
                 $encData = base64_encode($data);
