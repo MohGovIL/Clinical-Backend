@@ -135,5 +135,3 @@ VALUES
 ('6', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment amount'),
 ('7', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment method'),
 ('8', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Receipt number');
-
-INSERT INTO `globals` (`gl_name`, `gl_value`) VALUES ('s3_version', '2006-03-01');

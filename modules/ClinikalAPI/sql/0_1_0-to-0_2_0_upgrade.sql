@@ -226,7 +226,3 @@ CREATE TABLE `form_context_map` (
 #IfNotColumnType clinikal_templates_map form_id varchar(50)
 ALTER TABLE `clinikal_templates_map` CHANGE `form_id` `form_id` VARCHAR(50) NOT NULL COMMENT 'FK registry -> directory';
 #EndIf
-
-#IfNotRow2D globals gl_name s3_version gl_value 2006-03-01
-INSERT INTO `globals` (`gl_name`, `gl_value`) VALUES ('s3_version', '2006-03-01');
-#EndIf
