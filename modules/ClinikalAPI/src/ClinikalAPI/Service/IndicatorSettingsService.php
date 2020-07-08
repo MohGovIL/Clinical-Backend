@@ -22,17 +22,17 @@ trait IndicatorSettingsService
         $listsTable=$this->container->get(ListsTable::class);
         $lionicListTable =  $listsTable->getAllList($indicator,'seq','ASC');
         foreach($lionicListTable as $key=>$val){
-            $searchParam = $val['title'];
+            $searchParam = $val['option_id'];
             $arrTemp=[];
             switch($searchParam){
-                case "Oxygen saturation in Blood":
-                case "Heart rate --sitting":
-                case "Pain severity - 0-10 verbal numeric rating [Score] - Reported":
-                case "Body temperature":
-                case "Diastolic blood pressure":
-                case "Systolic blood pressure":
-                case "Glucose [Mass/volume] in Serum, Plasma or Blood":
-                case "Respiratory rate --resting":
+                case '20564-1'://"Oxygen saturation in Blood":
+                case '69000-8'://"Heart rate --sitting":
+                case '72514-3'://"Pain severity - 0-10 verbal numeric rating [Score] - Reported":
+                case '8310-5'://"Body temperature":
+                case '8462-4'://"Diastolic blood pressure":
+                case '8480-6'://"Systolic blood pressure":
+                case '74774-1'://"Glucose [Mass/volume] in Serum, Plasma or Blood":
+                case '9303-9'://"Respiratory rate --resting":
 
                         $arrTemp['description'] =  $val['title'];
                         $arrTemp['code'] = $key;
@@ -47,8 +47,8 @@ trait IndicatorSettingsService
                         $indicators['variant'][$key]=$arrTemp;
                     }
                 break;
-                case "Body height --standing":
-                case "Body weight Estimated":
+                case '8308-9'://"Body height --standing":
+                case '8335-2'://"Body weight Estimated":
 
                 $arrTemp['description'] =  $val['title'];
                 $arrTemp['code'] = $key;
