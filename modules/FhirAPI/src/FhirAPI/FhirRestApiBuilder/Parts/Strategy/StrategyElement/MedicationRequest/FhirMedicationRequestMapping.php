@@ -41,13 +41,13 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
     private $status_list = array();
     private $drug_list = array();
 
-    const DRUG_SYSTEM = "http://clinikal/valueset/drugs";
+    const DRUG_SYSTEM = "drugs";
     const DRUG_ROUTE_LIST = "drug_route";
     const DRUG_INTERVAL_LIST = "drug_interval";
     const DRUG_FORM_LIST = "drug_form";
     const DRUG_SITE_LIST = "drug_site";
     const STATUS_LIST = "medicationrequest_status";
-    const DOSAGE_UNIT_SYSTEM = "http://clinikal/valueset/units";
+    const DOSAGE_UNIT_SYSTEM = "units";
 
     public function __construct(ContainerInterface $container)
     {
@@ -458,7 +458,7 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
                 $drugList = $this->getDrugList();
                 $drugDisplay = $drugList['$drugCode'];
             }
-            $drugSystem = self::DRUG_SYSTEM;
+            $drugSystem = self::LIST_SYSTEM_LINK.self::DRUG_SYSTEM;
             $FHIRCodeableConcept = $this->createFHIRCodeableConcept(array(
                 "code" => $drugCode,
                 "display" => $drugDisplay,
@@ -509,7 +509,7 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
         if (!is_null($medicationRequestDataFromDb['unit'])) {
             $FHIRString = $this->createFHIRString($medicationRequestDataFromDb['unit']);
             $maxDosePerAdministration->setUnit($FHIRString);
-            $maxDosePerAdministration->setSystem(self::DOSAGE_UNIT_SYSTEM);
+            $maxDosePerAdministration->getSystem()->setValue( self::LIST_SYSTEM_LINK.self::DOSAGE_UNIT_SYSTEM);
 
         }
 
