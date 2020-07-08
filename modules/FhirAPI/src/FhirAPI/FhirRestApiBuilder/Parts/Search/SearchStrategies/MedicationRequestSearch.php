@@ -23,6 +23,7 @@ class MedicationRequestSearch extends BaseSearch
         $this->paramHandler('encounter', 'encounter');
         $this->paramHandler('patient', 'patient_id');
         $this->paramHandler('recorder', 'provider_id');
+        $this->paramHandler('requester', 'user');
         $this->paramHandler('code', 'drug_id');
 
         $this->searchParams = $this->paramsToDB;
