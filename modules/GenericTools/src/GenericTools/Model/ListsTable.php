@@ -181,7 +181,7 @@ class ListsTable
     }
 
     public function getAllList($listId,$orderBy = null,$typeOfOrder = null)
-    {xdebug_break();
+    {
         $rsArray=array();
 
         if($orderBy!==null) {

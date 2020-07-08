@@ -15,7 +15,7 @@ trait IndicatorSettingsService
 {
     public function getIndicatorSettings($indicator)
     {
-        xdebug_break();
+
         $indicators=array();
         $indicators['constant'];
         $indicators['variant'];

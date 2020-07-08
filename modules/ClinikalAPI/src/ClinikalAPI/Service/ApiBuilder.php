@@ -102,7 +102,7 @@ class ApiBuilder
             },
             "GET /api/indicator-settings" => function () {
                 //exit php or return 401 if not authorized
-                xdebug_break();
+
                 $this->checkAcl("clinikal_api", "general_settings");
                 return $this->getIndicatorSettings(self::LIONIC_CODES);
             },
