@@ -171,15 +171,24 @@ abstract class BaseSearch implements SearchInt
     public function addSortParams($fhir,$db)
     {
         $sortParam=$this->paramsAvaliable[self::_SORT];
-        if( !empty($sortParam['fhir_place']) &&  !empty($sortParam['openemr_column'])  ) {
+        $fhirPlaceCount= substr_count($sortParam['fhir_place'],",");
+        $openemrColumnCount=   substr_count($sortParam['openemr_column'],",");
+
+        /*
+         *  if both number of commas is zero add names without comma
+         *  if number of commas are equal add names with comma
+         *  if number of commas are not equal - add nothing - this should not happen
+         */
+
+        if( $fhirPlaceCount!==0 &&  $fhirPlaceCount === $openemrColumnCount) {
             $fhir=",".$fhir;
             $db=",".$db;
 
-        }elseif( ! (empty($sortParam['fhir_place']) &&  empty($sortParam['openemr_column']) )){
-            $fhir="";
-            $db="";
-        }
-
+        }elseif(!($openemrColumnCount===0 && $fhirPlaceCount===0)) {
+                $fhir="";
+                $db="";
+            }
+        
         $this->paramsAvaliable[self::_SORT]['fhir_place'].=$fhir;
         $this->paramsAvaliable[self::_SORT]['openemr_column'].=$db;
 
