@@ -32,6 +32,8 @@ abstract class BaseSearch implements SearchInt
     const COLLECT_FHIR_OBJECT = "collect_fhir_object";
     const SUBJECT = "Subject";
     const COUNT = "Count";
+    const FHIR_ELM_PATH="FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\\";
+
     protected $_search;
     protected $type;
     protected $FHIRBundle;
@@ -166,6 +168,23 @@ abstract class BaseSearch implements SearchInt
     # Restructing of parameters
     /* ------------ */
 
+    public function addSortParams($fhir,$db)
+    {
+        $sortParam=$this->paramsAvaliable[self::_SORT];
+        if( !empty($sortParam['fhir_place']) &&  !empty($sortParam['openemr_column'])  ) {
+            $fhir=",".$fhir;
+            $db=",".$db;
+
+        }elseif( ! (empty($sortParam['fhir_place']) &&  empty($sortParam['openemr_column']) )){
+            $fhir="";
+            $db="";
+        }
+
+        $this->paramsAvaliable[self::_SORT]['fhir_place'].=$fhir;
+        $this->paramsAvaliable[self::_SORT]['openemr_column'].=$db;
+
+    }
+
     public function buildSortParams()
     {
         $sortMapping = array_combine(explode(",", $this->paramsAvaliable[self::_SORT]['fhir_place']), explode(",", $this->paramsAvaliable[self::_SORT]['openemr_column']));
@@ -175,7 +194,7 @@ abstract class BaseSearch implements SearchInt
 
         if (is_array($this->sortParams[self::_SORT])) {
             foreach ($this->sortParams[self::_SORT] as $key => $value) {
-                $this->orderParams[$key] = $sortMapping[$value[self::VALUE]] . " " . $value[self::OPERATOR];
+                $this->orderParams[$key] = $sortMapping[trim($value[self::VALUE])] . " " . $value[self::OPERATOR];
             }
         } else {
             $this->orderParams[self::_SORT] = $sortMapping[trim($this->sortParams[self::_SORT])];
@@ -428,13 +447,57 @@ abstract class BaseSearch implements SearchInt
     public function runMysqlQuery()
     {
         $dataFromDb = $this->searchThisTable->buildGenericSelect($this->searchParams, implode(",", $this->orderParams), array());
+        $includeFlag= !empty($this->includeParams);
         foreach ($dataFromDb as $key => $data) {
+            if($includeFlag){
+                foreach ($this->includeParams as $index => $include){
+                    if(!empty($include[1]) && !empty($data[$include[1]]) ){
+                        $this->includeParams[$index][3]=$data[$include[1]];
+                    }
+                }
+            }
             $this->fhirObj->initFhirObject();
             $FHIRResourceContainer = new FHIRResourceContainer($this->fhirObj->DBToFhir($data));
             $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'match');
-            // $this->FHIRBundle->deletePatient();
+        }
+
+        if($includeFlag){
+            foreach ($this->includeParams as $index => $include){
+                $FHIRElm=$include[2];
+                $readId= $include[3];
+                if(!empty($FHIRElm) && !empty($readId)){
+                    $class = self::FHIR_ELM_PATH.$FHIRElm."\\".$FHIRElm;
+                    $initials=array();
+                    $initials['paramsFromUrl']=array("0"=>1);
+                    $initials['paramsFromBody']=array();
+                    $initials['container']=$this->container;
+                    $FHIRElmClass=new $class($initials);
+                    $FHIRElmOBJ=$FHIRElmClass->read();
+                    $FHIRResourceContainer = new FHIRResourceContainer($FHIRElmOBJ);
+                    $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'include');
+                }
+            }
+        }
+
+    }
+
+
+    public function includeParamHandler($fhirIncludeParam,$IncludeParamMap,$fhirType )
+    {
+        if (is_array($this->includeParams)){
+            foreach ($this->includeParams as $index => $data){
+                if (is_array($data)){
+                        $includeName = $data[0];
+                        if ($fhirIncludeParam===$includeName){
+                            $this->includeParams[$index][1]=$IncludeParamMap;
+                            $this->includeParams[$index][2]=$fhirType;
+                        }
+                }
+            }
         }
     }
+
+
 
 
 }
