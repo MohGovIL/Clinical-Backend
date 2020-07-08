@@ -215,6 +215,14 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
             $dbMedicationRequest['provider_id']=null;
         }
 
+        $requesterRef=$FHIRMedicationRequest->getRequester()->getReference()->getValue();
+        if (strpos($requesterRef, self::PRACTITIONER_URI) !== false ) {
+            $requester=substr($requesterRef,strlen(self::PRACTITIONER_URI),20);
+            $dbMedicationRequest['user']= (!empty($requester)) ? $requester : null ;
+        }else{
+            $dbMedicationRequest['user']=null;
+        }
+
         $authoredOn=$FHIRMedicationRequest->getAuthoredOn();
         $authoredOnDate= (is_object($authoredOn)) ? $authoredOn->getValue() : null;
         if(!empty($authoredOnDate)){
@@ -375,6 +383,7 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
         $FHIRMedicationRequest->setSubject(deep_copy($FHIRReference));
         $FHIRMedicationRequest->setEncounter(deep_copy($FHIRReference));
         $FHIRMedicationRequest->setRecorder(deep_copy($FHIRReference));
+        $FHIRMedicationRequest->setRequester(deep_copy($FHIRReference));
 
         $FHIRMedicationrequestStatus = $this->createFHIRMedicationRequestStatus();
         $FHIRMedicationRequest->setStatus($FHIRMedicationrequestStatus);
@@ -421,6 +430,11 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
             if (!is_null($medicationRequestDataFromDb['provider_id'])) {
                 $recorderRef = self::PRACTITIONER_URI . $medicationRequestDataFromDb['provider_id'];
                 $FHIRMedicationRequest->getRecorder()->getReference()->setValue($recorderRef);
+            }
+
+            if (!is_null($medicationRequestDataFromDb['user'])) {
+                $requesterRef = self::PRACTITIONER_URI . $medicationRequestDataFromDb['user'];
+                $FHIRMedicationRequest->getRequester()->getReference()->setValue($requesterRef);
             }
 
             if (!is_null($medicationRequestDataFromDb['datetime'])) {
