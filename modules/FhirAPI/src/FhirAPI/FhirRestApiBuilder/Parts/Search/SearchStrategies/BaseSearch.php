@@ -465,6 +465,7 @@ abstract class BaseSearch implements SearchInt
         $includeFlag= !empty($this->includeParams);
         foreach ($dataFromDb as $key => $data) {
             if($includeFlag){
+                // collect the id for the include for later use
                 foreach ($this->includeParams as $index => $include){
                     if(!empty($include[1]) && !empty($data[$include[1]]) ){
                         $this->includeParams[$index][3]=$data[$include[1]];
