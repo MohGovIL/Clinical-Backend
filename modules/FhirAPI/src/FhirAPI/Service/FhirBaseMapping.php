@@ -27,6 +27,8 @@ use OpenEMR\FHIR\R4\FHIRElement\FHIRIssueType;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRNarrative;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRNarrativeStatus;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRQuantity;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRQuantity\FHIRDuration;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRRange;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRString;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAddress;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRCode;
@@ -47,6 +49,8 @@ use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle\FHIRBundleSearch;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle\FHIRBundleResponse;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRSearchEntryMode;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRBundleType;
+use OpenEMR\FHIR\R4\FHIRResource\FHIRTiming;
+use OpenEMR\FHIR\R4\FHIRResource\FHIRTiming\FHIRTimingRepeat;
 use OpenEMR\FHIR\R4\FHIRResourceContainer;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRUnsignedInt;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIROperationOutcome;
@@ -94,6 +98,27 @@ class FhirBaseMapping
     }
 
     /**
+     * check if elment is of fhir type
+     *
+     * @param object
+     * @param string
+     *
+     * @return bool
+     */
+    public function checkFHIRType($element,$typeName)
+    {
+        if(is_object($element)){
+            if(method_exists($element,'get_fhirElementName')){
+                if($element->get_fhirElementName()===$typeName){
+                    return true;
+                }
+            }
+        }
+        return false;
+
+    }
+
+    /**
      * create FHIRId element
      *
      * @param integer
@@ -135,7 +160,7 @@ class FhirBaseMapping
      *
      * @return FHIRDateTime
      */
-    public function createFHIRDateTime($date, $time = null, $dateTime = null)
+    public function createFHIRDateTime($date, $time = null, $dateTime = null,$completeTime=true)
     {
         $FHIRDateTime = new FHIRDateTime;
 
@@ -155,10 +180,14 @@ class FhirBaseMapping
                 return null;
             }
         } else {
-            if (is_null($time)) {
-                $FHIRDateTime->setValue($date . "T" . date('H:i:s') . ".000Z");
-            } else {
-                $FHIRDateTime->setValue($date . "T" . $time . ".000Z");
+            if($completeTime){
+                if (is_null($time)) {
+                    $FHIRDateTime->setValue($date . "T" . date('H:i:s') . ".000Z");
+                } else {
+                    $FHIRDateTime->setValue($date . "T" . $time . ".000Z");
+                }
+            }else{
+                $FHIRDateTime->setValue($date);
             }
         }
 
@@ -542,7 +571,7 @@ class FhirBaseMapping
         $FHIRBoolean = new FHIRBoolean;
 
         if(!is_null($bool)){
-            $bool= ($bool && $bool!='false') ? "true" : "false";
+            $bool= ($bool && $bool!=='false') ? "true" : "false";
         }
 
         $this->fhirRequestParamsHandler::checkByPreg($bool, 'boolean', 'ALLOW_NULL_ERROR');
@@ -1274,6 +1303,129 @@ class FhirBaseMapping
 
     }
 
+
+    /**
+     * create FHIRTiming
+     *
+     * @param array
+     *
+     * @return FHIRTiming | null
+     */
+    public function createFHIRTiming(array $timingArr)
+    {
+        $FHIRTiming = new FHIRTiming;
+
+        if(is_array($timingArr['timing_repeat'])){
+            $FHIRTimingRepeat=$this->createFHIRTimingRepeat($timingArr['timing_repeat']);
+        }else{
+            $FHIRTimingRepeat=$this->createFHIRTimingRepeat(array());
+        }
+        $FHIRTiming->setRepeat($FHIRTimingRepeat);
+
+        if(is_array($timingArr['code'])){
+            $FHIRCodeableConcept=$this->createFHIRCodeableConcept($timingArr['code']);
+        }else{
+
+            $FHIRCodeableConcept=$this->createFHIRCodeableConcept(array("code"=>null,"text"=>"","system"=>""));
+        }
+        $FHIRTiming->setCode($FHIRCodeableConcept);
+
+        return $FHIRTiming;
+    }
+
+    /**
+     * create FHIRTimingRepeat
+     *
+     * @param array
+     *
+     * @return FHIRTimingRepeat | null
+     */
+    public function createFHIRTimingRepeat(array $timingRepeatArr)
+    {
+        $FHIRTimingRepeat = new FHIRTimingRepeat;
+
+        if(is_array($timingRepeatArr['range'])){
+            $FHIRRange=$this->createFHIRRange($timingRepeatArr['range']['low'],$timingRepeatArr['range']['high']);
+        }else{
+            $FHIRRange=$this->createFHIRRange(array(),array());
+        }
+        $FHIRTimingRepeat->setBoundsRange($FHIRRange);
+
+
+        if(is_array($timingRepeatArr['duration'])){
+
+            $FHIRDuration=$this->createFHIRDuration($timingRepeatArr['duration']);
+        }else{
+            $FHIRDuration=$this->createFHIRDuration(array());
+        }
+        $FHIRTimingRepeat->setBoundsDuration($FHIRDuration);
+
+        if(is_array($timingRepeatArr['duration'])){
+
+            $FHIRPeriod=$this->createFHIRPeriod($timingRepeatArr['period']);
+        }else{
+            $FHIRPeriod=$this->createFHIRPeriod(array());
+        }
+
+        $FHIRTimingRepeat->setBoundsPeriod($FHIRPeriod);
+
+        return $FHIRTimingRepeat;
+    }
+
+    /**
+     * create FHIRRange
+     *
+     * @param $lowArr
+     * @param $highArr
+     *
+     * @return FHIRRange | null
+     */
+    public function createFHIRRange( array $lowArr, array $highArr)
+    {
+        $FHIRRange = new FHIRRange;
+
+        if(is_array($highArr)){
+            $FHIRQuantityHigh = $this->createFHIRQuantity($highArr);
+        }else{
+            $FHIRQuantityHigh = $this->createFHIRQuantity(array());
+        }
+        $FHIRRange->setHigh($FHIRQuantityHigh);
+
+        if(is_array($lowArr)){
+            $FHIRQuantityLow = $this->createFHIRQuantity($lowArr);
+        }else{
+            $FHIRQuantityLow = $this->createFHIRQuantity(array());
+        }
+        $FHIRRange->setLow($FHIRQuantityLow);
+
+        return $FHIRRange;
+    }
+
+    /**
+     * create FHIRDuration
+     *
+     * @param $data
+     *
+     * @return FHIRDuration | null
+     */
+    public function createFHIRDuration( array $data)
+    {
+        $FHIRDuration = new FHIRDuration;
+
+        $FHIRCode=$this->createFHIRCode($data['code']);
+        $FHIRDuration->setCode($FHIRCode);
+
+        $FHIRDecimal=$this->createFHIRDecimal($data['decimal']);
+        $FHIRDuration->setValue($FHIRDecimal);
+
+        $FHIRString=$this->createFHIRString($data['string']);
+        $FHIRDuration->setUnit($FHIRString);
+
+        $FHIRUri=$this->createFHIRUri($data['uri']);
+        $FHIRDuration->setSystem($FHIRUri);
+
+        return $FHIRDuration;
+    }
 
 
 }

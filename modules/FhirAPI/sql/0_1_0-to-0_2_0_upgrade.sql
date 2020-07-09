@@ -268,14 +268,6 @@ ALTER TABLE `openemr_postcalendar_events` ADD `pc_service_type` INT NULL DEFAULT
 ALTER TABLE `openemr_postcalendar_events` ADD `pc_healthcare_service_id` INT NULL DEFAULT NULL AFTER `pc_service_type`;
 #EndIf
 
-
-
-
-
-
-
-
-
 #IfNotRow fhir_rest_elements name Organization
 INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES
 ('Organization', 1);
@@ -491,4 +483,23 @@ VALUES
 ('observation-category', 'exam', 'Exam', 70, 0, 0, '', '', '', 0, 0, 1, '', 1),
 ('observation-category', 'therapy', 'Therapy', 80, 0, 0, '', '', '', 0, 0, 1, '', 1),
 ('observation-category', 'activity', 'Activity', 90, 0, 0, '', '', '', 0, 0, 1, '', 1);
+#EndIf
+
+#IfNotRow fhir_rest_elements name MedicationRequest
+INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES
+('MedicationRequest', 1);
+#EndIf
+
+#IfNotRow2D list_options list_id lists option_id medicationrequest_status
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`)
+VALUES
+('lists', 'medicationrequest_status', 'medicationrequest status', 0, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '1', 'active', 10, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '2', 'on-hold', 20, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '0', 'cancelled', 30, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '3', 'completed', 40, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '4', 'entered-in-error', 50, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '5', 'stopped', 60, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '6', 'draft', 70, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '7', 'unknown', 80, 0, 0, '', '', '', 0, 0, 1, '', 1);
 #EndIf

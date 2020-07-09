@@ -163,7 +163,8 @@ VALUES
 ('RelatedPerson', 1),
 ('MedicationStatement', 1),
 ('Condition', 1),
-('Observation', 1);
+('Observation', 1),
+('MedicationRequest', 1);
 
 INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
 ('fhir_type_validation', 0, '0');
@@ -281,3 +282,16 @@ VALUES
 ('observation-category', 'exam', 'Exam', 70, 0, 0, '', '', '', 0, 0, 1, '', 1),
 ('observation-category', 'therapy', 'Therapy', 80, 0, 0, '', '', '', 0, 0, 1, '', 1),
 ('observation-category', 'activity', 'Activity', 90, 0, 0, '', '', '', 0, 0, 1, '', 1);
+
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`)
+VALUES
+('lists', 'medicationrequest_status', 'medicationrequest status', 0, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '1', 'active', 10, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '2', 'on-hold', 20, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '0', 'cancelled', 30, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '3', 'completed', 40, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '4', 'entered-in-error', 50, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '5', 'stopped', 60, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '6', 'draft', 70, 0, 0, '', '', '', 0, 0, 1, '', 1),
+('medicationrequest_status', '7', 'unknown', 80, 0, 0, '', '', '', 0, 0, 1, '', 1);
