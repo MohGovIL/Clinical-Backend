@@ -478,7 +478,7 @@ abstract class BaseSearch implements SearchInt
                     $class = self::FHIR_ELM_PATH.$FHIRElm."\\".$FHIRElm;
                     if(class_exists($class)){
                         $initials=array();
-                        $initials['paramsFromUrl']=array("0"=>1);
+                        $initials['paramsFromUrl']=array("0"=>$readId);
                         $initials['paramsFromBody']=array();
                         $initials['container']=$this->container;
                         $FHIRElmClass=new $class($initials);
