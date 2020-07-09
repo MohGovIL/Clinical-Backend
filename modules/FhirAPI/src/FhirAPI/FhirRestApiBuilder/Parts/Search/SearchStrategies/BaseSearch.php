@@ -188,7 +188,7 @@ abstract class BaseSearch implements SearchInt
                 $fhir="";
                 $db="";
             }
-        
+
         $this->paramsAvaliable[self::_SORT]['fhir_place'].=$fhir;
         $this->paramsAvaliable[self::_SORT]['openemr_column'].=$db;
 
@@ -476,14 +476,17 @@ abstract class BaseSearch implements SearchInt
                 $readId= $include[3];
                 if(!empty($FHIRElm) && !empty($readId)){
                     $class = self::FHIR_ELM_PATH.$FHIRElm."\\".$FHIRElm;
-                    $initials=array();
-                    $initials['paramsFromUrl']=array("0"=>1);
-                    $initials['paramsFromBody']=array();
-                    $initials['container']=$this->container;
-                    $FHIRElmClass=new $class($initials);
-                    $FHIRElmOBJ=$FHIRElmClass->read();
-                    $FHIRResourceContainer = new FHIRResourceContainer($FHIRElmOBJ);
-                    $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'include');
+                    if(class_exists($class)){
+                        $initials=array();
+                        $initials['paramsFromUrl']=array("0"=>1);
+                        $initials['paramsFromBody']=array();
+                        $initials['container']=$this->container;
+                        $FHIRElmClass=new $class($initials);
+                        $FHIRElmOBJ=$FHIRElmClass->read();
+                        $FHIRResourceContainer = new FHIRResourceContainer($FHIRElmOBJ);
+                        $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'include');
+                    }
+
                 }
             }
         }
