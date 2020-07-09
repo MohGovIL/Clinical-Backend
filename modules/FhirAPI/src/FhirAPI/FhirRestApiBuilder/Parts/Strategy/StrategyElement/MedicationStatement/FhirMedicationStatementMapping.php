@@ -206,12 +206,12 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         $period = $FHIRMedicationStatement->getEffectivePeriod();
 
         if (!is_null($medicationStatementDataFromDb['begdate'])) {
-            $date = $this->createFHIRDateTime($medicationStatementDataFromDb['begdate']);
+            $date = $this->createFHIRDateTime($medicationStatementDataFromDb['begdate'],null,null,false);
             $period->setStart($date);
         }
 
         if (!is_null($medicationStatementDataFromDb['enddate'])) {
-            $date = $this->createFHIRDateTime($medicationStatementDataFromDb['enddate']);
+            $date = $this->createFHIRDateTime($medicationStatementDataFromDb['enddate'],null,null,false);
             $period->setEnd($date);
         }
 

@@ -139,7 +139,7 @@ class FhirOrganizationMapping extends FhirBaseMapping implements MappingData
 
     /**
      * @param FHIROrganization $FHIROrganization
-     * @return FhirPractitionerMapping
+     * @return FHIROrganizationMapping
      */
     public function setFHIROrganization(FHIROrganization $FHIROrganization)
     {

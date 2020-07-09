@@ -69,46 +69,46 @@ ALTER TABLE `registry` ADD `component_name` VARCHAR(255) NULL AFTER `aco_spec`;
 DELETE FROM list_options where list_id="drug_route" OR option_id="drug_route";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
 ('lists', 'drug_route', 'Drug Route', 0, 1),
-('drug_route', 'per_oris', 'Per oris', 10, 1),
-('drug_route', 'to_skin', 'To skin', 20, 1),
-('drug_route', 'per_nostril', 'Per nostril', 30, 1),
-('drug_route', 'both_ears', 'Both ears', 40, 1),
-('drug_route', 'other', 'Other', 50, 1);
+('drug_route', '1', 'Per oris', 10, 1),
+('drug_route', '2', 'To skin', 20, 1),
+('drug_route', '3', 'Per nostril', 30, 1),
+('drug_route', '4', 'Both ears', 40, 1),
+('drug_route', '5', 'Other', 50, 1);
 
 
 
 DELETE FROM list_options where list_id="drug_interval" OR option_id="drug_interval";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
 ('lists', 'drug_interval', 'Drug interval', 0, 1),
-('drug_interval', 'once_a_day', 'Once a day', 10, 1),
-('drug_interval', 'twice_a_day', 'Twice a day', 20, 1),
-('drug_interval', '3_times_a_day', '3 times a day', 30, 1),
-('drug_interval', '4_times_a_day', '4 times a day', 40, 1),
-('drug_interval', 'every_hour', 'Every hour', 50, 1),
-('drug_interval', 'every_3_hours', 'Every 3 hours', 60, 1),
-('drug_interval', 'every_4_hours', 'Every 4 hours', 70, 1),
-('drug_interval', 'every_5_hours', 'Every 5 hours', 80, 1),
-('drug_interval', 'every_6_hours', 'Every 6 hours', 90, 1),
-('drug_interval', 'every_8_hours', 'Every 8 hours', 100, 1),
-('drug_interval', 'before_eating', 'Before eating', 110, 1),
-('drug_interval', 'after_eating', 'After eating', 120, 1),
-('drug_interval', 'before_noon', 'Before noon', 130, 1),
-('drug_interval', 'afternoon', 'Afternoon', 140, 1),
-('drug_interval', 'before_bedtime', 'Before bedtime', 150, 1),
-('drug_interval', 'as_needed', 'As needed', 160, 1);
+('drug_interval', '1', 'Once a day', 10, 1),
+('drug_interval', '2', 'Twice a day', 20, 1),
+('drug_interval', '3', '3 times a day', 30, 1),
+('drug_interval', '4', '4 times a day', 40, 1),
+('drug_interval', '5', 'Every hour', 50, 1),
+('drug_interval', '6', 'Every 3 hours', 60, 1),
+('drug_interval', '7', 'Every 4 hours', 70, 1),
+('drug_interval', '8', 'Every 5 hours', 80, 1),
+('drug_interval', '9', 'Every 6 hours', 90, 1),
+('drug_interval', '10', 'Every 8 hours', 100, 1),
+('drug_interval', '11', 'Before eating', 110, 1),
+('drug_interval', '12', 'After eating', 120, 1),
+('drug_interval', '13', 'Before noon', 130, 1),
+('drug_interval', '14', 'Afternoon', 140, 1),
+('drug_interval', '15', 'Before bedtime', 150, 1),
+('drug_interval', '16', 'As needed', 160, 1);
 
 
 DELETE FROM list_options where list_id="drug_form" OR option_id="drug_form";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
 ('lists', 'drug_form', 'Drug Form', 0, 1),
-('drug_form', 'tablet', 'Tablet', 10, 1),
-('drug_form', 'drops', 'Drops', 20, 1),
-('drug_form', 'tsp', 'Tsp', 30, 1),
-('drug_form', 'ml', 'ml', 40, 1),
-('drug_form', 'ointment', 'Ointment', 50, 1),
-('drug_form', 'cream', 'Cream', 60, 1),
-('drug_form', 'solution', 'Solution', 70, 1),
-('drug_form', 'suspension', 'Suspension', 80, 1);
+('drug_form', '1', 'Tablet', 10, 1),
+('drug_form', '2', 'Drops', 20, 1),
+('drug_form', '3', 'Tsp', 30, 1),
+('drug_form', '4', 'ml', 40, 1),
+('drug_form', '5', 'Ointment', 50, 1),
+('drug_form', '6', 'Cream', 60, 1),
+('drug_form', '7', 'Solution', 70, 1),
+('drug_form', '8', 'Suspension', 80, 1);
 
 
 CREATE TABLE form_commitment_questionnaire(
@@ -135,7 +135,3 @@ VALUES
 ('6', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment amount'),
 ('7', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment method'),
 ('8', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Receipt number');
-
-
-
-

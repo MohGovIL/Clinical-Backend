@@ -18,6 +18,8 @@
  */
 namespace ClinikalAPI;
 
+use ClinikalAPI\Model\ListOptions;
+use ClinikalAPI\Model\ListOptionsTable;
 use ClinikalAPI\Service\ApiBuilder;
 
 use Interop\Container\ContainerInterface;
@@ -96,6 +98,14 @@ class Module {
                     $table = new GetTemplatesServiceTable($tableGateway);
                     return $table;
                 },
+                GetLionicCodesTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new ListOptions());
+                    $tableGateway = new ZendTableGateway('list_options', $dbAdapter, null, $resultSetPrototype);
+                    $table = new ListOptionsTable($tableGateway);
+                    return $table;
+                },
             ),
         );
     }
@@ -126,7 +136,6 @@ class Module {
     {
         $apiBuilder= $this->sm->get(ApiBuilder::class);
         $extend_route_map=$apiBuilder->getApi();
-
         if (count($extend_route_map) > 0) {
             foreach ($extend_route_map as $route => $action) {
                 $m->addToRouteMap($route, $action);
