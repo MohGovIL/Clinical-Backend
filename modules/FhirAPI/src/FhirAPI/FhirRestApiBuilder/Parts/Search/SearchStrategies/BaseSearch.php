@@ -107,11 +107,27 @@ abstract class BaseSearch implements SearchInt
 
             $searchArguments = $params['PARAMETERS_FOR_ALL_RESOURCES'];
             foreach ($searchArguments as $type => $valArr) {
-                if(is_array($valArr[0])){
-                    $this->searchParams[$type] = $valArr[0]['value'];
-                }else{
-                    $this->searchParams[$type] = $valArr[0];
+
+                if (strpos($valArr[0], ",") !== false) {   // support arg=x,y,z
+
+                        foreach (explode(",", $valArr[0]) as $k => $v) {
+                            $this->searchParams[$type][] = array('value'=> $v);
+                        }
+                } else{
+                    if(is_array($valArr[0])){   // special case
+                        $this->searchParams[$type] = $valArr[0][''];
+                    }else{
+                        if(is_array($valArr)){   // support arg=x&arg=y
+                            foreach ($valArr as $i => $j) {
+                                $this->searchParams[$type][] = array('value'=> $j);
+                            }
+                        }else{ // support single value
+                            $this->searchParams[$type] = $valArr[0];
+                        }
+
+                    }
                 }
+
 
 
                 unset($params['PARAMETERS_FOR_ALL_RESOURCES'][$type]);
