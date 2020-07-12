@@ -226,3 +226,15 @@ CREATE TABLE `form_context_map` (
 #IfNotColumnType clinikal_templates_map form_id varchar(50)
 ALTER TABLE `clinikal_templates_map` CHANGE `form_id` `form_id` VARCHAR(50) NOT NULL COMMENT 'FK registry -> directory';
 #EndIf
+
+
+#IfNotRow fhir_value_sets id details_providing_medicine
+INSERT INTO `fhir_value_sets` (`id`, `title`)
+VALUES ('drugs_list', 'Drugs list');
+#EndIf
+
+
+#IfNotRow fhir_value_set_systems vs_id details_providing_medicine
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`,`filter`)
+VALUES ('drugs_list', '9911', 'Codes', NULL);
+#EndIf
