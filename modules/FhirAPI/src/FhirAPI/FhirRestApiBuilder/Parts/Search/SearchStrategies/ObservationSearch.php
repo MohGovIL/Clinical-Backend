@@ -24,8 +24,12 @@ class ObservationSearch extends BaseSearch
         $this->paramHandler('encounter','eid');
         $this->paramHandler('category','category');
 
-        $this->searchParams = $this->paramsToDB;
+        $this->addSortParams('issued','date'); //must run buildSortParams() after this in order to work
+        $this->buildSortParams();
 
+        $this->includeParamHandler('Observation:performer','user','Practitioner');
+
+        $this->searchParams = $this->paramsToDB;
         $this->runMysqlQuery();
         return $this->FHIRBundle;
 
