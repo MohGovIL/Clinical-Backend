@@ -527,6 +527,11 @@ abstract class BaseSearch implements SearchInt
         }
     }
 
+    /**
+     * @param $fhirIncludeParam string include search param
+     * @param $IncludeParamMap string db name of include field
+     * @param $fhirType  string  FHIR object name
+     */
 
     public function includeParamHandler($fhirIncludeParam,$IncludeParamMap,$fhirType )
     {
