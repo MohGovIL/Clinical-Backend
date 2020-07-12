@@ -481,17 +481,15 @@ abstract class BaseSearch implements SearchInt
         $includeFlag= !empty($this->includeParams);
         $tempIncludeParams=array();
         foreach ($dataFromDb as $key => $data) {
-            if($includeFlag){
-                // collect the id for the include for later use
+            if($includeFlag){  // if true collect the id for the include for later use
                 foreach ($this->includeParams as $index => $include){
                     if(!empty($include[1]) && !empty($data[$include[1]]) ){
                         $this->includeParams[$index][3]=$data[$include[1]];
 
                         if(empty($tempIncludeParams[$include[0]])){
-                            // enter new fhir include object
-                            $tempIncludeParams[$include[0]][0]= $this->includeParams[$index];
+                            $tempIncludeParams[$include[0]][0]= $this->includeParams[$index]; //new fhir include object
                         }else{
-                            $tempIncludeParams[$include[0]][0][3] .=",". $data[$include[1]];
+                            $tempIncludeParams[$include[0]][0][3] .=",". $data[$include[1]];  //add fhir include object
                         }
                     }
                 }
@@ -501,15 +499,14 @@ abstract class BaseSearch implements SearchInt
             $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'match');
         }
         $this->includeParams=$tempIncludeParams;
-        if($includeFlag){
-
+        if($includeFlag){  //perform search() for each include element
             foreach ($this->includeParams as $index => $include){
                 $FHIRElm=$include[0][2];
-                $readId= $include[0][3];
-                if(!empty($FHIRElm) && !empty($readId)){
+                $idStringList= $include[0][3];
+                if(!empty($FHIRElm) && !empty($idStringList)){
                     $class = self::FHIR_ELM_PATH.$FHIRElm."\\".$FHIRElm;
                     if(class_exists($class)){
-                        $paramsFromBody=array_keys(array_flip(explode(',',$readId)));
+                        $paramsFromBody=array_keys(array_flip(explode(',',$idStringList))); // remove duplicate values
                         $initials=array();
                         $initials['paramsFromUrl']=array();
                         $initials['paramsFromBody']['PARAMETERS_FOR_ALL_RESOURCES']=array('_id'=>$paramsFromBody);
@@ -519,7 +516,7 @@ abstract class BaseSearch implements SearchInt
                         $entries = $searchRez->getEntry();
                         foreach ($entries as $key => $value) {
                             $FHIRElmOBJ=$value->getResource();
-                            if(is_object($FHIRElmOBJ)){
+                            if(is_object($FHIRElmOBJ) && $FHIRElmOBJ->get_fhirElementName()===$FHIRElm){
                                 $FHIRResourceContainer = new FHIRResourceContainer($FHIRElmOBJ);
                                 $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'include');
                             }
