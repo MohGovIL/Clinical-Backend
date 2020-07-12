@@ -479,12 +479,20 @@ abstract class BaseSearch implements SearchInt
     {
         $dataFromDb = $this->searchThisTable->buildGenericSelect($this->searchParams, implode(",", $this->orderParams), array());
         $includeFlag= !empty($this->includeParams);
+        $tempIncludeParams=array();
         foreach ($dataFromDb as $key => $data) {
             if($includeFlag){
                 // collect the id for the include for later use
                 foreach ($this->includeParams as $index => $include){
                     if(!empty($include[1]) && !empty($data[$include[1]]) ){
                         $this->includeParams[$index][3]=$data[$include[1]];
+
+                        if(empty($tempIncludeParams[$include[0]])){
+                            // enter new fhir include object
+                            $tempIncludeParams[$include[0]][0]= $this->includeParams[$index];
+                        }else{
+                            $tempIncludeParams[$include[0]][0][3] .=",". $data[$include[1]];
+                        }
                     }
                 }
             }
@@ -492,28 +500,34 @@ abstract class BaseSearch implements SearchInt
             $FHIRResourceContainer = new FHIRResourceContainer($this->fhirObj->DBToFhir($data));
             $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'match');
         }
-
+        $this->includeParams=$tempIncludeParams;
         if($includeFlag){
+
             foreach ($this->includeParams as $index => $include){
-                $FHIRElm=$include[2];
-                $readId= $include[3];
+                $FHIRElm=$include[0][2];
+                $readId= $include[0][3];
                 if(!empty($FHIRElm) && !empty($readId)){
                     $class = self::FHIR_ELM_PATH.$FHIRElm."\\".$FHIRElm;
                     if(class_exists($class)){
+                        $paramsFromBody=array_keys(array_flip(explode(',',$readId)));
                         $initials=array();
-                        $initials['paramsFromUrl']=array("0"=>$readId);
-                        $initials['paramsFromBody']=array();
+                        $initials['paramsFromUrl']=array();
+                        $initials['paramsFromBody']['PARAMETERS_FOR_ALL_RESOURCES']=array('_id'=>$paramsFromBody);
                         $initials['container']=$this->container;
                         $FHIRElmClass=new $class($initials);
-                        $FHIRElmOBJ=$FHIRElmClass->read();
-                        $FHIRResourceContainer = new FHIRResourceContainer($FHIRElmOBJ);
-                        $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'include');
+                        $searchRez=$FHIRElmClass->search();
+                        $entries = $searchRez->getEntry();
+                        foreach ($entries as $key => $value) {
+                            $FHIRElmOBJ=$value->getResource();
+                            if(is_object($FHIRElmOBJ)){
+                                $FHIRResourceContainer = new FHIRResourceContainer($FHIRElmOBJ);
+                                $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'include');
+                            }
+                        }
                     }
-
                 }
             }
         }
-
     }
 
 
