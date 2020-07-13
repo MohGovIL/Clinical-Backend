@@ -164,7 +164,9 @@ VALUES
 ('MedicationStatement', 1),
 ('Condition', 1),
 ('Observation', 1),
-('MedicationRequest', 1);
+('MedicationRequest', 1),
+('ServiceRequest', 1);
+
 
 INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES
 ('fhir_type_validation', 0, '0');
@@ -293,3 +295,25 @@ VALUES
 ('medicationrequest_status', '5', 'stopped', 60, 0, 0, '', '', '', 0, 0, 1, '', 1),
 ('medicationrequest_status', '6', 'draft', 70, 0, 0, '', '', '', 0, 0, 1, '', 1),
 ('medicationrequest_status', '7', 'unknown', 80, 0, 0, '', '', '', 0, 0, 1, '', 1);
+
+
+CREATE TABLE `fhir_service_request` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category` int(11) DEFAULT NULL,
+  `encounter` int(11) DEFAULT NULL,
+  `reason_code` int(11) DEFAULT NULL,
+  `patient` int(11) DEFAULT NULL,
+  `instruction_code` int(11) DEFAULT NULL,
+  `order_detail_code` varchar(255) DEFAULT NULL,
+  `order_detail_system` varchar(255) DEFAULT NULL,
+  `patient_instruction` text DEFAULT NULL,
+  `requester` int(11) DEFAULT NULL,
+  `authored_on` datetime DEFAULT NULL,
+  `status` varchar(30) NOT NULL,
+  `intent` varchar(30) NOT NULL,
+  `note` text DEFAULT NULL,
+  `performer` int(11) DEFAULT NULL,
+  `occurrence_datetime` datetime DEFAULT NULL,
+  `reason_reference_doc_id` int(11) DEFAULT NULL,
+   PRIMARY KEY(`id`)
+) ENGINE=INNODB DEFAULT CHARSET=UTF8;
