@@ -98,9 +98,6 @@ class ServiceRequest Extends Restful implements  Strategy
      */
     public function search()
     {
-
-        return ErrorCodes::http_response_code('405','Method Not Allowed');
-        /*
         $paramsToSearch = array(
             'tableToSearchOnOrm'=>$this->container->get(FhirServiceRequestTable::class),
             'fhirObj'=>new FhirServiceRequestMapping($this->container),
@@ -112,7 +109,7 @@ class ServiceRequest Extends Restful implements  Strategy
         );
         $searchContext = new SearchContext($paramsToSearch);
         return $searchContext->doSearch();
-        */
+
 
     }
 

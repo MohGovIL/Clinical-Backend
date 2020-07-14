@@ -222,7 +222,7 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
         $refReference = self::PRACTITIONER_URI. $ServiceRequestFromDb['requester'];
         $FHIRServiceRequest->getRequester()->getReference()->setValue($refReference);
 
-        $authoredOn = $this->createFHIRDateTime($ServiceRequestFromDb['authored_on']);
+        $authoredOn = $this->createFHIRDateTime(null,null,$ServiceRequestFromDb['authored_on']);
         $FHIRServiceRequest->setAuthoredOn($authoredOn);
 
         $FHIRServiceRequest->getStatus()->setValue($ServiceRequestFromDb['status']);
@@ -234,7 +234,7 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
         $refPerformer=self::PRACTITIONER_URI. $ServiceRequestFromDb['performer'];
         $FHIRServiceRequest->getPerformer()[0]->getReference()->setValue($refPerformer);
 
-        $occurrenceDateTime = $this->createFHIRDateTime($ServiceRequestFromDb['occurrence']);
+        $occurrenceDateTime = $this->createFHIRDateTime(null,null,$ServiceRequestFromDb['occurrence_datetime']);
         $FHIRServiceRequest->setOccurrenceDateTime($occurrenceDateTime);
 
         $refReasonReference=self::DOCUMENT_REFERENCE_URI. $ServiceRequestFromDb['reason_reference_doc_id'];
