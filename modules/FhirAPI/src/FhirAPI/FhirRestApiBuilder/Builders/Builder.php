@@ -377,6 +377,8 @@ Abstract class Builder
                          } else {
                              if ($subArr === null || $subArr === "") {
                                  unset ($mainArr[$index]);
+                             }elseif($index==="resourceType" && in_array($subArr,array("Dosage","Timing"))){
+                                 unset ($mainArr[$index]);
                              }
                          }
                      }

@@ -60,6 +60,8 @@ use GenericTools\Model\Registry;
 use GenericTools\Model\LogServiceTable;
 use GenericTools\Model\LogService;
 
+use GenericTools\Model\PrescriptionsTable;
+use GenericTools\Model\Prescriptions;
 
 // todo: move the following to FHIR Module.php
 use GenericTools\Model\RelatedPerson;
@@ -316,6 +318,15 @@ class Module
                     $table = new FormVitalsTable($tableGateway);
                     return $table;
                 },
+                PrescriptionsTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Prescriptions());
+                    $tableGateway = new TableGateway('prescriptions', $dbAdapter, null, $resultSetPrototype);
+                    $table = new PrescriptionsTable($tableGateway);
+                    return $table;
+                },
+
 
 
             ),
