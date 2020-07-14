@@ -59,7 +59,15 @@ class ValueSetsTable
             if($index==='filter'){
                 foreach($conditionSet as $pos => $condition) {
                     if (!empty($condition['value']) && !empty($condition['operator'])) {
-                        $action = $condition['operator'] . " ?";
+
+                        if($condition['operator']==="LIKE"){
+                            $condition['value']="%".$condition['value']."%";
+                            $action = $condition['operator'] . " ?";
+                        }else{
+                            $action = $condition['operator'] . " ?";
+                        }
+
+
                         $params[]=$condition['value'];
                         $params[]=$condition['value'];
                         $sql .= "AND ( lo.a_option_id " . $action . " OR lo.a_title " . $action . " ) ";
