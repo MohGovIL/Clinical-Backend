@@ -248,7 +248,7 @@ trait baseTable
             }
 
         }
-
+        //print $select->getSqlString();die;
         $rs = $this->tableGateway->selectWith($select);
         $rsArray = array();
         foreach ($rs as $r) {
