@@ -122,7 +122,13 @@ class ServiceRequest Extends Restful implements  Strategy
      */
     public function patch()
     {
-        return ErrorCodes::http_response_code('405','Method Not Allowed');
+        $initPatch['paramsFromUrl']=$this->paramsFromUrl;
+        $initPatch['paramsFromBody']=$this->paramsFromBody;
+        $initPatch['container']=$this->container;
+        $initPatch['mapping']=$this->mapping;
+        $initPatch['selfApiCalls']=new ServiceRequest($initPatch);
+        $patch = new GenericPatch($initPatch);
+        return $patch->patch();
     }
 
     /**
@@ -163,7 +169,9 @@ class ServiceRequest Extends Restful implements  Strategy
      */
     public function update()
     {
-        return ErrorCodes::http_response_code('405','Method Not Allowed');
+        $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
+        $srid =$this->paramsFromUrl[0];
+        return $this->mapping->updateDbData($dbData,$srid);
 
      }
 

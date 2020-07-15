@@ -7,6 +7,8 @@
 
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ServiceRequest;
 
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
+use FhirAPI\Model\FhirServiceRequestTable;
 use GenericTools\Model\ListsTable;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRServiceRequest;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRRequestIntent;
@@ -353,19 +355,25 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
 
     public function updateDbData($data,$id)
     {
-        /*
-        $relatedPersonTable = $this->container->get(RelatedPersonTable::class);
-        $primaryKey='id';
-        unset($data['related_person']['id']);
-        $updated=$relatedPersonTable->safeUpdate($data['related_person'],array($primaryKey=>$id));
-
-        if(!is_array($updated)){
-            return ErrorCodes::http_response_code('400','Error inserting to db');
+        $FhirServiceRequestTable = $this->container->get(FhirServiceRequestTable::class);
+        $flag=$this->validateDb($data);
+        if($flag){
+            $primaryKey='id';
+            $primaryKeyValue=$id;
+            unset($data[$primaryKey]);
+            $rez=$FhirServiceRequestTable->safeUpdate($data,array($primaryKey=>$primaryKeyValue));
+            if(is_array($rez)){
+                $this->initFhirObject();
+                $patient=$this->DBToFhir($rez);
+                return $patient;
+            }else{ //insert failed
+                ErrorCodes::http_response_code('500','insert object failed :'.$rez);
+            }
+        }else{ // object is not valid
+            ErrorCodes::http_response_code('406','object is not valid');
         }
-
-        $this->initFhirObject();
-        return $this->DBToFhir($updated);
-        */
+        //this never happens since ErrorCodes call to exit()
+        return false;
     }
 
     /**
