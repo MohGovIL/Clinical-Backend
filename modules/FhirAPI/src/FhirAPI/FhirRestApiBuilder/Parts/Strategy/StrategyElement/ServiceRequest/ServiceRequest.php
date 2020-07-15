@@ -134,7 +134,24 @@ class ServiceRequest Extends Restful implements  Strategy
      */
     public function create()
     {
-        return ErrorCodes::http_response_code('405','Method Not Allowed');
+        $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
+
+        $formVitalsTable = $this->container->get(FhirServiceRequestTable::class);
+        $flag=$this->mapping->validateDb($dbData);
+        if($flag){
+            unset($dbData['id']);
+            $rez=$formVitalsTable->safeInsert($dbData,'id');
+            if(is_array($rez)){
+                $serviceRequest=$this->mapping->DBToFhir($rez);
+                return $serviceRequest;
+            }else{ //insert failed
+                ErrorCodes::http_response_code('500','insert object failed :'.$rez);
+            }
+        }else{ // object is not valid
+            ErrorCodes::http_response_code('406','object is not valid');
+        }
+        //this never happens since ErrorCodes call to exit()
+        return new FHIRServiceRequest;
     }
 
     /**

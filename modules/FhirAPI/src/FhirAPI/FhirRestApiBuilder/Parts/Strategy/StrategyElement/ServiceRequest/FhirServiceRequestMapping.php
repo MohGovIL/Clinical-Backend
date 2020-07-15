@@ -117,9 +117,93 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
     /********************************************************************************************************/
 
 
-    public function fhirToDb($FhirObject)
+    public function fhirToDb($FHIRServiceRequest)
     {
-        return array();
+
+        $serviceRequestDb= array();
+        $serviceRequestDb['id'] = $FHIRServiceRequest->getId()->getValue();
+
+        $categoryCoding=$FHIRServiceRequest->getCategory()[0];
+        if(is_object($categoryCoding)){
+            $serviceRequestCoding=$categoryCoding->getCoding()[0];
+            if(is_object($serviceRequestCoding)){
+                $serviceRequestDb['category']=$serviceRequestCoding->getCode()->getValue();
+            }
+        }
+
+        $codeCode=$FHIRServiceRequest->getCode();
+        if(is_object($codeCode)){
+            $codeCoding=$codeCode->getCoding()[0];
+            if(is_object($codeCoding)){
+                $serviceRequestDb['instruction_code']=$codeCoding->getCode()->getValue();
+            }
+        }
+
+        $reasonCode=$FHIRServiceRequest->getReasonCode()[0];
+        if(is_object($reasonCode)){
+            $reasonCoding=$reasonCode->getCoding()[0];
+            if(is_object($reasonCoding)){
+                $serviceRequestDb['reason_code']=$reasonCoding->getCode()->getValue();
+            }
+        }
+
+        $orderDetailnCode=$FHIRServiceRequest->getOrderDetail()[0];
+        if(is_object($orderDetailnCode)){
+            $orderDetailCoding=$orderDetailnCode->getCoding()[0];
+            if(is_object($orderDetailCoding)){
+                $serviceRequestDb['order_detail_code'] = $orderDetailCoding->getCode()->getValue();
+                $orderDetailRef=  $orderDetailCoding->getSystem()->getValue();;
+                $orderDetailRef=substr($orderDetailRef, strrpos($orderDetailRef, '/') + 1);
+                $serviceRequestDb['order_detail_system'] =$orderDetailRef;
+            }
+        }
+
+
+        $encRef=$FHIRServiceRequest->getEncounter()->getReference()->getValue() ;
+        if(!empty($encRef)){
+            $encRef=substr($encRef, strrpos($encRef, '/') + 1);
+        }
+        $serviceRequestDb['encounter']=$encRef;
+
+        $patientRef=$FHIRServiceRequest->getSubject()->getReference()->getValue();
+        if(!empty($patientRef)){
+            $patientRef=substr($patientRef, strrpos($patientRef, '/') + 1);
+        }
+        $serviceRequestDb['patient']=$patientRef;
+
+        $refReasonReference=$FHIRServiceRequest->getReasonReference()[0]->getReference()->getValue();
+        if(!empty($refReasonReference)){
+            $refReasonReference=substr($refReasonReference, strrpos($refReasonReference, '/') + 1);
+        }
+        $serviceRequestDb['reason_reference_doc_id']=$refReasonReference;
+
+        $refPerformer=$FHIRServiceRequest->getPerformer()[0]->getReference()->getValue();
+        if(!empty($refPerformer)){
+            $refPerformer=substr($refPerformer, strrpos($refPerformer, '/') + 1);
+        }
+        $serviceRequestDb['performer']=$refPerformer;
+
+        $refReference=$FHIRServiceRequest->getRequester()->getReference()->getValue();
+        if(!empty($refReference)){
+            $refReference=substr($refReference, strrpos($refReference, '/') + 1);
+        }
+        $serviceRequestDb['requester']=$refReference;
+
+        $serviceRequestDb['patient_instruction']=$FHIRServiceRequest->getPatientInstruction()->getValue();
+
+        $authoredOn =$FHIRServiceRequest->getAuthoredOn()->getValue();
+        $authoredOn = $this->convertToDateTime($authoredOn);
+        $serviceRequestDb['authored_on']=$authoredOn;
+
+        $occurrenceDateTime = $FHIRServiceRequest->getOccurrenceDateTime()->getValue();
+        $occurrenceDateTime = $this->convertToDateTime($occurrenceDateTime);
+        $serviceRequestDb['occurrence_datetime']=$occurrenceDateTime;
+
+        $serviceRequestDb['status']=$FHIRServiceRequest->getStatus()->getValue();
+        $serviceRequestDb['intent']= $FHIRServiceRequest->getIntent()->getValue();
+        $serviceRequestDb['note']=$FHIRServiceRequest->getNote()[0]->getText()->getValue();
+
+        return $serviceRequestDb;
     }
 
 
@@ -185,7 +269,7 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
             $serviceRequestCoding=$categoryCoding->getCoding()[0];
             $categoryList=$this->getCategoryList();
 
-            $categoryCoding->getText()->setValue($categoryList[$ServiceRequestFromDb['instruction_code']]);
+            $categoryCoding->getText()->setValue($categoryList[$ServiceRequestFromDb['category']]);
             $serviceRequestCoding->getCode()->setValue($ServiceRequestFromDb['category']);
             $serviceRequestCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK.self::CATEGORY_SYSTEM);
         }
@@ -200,19 +284,15 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
         $FHIRServiceRequest->getSubject()->getReference()->setValue($refSubject);
 
         if(!is_null($ServiceRequestFromDb['instruction_code'])) {
-
             $codeCode=$FHIRServiceRequest->getCode();
             $codeCoding = $codeCode->getCoding()[0];
             $codeList=$this->getCodeList();
-
             $codeCode->getText()->setValue($codeList[$ServiceRequestFromDb['instruction_code']]);
             $codeCoding->getCode()->setValue($ServiceRequestFromDb['instruction_code']);
             $codeCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK.self::CODE_SYSTEM);
-
         }
 
         $orderDetail=$FHIRServiceRequest->getOrderDetail()[0]->getCoding()[0];
-
 
         $orderDetail->setCode($ServiceRequestFromDb['order_detail_code']);
         $orderDetail->getSystem()->setValue(self::LIST_SYSTEM_LINK.$ServiceRequestFromDb['order_detail_system']);
@@ -265,12 +345,27 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
 
     public function getDbDataFromRequest($data)
     {
-        return array();
+        $this->initFhirObject();
+        $this->arrayToFhirObject($this->FHIRServiceRequest,$data);
+        $dBdata = $this->fhirToDb($this->FHIRServiceRequest);
+        return $dBdata;
     }
 
     public function updateDbData($data,$id)
     {
-        return array();
+        /*
+        $relatedPersonTable = $this->container->get(RelatedPersonTable::class);
+        $primaryKey='id';
+        unset($data['related_person']['id']);
+        $updated=$relatedPersonTable->safeUpdate($data['related_person'],array($primaryKey=>$id));
+
+        if(!is_array($updated)){
+            return ErrorCodes::http_response_code('400','Error inserting to db');
+        }
+
+        $this->initFhirObject();
+        return $this->DBToFhir($updated);
+        */
     }
 
     /**
