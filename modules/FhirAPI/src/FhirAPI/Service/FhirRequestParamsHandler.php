@@ -132,7 +132,7 @@ class FhirRequestParamsHandler
                         case "filter":
                             $cleanValue = preg_replace("/[\W]/", "", $value);
                             $operators=  preg_replace("/[\w]/", "", $value);
-                            if(strpos($operators, '^') !== false){
+                            if(strpos($operators, '~') !== false){  
                                 $operator="LIKE";
                             }else{
                                 $operator="=";
