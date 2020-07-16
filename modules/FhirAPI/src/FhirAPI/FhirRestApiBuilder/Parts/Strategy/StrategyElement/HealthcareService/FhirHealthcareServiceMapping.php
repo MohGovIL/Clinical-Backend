@@ -60,6 +60,7 @@ class FhirHealthcareServiceMapping extends FhirBaseMapping implements MappingDat
         $this->setNewFHIRHealthcareService(); //reset
 
         $healthcareServiceDataFromDb = $params[0];
+
         $FHIRId = $this->createFHIRId($healthcareServiceDataFromDb['id']);
         $this->FHIRHealthcareService->setId($FHIRId);
 

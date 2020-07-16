@@ -135,3 +135,11 @@ VALUES
 ('6', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment amount'),
 ('7', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment method'),
 ('8', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Receipt number');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`)
+VALUES ('drugs_list', 'Drugs list');
+
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`,`filter`)
+VALUES ('drugs_list', '9911', 'Codes', NULL);
+
