@@ -35,11 +35,12 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
     private $container = null;
     private $FHIRServiceRequest = null;
     private $FhirValueSet = null;
-    
+
     const ORDER_DETAIL_SYSTEM_XRAY = "details_x_ray";
     const ORDER_DETAIL_SYSTEM_MEDICINE = "details_providing_medicine";
     const CODE_SYSTEM = "tests_and_treatments";
     const CATEGORY_SYSTEM = "service_types";
+    const EMPTY_TIME = "0000-00-00 00:00:00";
 
     public function __construct(ContainerInterface $container)
     {
@@ -82,6 +83,9 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
                 $serviceRequestDb['reason_code'] = $reasonCoding->getCode()->getValue();
             }
         }
+
+        $serviceRequestDb['order_detail_code'] = null;
+        $serviceRequestDb['order_detail_system'] = null;
 
         $orderDetailnCode = $FHIRServiceRequest->getOrderDetail()[0];
         if (is_object($orderDetailnCode)) {
@@ -207,13 +211,18 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
             $serviceRequestCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK . self::CATEGORY_SYSTEM);
         }
 
-        $refEncounter = self::ENCOUNTER_URI . $ServiceRequestFromDb['encounter'];
-        $FHIRServiceRequest->getEncounter()->getReference()->setValue($refEncounter);
+        if(!is_null($ServiceRequestFromDb['encounter'])){
+            $refEncounter = self::ENCOUNTER_URI . $ServiceRequestFromDb['encounter'];
+            $FHIRServiceRequest->getEncounter()->getReference()->setValue($refEncounter);
+        }
 
         $FHIRServiceRequest->getReasonCode()[0]->getCoding()[0]->setCode($ServiceRequestFromDb['reason_code']);
 
-        $refSubject = self::PATIENT_URI . $ServiceRequestFromDb['patient'];
-        $FHIRServiceRequest->getSubject()->getReference()->setValue($refSubject);
+        if(!is_null($ServiceRequestFromDb['patient'])){
+            $refSubject = self::PATIENT_URI . $ServiceRequestFromDb['patient'];
+            $FHIRServiceRequest->getSubject()->getReference()->setValue($refSubject);
+        }
+
 
         if (!is_null($ServiceRequestFromDb['instruction_code'])) {
             $codeCode = $FHIRServiceRequest->getCode();
@@ -224,37 +233,48 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
             $codeCoding->getCode()->setValue($ServiceRequestFromDb['instruction_code']);
             $codeCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK . self::CODE_SYSTEM);
         }
+
         $orderDetailCoding =$FHIRServiceRequest->getOrderDetail()[0];
-        $orderDetail = $orderDetailCoding->getCoding()[0];
 
-        $title=$this->getValueSetTitle($ServiceRequestFromDb['order_detail_system'],$ServiceRequestFromDb['order_detail_code']);
-        $orderDetailCoding->getText()->setValue($title);
-
-        $orderDetail->setCode($ServiceRequestFromDb['order_detail_code']);
-        $orderDetail->getSystem()->setValue(self::LIST_SYSTEM_LINK . $ServiceRequestFromDb['order_detail_system']);
+        if(!is_null($ServiceRequestFromDb['order_detail_code'])  && !is_null($ServiceRequestFromDb['order_detail_system']) ){
+            $orderDetail = $orderDetailCoding->getCoding()[0];
+            $title=$this->getValueSetTitle($ServiceRequestFromDb['order_detail_system'],$ServiceRequestFromDb['order_detail_code']);
+            $orderDetailCoding->getText()->setValue($title);
+            $orderDetail->setCode($ServiceRequestFromDb['order_detail_code']);
+            $orderDetail->getSystem()->setValue(self::LIST_SYSTEM_LINK . $ServiceRequestFromDb['order_detail_system']);
+        }
 
         $FHIRServiceRequest->getPatientInstruction()->setValue($ServiceRequestFromDb['patient_instruction']);
 
-        $refReference = self::PRACTITIONER_URI . $ServiceRequestFromDb['requester'];
-        $FHIRServiceRequest->getRequester()->getReference()->setValue($refReference);
+        if(!is_null($ServiceRequestFromDb['requester'])){
+            $refReference = self::PRACTITIONER_URI . $ServiceRequestFromDb['requester'];
+            $FHIRServiceRequest->getRequester()->getReference()->setValue($refReference);
+        }
 
-        $authoredOn = $this->createFHIRDateTime(null, null, $ServiceRequestFromDb['authored_on']);
-        $FHIRServiceRequest->setAuthoredOn($authoredOn);
+        if(!is_null($ServiceRequestFromDb['performer'])){
+            $refPerformer = self::PRACTITIONER_URI . $ServiceRequestFromDb['performer'];
+            $FHIRServiceRequest->getPerformer()[0]->getReference()->setValue($refPerformer);
+        }
+
+        if(!is_null($ServiceRequestFromDb['reason_reference_doc_id'])){
+            $refReasonReference = self::DOCUMENT_REFERENCE_URI . $ServiceRequestFromDb['reason_reference_doc_id'];
+            $FHIRServiceRequest->getReasonReference()[0]->getReference()->setValue($refReasonReference);
+        }
+
+        if($ServiceRequestFromDb['occurrence_datetime']!==self::EMPTY_TIME){
+            $occurrenceDateTime = $this->createFHIRDateTime(null, null, $ServiceRequestFromDb['occurrence_datetime']);
+            $FHIRServiceRequest->setOccurrenceDateTime($occurrenceDateTime);
+        }
+
+        if($ServiceRequestFromDb['authored_on']!==self::EMPTY_TIME){
+            $authoredOn = $this->createFHIRDateTime(null, null, $ServiceRequestFromDb['authored_on']);
+            $FHIRServiceRequest->setAuthoredOn($authoredOn);
+        }
+
 
         $FHIRServiceRequest->getStatus()->setValue($ServiceRequestFromDb['status']);
-
         $FHIRServiceRequest->getIntent()->setValue($ServiceRequestFromDb['intent']);
-
         $FHIRServiceRequest->getNote()[0]->setText($ServiceRequestFromDb['note']);
-
-        $refPerformer = self::PRACTITIONER_URI . $ServiceRequestFromDb['performer'];
-        $FHIRServiceRequest->getPerformer()[0]->getReference()->setValue($refPerformer);
-
-        $occurrenceDateTime = $this->createFHIRDateTime(null, null, $ServiceRequestFromDb['occurrence_datetime']);
-        $FHIRServiceRequest->setOccurrenceDateTime($occurrenceDateTime);
-
-        $refReasonReference = self::DOCUMENT_REFERENCE_URI . $ServiceRequestFromDb['reason_reference_doc_id'];
-        $FHIRServiceRequest->getReasonReference()[0]->getReference()->setValue($refReasonReference);
 
         return $FHIRServiceRequest;
 
