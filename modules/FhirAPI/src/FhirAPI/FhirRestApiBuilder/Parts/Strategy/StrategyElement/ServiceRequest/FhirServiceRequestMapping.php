@@ -8,6 +8,7 @@
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ServiceRequest;
 
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ValueSet\ValueSet;
 use FhirAPI\Model\FhirServiceRequestTable;
 use GenericTools\Model\ListsTable;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRServiceRequest;
@@ -33,13 +34,8 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
     private $adapter = null;
     private $container = null;
     private $FHIRServiceRequest = null;
-
-
-    private $xRayList = array();
-    private $medicineList = array();
-    private $codeList = array();
-    private $categoryList = array();
-
+    private $FhirValueSet = null;
+    
     const ORDER_DETAIL_SYSTEM_XRAY = "details_x_ray";
     const ORDER_DETAIL_SYSTEM_MEDICINE = "details_providing_medicine";
     const CODE_SYSTEM = "tests_and_treatments";
@@ -52,70 +48,10 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
         $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRServiceRequest = new FHIRServiceRequest;
 
-        $ListsTable = $this->container->get(ListsTable::class);
-
-        $listXRay = $ListsTable->getListNormalized(self::ORDER_DETAIL_SYSTEM_XRAY);
-        $this->setXRayList($listXRay);
-
-        $listMedicine = $ListsTable->getListNormalized(self::ORDER_DETAIL_SYSTEM_MEDICINE);
-        $this->setMedicineList($listMedicine);
-
-        $listCode = $ListsTable->getListNormalized(self::CODE_SYSTEM);
-        $this->setCodeList($listCode);
-
-        $listCategory = $ListsTable->getListNormalized(self::CATEGORY_SYSTEM);
-        $this->setCategoryList($listCategory);
+        $valueSetParams = array('paramsFromUrl' => array(), 'paramsFromBody' => array(), 'container' => $this->container);
+        $this->FhirValueSet = new ValueSet($valueSetParams);
     }
 
-    /*****************************************get lists*******************************************************/
-
-    public function setXRayList($types)
-    {
-        $this->xRayList = $types;
-        return $this->xRayList;
-    }
-
-    public function getXRayList()
-    {
-        return $this->xRayList;
-    }
-
-    public function setMedicineList($types)
-    {
-        $this->medicineList = $types;
-        return $this->medicineList;
-    }
-
-    public function getMedicineList()
-    {
-        return $this->medicineList;
-    }
-
-    public function setCodeList($types)
-    {
-        $this->codeList = $types;
-        return $this->codeList;
-    }
-
-    public function getCodeList()
-    {
-        return $this->codeList;
-    }
-
-
-    public function setCategoryList($types)
-    {
-        $this->categoryList = $types;
-        return $this->categoryList;
-    }
-
-    public function getCategoryList()
-    {
-        return $this->loincCodes;
-    }
-
-
-    /********************************************************************************************************/
 
     public function fhirToDb($FHIRServiceRequest)
     {
@@ -264,9 +200,9 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
 
             $categoryCoding = $FHIRServiceRequest->getCategory()[0];
             $serviceRequestCoding = $categoryCoding->getCoding()[0];
-            $categoryList = $this->getCategoryList();
 
-            $categoryCoding->getText()->setValue($categoryList[$ServiceRequestFromDb['category']]);
+            $title=$this->getValueSetTitle(self::CATEGORY_SYSTEM,$ServiceRequestFromDb['category']);
+            $categoryCoding->getText()->setValue($title);
             $serviceRequestCoding->getCode()->setValue($ServiceRequestFromDb['category']);
             $serviceRequestCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK . self::CATEGORY_SYSTEM);
         }
@@ -282,13 +218,17 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
         if (!is_null($ServiceRequestFromDb['instruction_code'])) {
             $codeCode = $FHIRServiceRequest->getCode();
             $codeCoding = $codeCode->getCoding()[0];
-            $codeList = $this->getCodeList();
-            $codeCode->getText()->setValue($codeList[$ServiceRequestFromDb['instruction_code']]);
+
+            $title=$this->getValueSetTitle(self::CODE_SYSTEM,$ServiceRequestFromDb['instruction_code']);
+            $codeCode->getText()->setValue($title);
             $codeCoding->getCode()->setValue($ServiceRequestFromDb['instruction_code']);
             $codeCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK . self::CODE_SYSTEM);
         }
+        $orderDetailCoding =$FHIRServiceRequest->getOrderDetail()[0];
+        $orderDetail = $orderDetailCoding->getCoding()[0];
 
-        $orderDetail = $FHIRServiceRequest->getOrderDetail()[0]->getCoding()[0];
+        $title=$this->getValueSetTitle($ServiceRequestFromDb['order_detail_system'],$ServiceRequestFromDb['order_detail_code']);
+        $orderDetailCoding->getText()->setValue($title);
 
         $orderDetail->setCode($ServiceRequestFromDb['order_detail_code']);
         $orderDetail->getSystem()->setValue(self::LIST_SYSTEM_LINK . $ServiceRequestFromDb['order_detail_system']);
@@ -390,5 +330,21 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
         $FHIRRequestIntent->setValue($value);
         return $FHIRRequestIntent;
     }
+
+
+    private function getValueSetTitle($listName,$value,$operations='$expand')
+    {
+        $this->FhirValueSet->setOperations(array($operations));
+        $this->FhirValueSet->setParamsFromUrl(array($listName));
+        $this->FhirValueSet->setParamsFromBody(array('PARAMETERS_FOR_SEARCH_RESULT'=>array ('filter' => array (0 => array ('value' => $value, 'operator' => '=',),),)));
+        $ValueSetRez = $this->FhirValueSet->read();
+        $expansion=$ValueSetRez->getExpansion();
+        $expansion['contains'][0]['display'];
+        $display=$expansion['contains'][0]['display'];  // Todo : refactor this after valueset fix
+        return $display->getValue();
+
+    }
+
+
 
 }
