@@ -34,7 +34,8 @@ class FhirRequestParamsHandler
                                               '_total',
                                               '_elements',
                                               '_contained',
-                                              '_containedType'
+                                              '_containedType',
+                                              'filter'
                                             );
 
     const PREFIXES =array('eq',
@@ -128,6 +129,17 @@ class FhirRequestParamsHandler
                                 $requestParams['PARAMETERS_FOR_SEARCH_RESULT'][$name][] =$tempValue;
                             }
                             break;
+                        case "filter":
+                            $cleanValue = preg_replace("/[\W]/", "", $value);
+                            $operators=  preg_replace("/[\w]/", "", $value);
+                            if(strpos($operators, '~') !== false){  
+                                $operator="LIKE";
+                            }else{
+                                $operator="=";
+                            }
+                            $tempValue=array('value'=>$cleanValue,'operator'=>$operator);
+                            $requestParams['PARAMETERS_FOR_SEARCH_RESULT'][$name][] =$tempValue;
+                        break;
                         default:
                             $requestParams['PARAMETERS_FOR_SEARCH_RESULT'][$name][] =$value;
                     }
