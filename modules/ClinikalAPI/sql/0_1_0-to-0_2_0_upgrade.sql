@@ -134,9 +134,8 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 #EndIf
 
 #IfNotRow2D list_options list_id drug_route option_id 2
-DELETE FROM list_options where list_id="drug_route" OR option_id="drug_route";
+DELETE FROM list_options where list_id="drug_route";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
-('lists', 'drug_route', 'Drug Route', 0, 1),
 ('drug_route', '1', 'Per oris', 10, 1),
 ('drug_route', '2', 'To skin', 20, 1),
 ('drug_route', '3', 'Per nostril', 30, 1),
@@ -145,9 +144,8 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) 
 #EndIf
 
 #IfNotRow2D list_options list_id drug_interval option_id 3
-DELETE FROM list_options where list_id="drug_interval" OR option_id="drug_interval";
+DELETE FROM list_options where list_id="drug_interval";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
-('lists', 'drug_interval', 'Drug interval', 0, 1),
 ('drug_interval', '1', 'Once a day', 10, 1),
 ('drug_interval', '2', 'Twice a day', 20, 1),
 ('drug_interval', '3', '3 times a day', 30, 1),
@@ -167,9 +165,8 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) 
 #EndIf
 
 #IfNotRow2D list_options list_id drug_form option_id 2
-DELETE FROM list_options where list_id="drug_form" OR option_id="drug_form";
+DELETE FROM list_options where list_id="drug_form";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
-('lists', 'drug_form', 'Drug Form', 0, 1),
 ('drug_form', '1', 'Tablet', 10, 1),
 ('drug_form', '2', 'Drops', 20, 1),
 ('drug_form', '3', 'Tsp', 30, 1),
@@ -228,13 +225,13 @@ ALTER TABLE `clinikal_templates_map` CHANGE `form_id` `form_id` VARCHAR(50) NOT 
 #EndIf
 
 
-#IfNotRow fhir_value_sets id details_providing_medicine
+#IfNotRow fhir_value_sets id drugs_list
 INSERT INTO `fhir_value_sets` (`id`, `title`)
 VALUES ('drugs_list', 'Drugs list');
 #EndIf
 
 
-#IfNotRow fhir_value_set_systems vs_id details_providing_medicine
+#IfNotRow fhir_value_set_systems vs_id drugs_list
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`,`filter`)
 VALUES ('drugs_list', '9911', 'Codes', NULL);
 #EndIf

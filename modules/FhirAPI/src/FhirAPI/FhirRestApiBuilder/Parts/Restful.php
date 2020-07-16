@@ -53,6 +53,7 @@ abstract  class Restful extends Registry implements FHIRRestInt
      */
     public function readOp()
     {
+
          $result = $this->read();
          return $result;
     }

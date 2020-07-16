@@ -299,3 +299,21 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 ('lists', 'clinikal_service_categories', 'Clinikal Service Categories', 0, 0, 0, '', '', '', 0, 0, 1, '', 1),
 ('clinikal_service_categories', '14', '	Emergency Department', 10, 0, 0, '', '', '', 0, 0, 1, '', 1),
 ('clinikal_service_categories', '30', 'Specialist Radiology/Imaging', 10, 0, 0, '', '', '', 0, 0, 1, '', 1);
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('drug_interval', 'Drug Interval');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('drug_interval', 'drug_interval', 'All');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('drug_form', 'Drug Form');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('drug_form', 'drug_form', 'All');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('drug_route', 'Drug Route');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('drug_route', 'drug_route', 'All');

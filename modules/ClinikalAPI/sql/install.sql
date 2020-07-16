@@ -66,9 +66,8 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 ALTER TABLE `registry` ADD `component_name` VARCHAR(255) NULL AFTER `aco_spec`;
 
 
-DELETE FROM list_options where list_id="drug_route" OR option_id="drug_route";
+DELETE FROM list_options where list_id="drug_route";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
-('lists', 'drug_route', 'Drug Route', 0, 1),
 ('drug_route', '1', 'Per oris', 10, 1),
 ('drug_route', '2', 'To skin', 20, 1),
 ('drug_route', '3', 'Per nostril', 30, 1),
@@ -77,9 +76,8 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) 
 
 
 
-DELETE FROM list_options where list_id="drug_interval" OR option_id="drug_interval";
+DELETE FROM list_options where list_id="drug_interval";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
-('lists', 'drug_interval', 'Drug interval', 0, 1),
 ('drug_interval', '1', 'Once a day', 10, 1),
 ('drug_interval', '2', 'Twice a day', 20, 1),
 ('drug_interval', '3', '3 times a day', 30, 1),
@@ -98,9 +96,8 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) 
 ('drug_interval', '16', 'As needed', 160, 1);
 
 
-DELETE FROM list_options where list_id="drug_form" OR option_id="drug_form";
+DELETE FROM list_options where list_id="drug_form";
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
-('lists', 'drug_form', 'Drug Form', 0, 1),
 ('drug_form', '1', 'Tablet', 10, 1),
 ('drug_form', '2', 'Drops', 20, 1),
 ('drug_form', '3', 'Tsp', 30, 1),
