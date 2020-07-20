@@ -36,8 +36,6 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
     private $FHIRServiceRequest = null;
     private $FhirValueSet = null;
 
-    const ORDER_DETAIL_SYSTEM_XRAY = "details_x_ray";
-    const ORDER_DETAIL_SYSTEM_MEDICINE = "details_providing_medicine";
     const CODE_SYSTEM = "tests_and_treatments";
     const CATEGORY_SYSTEM = "service_types";
     const EMPTY_TIME = "0000-00-00 00:00:00";
@@ -261,12 +259,12 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
             $FHIRServiceRequest->getReasonReference()[0]->getReference()->setValue($refReasonReference);
         }
 
-        if($ServiceRequestFromDb['occurrence_datetime']!==self::EMPTY_TIME){
+        if($ServiceRequestFromDb['occurrence_datetime']!==self::EMPTY_TIME && !is_null($ServiceRequestFromDb['occurrence_datetime'])){
             $occurrenceDateTime = $this->createFHIRDateTime(null, null, $ServiceRequestFromDb['occurrence_datetime']);
             $FHIRServiceRequest->setOccurrenceDateTime($occurrenceDateTime);
         }
 
-        if($ServiceRequestFromDb['authored_on']!==self::EMPTY_TIME){
+        if($ServiceRequestFromDb['authored_on']!==self::EMPTY_TIME && !is_null($ServiceRequestFromDb['occurrence_datetime']) ){
             $authoredOn = $this->createFHIRDateTime(null, null, $ServiceRequestFromDb['authored_on']);
             $FHIRServiceRequest->setAuthoredOn($authoredOn);
         }

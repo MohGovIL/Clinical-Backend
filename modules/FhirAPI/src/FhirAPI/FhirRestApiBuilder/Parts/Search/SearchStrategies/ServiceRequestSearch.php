@@ -14,6 +14,7 @@ class ServiceRequestSearch extends BaseSearch
             foreach($this->searchParams as $index => $data){
                 if($index === "occurrence" || $index === "authored"){
                     foreach($data as $pos => $record){
+                        // notice this search support only date time for now
                         $this->searchParams[$index][$pos]['value']=$this->fhirObj->convertToDateTime($record['value']);
 
                     }
