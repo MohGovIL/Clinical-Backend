@@ -234,4 +234,35 @@ class PdfService
 
         file_put_contents("php://output", $binaryString);
     }
+
+    /**
+     * Create pdf with standard header and footer (with logos)
+     */
+    public function setCustomHeaderFooter($headerPath,$footerPath,$showDate = false,$data=array())
+    {
+
+        $this->addImage('logoHeader', $GLOBALS['OE_SITE_DIR'] . '/images/logo_1.png');
+        $this->addImage('logoFooter', $GLOBALS['OE_SITE_DIR'] . '/images/logo_2.png');
+
+        $showDate=($showDate===true) ? 'true' : $showDate;
+        switch ($showDate) {
+            case "datetime":
+                $showDate= oeFormatDateTime(date("Y-m-d H:m"),false, false);
+                break;
+            case false :
+                $showDate= false;
+                break;
+            case 'false' :
+                $showDate= false;
+                break;
+            case 'true':
+                $showDate= oeFormatDateTime(date("Y-m-d"),false, false);
+                break;
+            default:
+                $showDate=false;
+        }
+
+        $this->header($headerPath,array('showDate'=>$showDate,'data' => $data));
+        $this->footer($footerPath, array('data' => $data));
+    }
 }
