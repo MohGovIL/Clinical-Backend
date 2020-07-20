@@ -37,9 +37,6 @@ class FhirValueSetMapping extends FhirBaseMapping  implements MappingData
 
         // build expansion (contains the actual codes)
         if(in_array('$expand', $operations)) {
-
-            $this->
-
             $expansion = [];
             $expansion['timestamp'] = $this->createFHIRDateTime(date("Y-m-d h:i:s"));
 
