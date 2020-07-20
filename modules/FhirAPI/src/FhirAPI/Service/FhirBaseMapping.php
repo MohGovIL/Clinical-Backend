@@ -80,6 +80,8 @@ class FhirBaseMapping
     CONST   PATIENT_URI="Patient/";
     CONST   PRACTITIONER_URI="Practitioner/";
     CONST   ENCOUNTER_URI="Encounter/";
+    CONST   DOCUMENT_REFERENCE_URI="DocumentReference/";
+
 
 
     use ConversionsTrait;
