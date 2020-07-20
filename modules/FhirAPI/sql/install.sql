@@ -323,3 +323,21 @@ CREATE TABLE `fhir_service_request` (
   `reason_reference_doc_id` int(11) DEFAULT NULL,
    PRIMARY KEY(`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=UTF8;
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('drug_interval', 'Drug Interval');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('drug_interval', 'drug_interval', 'All');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('drug_form', 'Drug Form');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('drug_form', 'drug_form', 'All');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('drug_route', 'Drug Route');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('drug_route', 'drug_route', 'All');
