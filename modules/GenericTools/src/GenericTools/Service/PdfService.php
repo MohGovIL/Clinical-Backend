@@ -238,7 +238,7 @@ class PdfService
     /**
      * Create pdf with standard header and footer (with logos)
      */
-    public function setCustomHeaderFooter($headerPath,$footerPath,$showDate = false,$data=array())
+    public function setCustomHeaderFooter($headerPath,$footerPath,$data=array(),$showDate = false)
     {
 
         $this->addImage('logoHeader', $GLOBALS['OE_SITE_DIR'] . '/images/logo_1.png');
