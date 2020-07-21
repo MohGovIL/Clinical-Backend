@@ -14,11 +14,19 @@ trait ManageTemplatesLettersService
 
     public function getLetterList()
     {
+        $letters= array();
         $FormContextMapTable= $this->container->get(ManageTemplatesLettersTable::class);
-        $param=array();
+        $param=array("active"=>"1");
         $dbData=$FormContextMapTable->getDataByParams($param);
 
-        return $dbData;
+        foreach($dbData as $index => $letter){
+            $letters[$index] = array(
+                                        "letter_name" => $letter['letter_name'],
+                                        "letter_post_json" => json_decode($letter['letter_post_json'])
+                                    );
+        }
+
+        return $letters;
 
     }
 
