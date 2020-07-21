@@ -20,10 +20,7 @@ trait ManageTemplatesLettersService
         $dbData=$FormContextMapTable->getDataByParams($param);
 
         foreach($dbData as $index => $letter){
-            $letters[$index] = array(
-                                        "letter_name" => $letter['letter_name'],
-                                        "letter_post_json" => json_decode($letter['letter_post_json'])
-                                    );
+            $letters[$letter['letter_name']] = array("letter_post_json" => json_decode($letter['letter_post_json']));
         }
 
         return $letters;
