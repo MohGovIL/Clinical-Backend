@@ -304,7 +304,7 @@ class DocumentReference extends Restful implements  Strategy
             $couchdbService = new CouchdbService($this->getContainer());
             $couchdbService->connect();
             if(empty($updateArr)) {
-                $result = $couchdbService->putDoc($arr['storage']['data'], $updateArr['id'], $updateArr['rev'], false);
+                $result = $couchdbService->putDocument($arr['storage']['data'], $updateArr['id'], $updateArr['rev'], false);
             }
             else {
                 $result = $couchdbService->saveDoc($arr['storage']['data'], false);
