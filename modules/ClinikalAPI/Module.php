@@ -38,6 +38,10 @@ use ClinikalAPI\Model\FormContextMapTable;
 use ClinikalAPI\Model\GetTemplatesService;
 use ClinikalAPI\Model\GetTemplatesServiceTable;
 
+use ClinikalAPI\Model\ManageTemplatesLetters;
+use ClinikalAPI\Model\ManageTemplatesLettersTable;
+
+
 class Module {
 
 
@@ -98,6 +102,7 @@ class Module {
                     $table = new GetTemplatesServiceTable($tableGateway);
                     return $table;
                 },
+                /* incomment since 21/07/2020 if there is no bugs delete this
                 GetLionicCodesTable::class =>  function(ContainerInterface $container) {
                     $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
@@ -106,6 +111,17 @@ class Module {
                     $table = new ListOptionsTable($tableGateway);
                     return $table;
                 },
+                */
+                ManageTemplatesLettersTable::class =>  function(ContainerInterface $container) {
+
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new ManageTemplatesLetters());
+                    $tableGateway = new ZendTableGateway('manage_templates_letters', $dbAdapter, null, $resultSetPrototype);
+                    $table = new ManageTemplatesLettersTable($tableGateway);
+                    return $table;
+                },
+
             ),
         );
     }
