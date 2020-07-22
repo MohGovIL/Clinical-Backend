@@ -120,7 +120,7 @@ class DocumentReference extends Restful implements  Strategy
         $this->mapping->initFhirObject();
 
         $json = $this->paramsFromBody['POST_PARSED_JSON'];
-        $json['id'] = $documentsTable->lastId() + 1;;
+        $json['id'] = $documentsTable->lastId() + 1;
         $fhirDocumentReference = $this->mapping->parsedJsonToFhir($json);
         $dbStructuredData = $this->mapping->fhirToDb($fhirDocumentReference);
 

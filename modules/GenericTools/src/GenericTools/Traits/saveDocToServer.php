@@ -18,6 +18,11 @@ trait saveDocToServer
     // Note that an S3 update is actually a delete + insert.
     public function uploadToStorage($arr, $updateArr = array())
     {
+        $result=array();
+        $result['id'] = false;
+        $result['url'] = null;
+        $result['rev'] = null;
+
         if ($GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE) {
             // save to S3
             $creationDateUnixTs = strtotime($arr['documents']['date']);
@@ -31,8 +36,8 @@ trait saveDocToServer
             $s3Service = new S3Service($this->getContainer());
             $s3Service->connect();
             $decoData = base64_decode($arr['storage']['data']);
-            $result['success'] = $s3Service->saveObject($url, $decoData);
-            if ($result != false) {
+            $result['id'] = $s3Service->saveObject($url, $decoData);
+            if ($result['id'] != false) {
                 $result['url'] = $url;
             }
         }
@@ -41,10 +46,14 @@ trait saveDocToServer
             $couchdbService = new CouchdbService($this->getContainer());
             $couchdbService->connect();
             if(empty($updateArr)) {
-                $result = $couchdbService->putDocument($arr['storage']['data'], $updateArr['id'], $updateArr['rev'], false);
+                $couchSave = $couchdbService->putDocument($arr['storage']['data'], $updateArr['id'], $updateArr['rev'], false);
             }
             else {
-                $result = $couchdbService->saveDoc($arr['storage']['data'], false);
+                $couchSave = $couchdbService->saveDoc($arr['storage']['data'], false);
+            }
+            if(is_array($couchSave)){
+                $result['id'] = $couchSave['id'];
+                $result['rev'] = $couchSave['rev'];
             }
         }
 

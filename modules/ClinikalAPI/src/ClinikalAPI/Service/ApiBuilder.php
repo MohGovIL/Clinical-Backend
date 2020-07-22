@@ -9,6 +9,7 @@ namespace ClinikalAPI\Service;
 
 use Exception;
 use OpenEMR\Common\Acl\AclMain;
+use PHPUnit\Framework\Assert;
 use RestConfig;
 use ClinikalAPI\Model\TranslationTables;
 use OpenEMR\RestControllers\AuthRestController;
@@ -35,9 +36,11 @@ class ApiBuilder
 
     public function __construct(ContainerInterface $container)
     {
-        $this->container = $container;
-       // $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
+          $this->container = $container;
           $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
+          if(Assert::isJson(file_get_contents('php://input'))){  // $_POST is empty here
+              $_POST['clinikal_api']=json_decode(file_get_contents('php://input'),true);
+          }
     }
 
 
@@ -110,6 +113,10 @@ class ApiBuilder
             "GET /api/letter/list" => function () {
                 $this->checkAcl("clinikal_api", "general_settings");
                 return $this->getLetterList();
+            },
+            "POST /api/letters/:letter_name" => function ($letter_name) {
+                $this->checkAcl("clinikal_api", "general_settings");
+                return $this->createLetter($letter_name);
             },
 
         ];
