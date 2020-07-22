@@ -51,7 +51,12 @@ class ValueSet Extends Restful implements  Strategy
             //not found
             return self::$errorCodes::http_response_code(204);
         }
-        // pass codes, value set id, and operations, to method
-        return $fhirValueSetMapping->DBToFhir($ValueSetDataFromDb, $this->operations);
+
+        $this->mapping->initFhirObject();
+        $valueSet= $this->mapping->DBToFhir($ValueSetDataFromDb, $this->operations);
+        $this->mapping->initFhirObject();
+        return $valueSet;
+
+
     }
 }
