@@ -82,8 +82,6 @@ class FhirBaseMapping
     CONST   ENCOUNTER_URI="Encounter/";
     CONST   DOCUMENT_REFERENCE_URI="DocumentReference/";
 
-
-
     use ConversionsTrait;
 
     public function __construct(ContainerInterface $container)

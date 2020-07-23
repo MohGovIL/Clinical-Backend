@@ -13,6 +13,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\ListsOpenEmrTable;
 use GenericTools\Model\ListsTable;
+use ImportData\Model\CodesTable;
 use Interop\Container\ContainerInterface;
 
 /*include FHIR*/
@@ -226,6 +227,10 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
             $code = $FHIRMedicationStatement->getMedicationCodeableConcept()->getCoding()[0];
             $code->getCode()->setValue($codeFromDb[1]);
             $code->getSystem()->setValue(self::LIST_SYSTEM_LINK . $codeFromDb[0]);
+
+            $CodesTable =$this->container->get('ImportData\Model\CodesTable');
+            $title=$CodesTable->getCodeTitle($codeFromDb[1],$codeFromDb[0]);
+            $FHIRMedicationStatement->getMedicationCodeableConcept()->getText()->setValue($title);
         }
 
         if (!empty($medicationStatementDataFromDb['pid'])) {
