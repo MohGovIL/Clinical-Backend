@@ -13,6 +13,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\ListsOpenEmrTable;
 use GenericTools\Model\ListsTable;
+use GenericTools\Model\PrescriptionsTable;
 use Interop\Container\ContainerInterface;
 
 /*include FHIR*/
@@ -603,7 +604,7 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
 
     public function updateDbData($data, $id)
     {
-        $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
+        $listsOpenEmrTable = $this->container->get(PrescriptionsTable::class);
         $flag = $this->validateDb($data);
         if ($flag) {
             $primaryKey = 'id';
