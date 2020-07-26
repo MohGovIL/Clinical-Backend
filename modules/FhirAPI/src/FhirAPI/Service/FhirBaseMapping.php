@@ -22,10 +22,12 @@ use OpenEMR\FHIR\R4\FHIRElement\FHIRInstant;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDate;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAdministrativeGender;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRHumanName;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRInteger;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRIssueSeverity;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRIssueType;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRNarrative;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRNarrativeStatus;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRPublicationStatus;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRQuantity;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRQuantity\FHIRDuration;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRRange;
@@ -62,7 +64,6 @@ use OpenEMR\FHIR\R4\FHIRElement\FHIRPeriod;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAttachment;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRBase64Binary;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRUrl;
-use OpenEMR\FHIR\R4\FHIRResource\FHIREncounter\FHIREncounterParticipant;
 
 
 use function DeepCopy\deep_copy;
@@ -1428,6 +1429,40 @@ class FhirBaseMapping
 
         return $FHIRDuration;
     }
+
+    /**
+     * create FHIRPublicationStatus
+     *
+     * @param $string
+     *
+     * @return FHIRPublicationStatus | null
+     */
+    public function createFHIRPublicationStatus( $string=null)
+    {
+        $FHIRPublicationStatus = new FHIRPublicationStatus;
+
+        $FHIRPublicationStatus->setValue($string);
+
+        return $FHIRPublicationStatus;
+    }
+
+
+    /**
+     * create FHIRInteger
+     *
+     * @param $string
+     *
+     * @return FHIRInteger | null
+     */
+    public function createFHIRInteger( $value)
+    {
+        $FHIRInteger = new FHIRInteger;
+        $FHIRInteger->setValue($value);
+        return $FHIRInteger;
+    }
+
+
+
 
 
 }

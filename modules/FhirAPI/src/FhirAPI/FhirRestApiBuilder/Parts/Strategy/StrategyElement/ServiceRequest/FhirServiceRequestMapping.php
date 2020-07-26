@@ -357,10 +357,8 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
         $this->FhirValueSet->setParamsFromBody(array('PARAMETERS_FOR_SEARCH_RESULT'=>array ('filter' => array (0 => array ('value' => $value, 'operator' => '=',),),)));
         $ValueSetRez = $this->FhirValueSet->read();
         $expansion=$ValueSetRez->getExpansion();
-        $expansion['contains'][0]['display'];
-        $display=$expansion['contains'][0]['display'];  // Todo : refactor this after valueset fix
-        return $display->getValue();
-
+        //$display=$expansion['contains'][0]['display']->getValue();
+        return $expansion->getContains()[0]->getDisplay()->getValue();
     }
 
 
