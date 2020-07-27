@@ -61,14 +61,12 @@ trait baseTable
         return $rsArray;
     }
 
-
     /**
      * @param array
      * @param array
      * @return  bool
      *
      */
-
     public function updateData(array $id, array $data)
     {
 
@@ -86,7 +84,6 @@ trait baseTable
 
     }
 
-
     /**
      *
      * This function insert data (can be parietal) to db
@@ -102,7 +99,6 @@ trait baseTable
      * field name that gets tha max +1 value of its column
      * @return  string | array
      */
-
     public function safeInsert(array $data,$primaryKey,$maxField=null)
     {
         $db=$this->tableGateway;
@@ -156,7 +152,6 @@ trait baseTable
      * field name that gets tha max +1 value of its column
      * @return  string | array
      */
-
     public function safeUpdate(array $data,array $primaryKey)
     {
         $db=$this->tableGateway;
@@ -190,8 +185,6 @@ trait baseTable
             return $e->getMessage();
         }
     }
-
-
 
     public function buildGenericSelect(array $FilterData = null,$order = null,$specialParams = array() )
     {
@@ -322,7 +315,6 @@ trait baseTable
 
     }
 
-
     public function parsePredicateAnd($value,&$where,$field){
 
         if(is_array($value)){
@@ -357,7 +349,6 @@ trait baseTable
         return true;
     }
 
-
     public function createQuery($value,&$where,$field,&$last,$FilterData)
     {
         if (is_array($value)) { //needs or
@@ -388,14 +379,11 @@ trait baseTable
 
     }
 
-
     public function insert($data)
     {
         $result = $this->tableGateway->insert($data);
         return $result;
     }
-
-
 
     public function deleteDataByParams(array $FilterData)
     {
