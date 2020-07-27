@@ -235,3 +235,4 @@ VALUES ('drugs_list', 'Drugs list');
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`,`filter`)
 VALUES ('drugs_list', '9911', 'Codes', NULL);
 #EndIf
+
