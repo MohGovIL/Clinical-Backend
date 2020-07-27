@@ -60,3 +60,7 @@ INSERT INTO `moh_import_data` (`id`, `external_name`, `clinikal_name`, `static_n
 (18, 'ICD9', 'codes', 'icd9', 'EDM', '2017-03-02 09:11:01'),
 (19, 'MOH_KUPAT_CHOLIM_BRANCHES', 'MOH_KUPAT_CHOLIM_BRANCHES', 'mkcb', 'CSV', '2017-03-29 00:00:00'),
 (20, 'MOH_DRUGS', '	codes', 'moh_drugs', 'EDM', '2020-03-29 00:00:00');
+
+INSERT INTO `code_types` (`ct_key`, `ct_id`, `ct_seq`, `ct_mod`, `ct_just`, `ct_mask`, `ct_fee`, `ct_rel`, `ct_nofs`, `ct_diag`, `ct_active`, `ct_label`, `ct_external`, `ct_claim`, `ct_proc`, `ct_term`, `ct_problem`, `ct_drug`)
+VALUES
+('MOH_DRUGS', 9911, 9911, 12, 'MOH_DRUGS', '', 1, 0, 1, 0, 1, 'MOH DRUGS LIST', 0, 1, 0, 1, 1, 0);

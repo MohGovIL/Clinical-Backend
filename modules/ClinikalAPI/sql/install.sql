@@ -140,6 +140,3 @@ VALUES ('drugs_list', 'Drugs list');
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`,`filter`)
 VALUES ('drugs_list', '9911', 'Codes', NULL);
 
-INSERT INTO `code_types` (`ct_key`, `ct_id`, `ct_seq`, `ct_mod`, `ct_just`, `ct_mask`, `ct_fee`, `ct_rel`, `ct_nofs`, `ct_diag`, `ct_active`, `ct_label`, `ct_external`, `ct_claim`, `ct_proc`, `ct_term`, `ct_problem`, `ct_drug`)
-VALUES
-('MOH_DRUGS', 9911, 9911, 12, 'MOH_DRUGS', '', 1, 0, 1, 0, 1, 'MOH DRUGS LIST', 0, 1, 0, 1, 1, 0);
