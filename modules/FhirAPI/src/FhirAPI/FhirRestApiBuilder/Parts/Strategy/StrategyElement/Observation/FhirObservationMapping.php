@@ -11,7 +11,7 @@ use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
-use GenericTools\Model\ListsOpenEmrTable;
+use GenericTools\Model\FormVitalsTable;
 use GenericTools\Model\ListsTable;
 use Interop\Container\ContainerInterface;
 
