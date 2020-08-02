@@ -359,7 +359,7 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
 
     public function updateDbData($data,$id)
     {
-        $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
+        $listsOpenEmrTable = $this->container->get(FormVitalsTable::class);
         $flag=$this->validateDb($data);
         if($flag){
             $primaryKey='id';
