@@ -302,14 +302,13 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 ('clinikal_service_categories', '14', '	Emergency Department', 10, 0, 0, '', '', '', 0, 0, 1, '', 1),
 ('clinikal_service_categories', '30', 'Specialist Radiology/Imaging', 10, 0, 0, '', '', '', 0, 0, 1, '', 1);
 
-
 CREATE TABLE `fhir_service_request` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `category` int(11) DEFAULT NULL,
+  `category` varchar(255) DEFAULT NULL,
   `encounter` int(11) DEFAULT NULL,
-  `reason_code` int(11) DEFAULT NULL,
+  `reason_code` varchar(255) DEFAULT NULL,
   `patient` int(11) DEFAULT NULL,
-  `instruction_code` int(11) DEFAULT NULL,
+  `instruction_code` varchar(255) DEFAULT NULL,
   `order_detail_code` varchar(255) DEFAULT NULL,
   `order_detail_system` varchar(255) DEFAULT NULL,
   `patient_instruction` text DEFAULT NULL,
@@ -322,7 +321,7 @@ CREATE TABLE `fhir_service_request` (
   `occurrence_datetime` datetime DEFAULT NULL,
   `reason_reference_doc_id` int(11) DEFAULT NULL,
    PRIMARY KEY(`id`)
-) ENGINE=INNODB DEFAULT CHARSET=UTF8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
