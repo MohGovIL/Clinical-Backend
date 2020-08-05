@@ -559,3 +559,17 @@ INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 ('drug_route', 'drug_route', 'All');
 #EndIf
+
+#IfNotColumnType fhir_service_request category varchar(255)
+ALTER TABLE fhir_service_request MODIFY `category`  varchar(255) DEFAULT NULL;
+#EndIf
+
+#IfNotColumnType fhir_service_request reason_code varchar(255)
+ALTER TABLE fhir_service_request MODIFY `reason_code`  varchar(255) DEFAULT NULL;
+#EndIf
+
+#IfNotColumnType fhir_service_request instruction_code varchar(255)
+ALTER TABLE fhir_service_request MODIFY `instruction_code`  varchar(255) DEFAULT NULL;
+#EndIf
+
+
