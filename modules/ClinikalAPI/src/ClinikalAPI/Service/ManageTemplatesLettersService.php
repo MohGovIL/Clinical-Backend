@@ -45,9 +45,10 @@ trait ManageTemplatesLettersService
     /**
      * create letter
      * @param string $letter_name
+     * @param string $fileData
      * @return array
      */
-    public function createLetter($letter_name)
+    public function createLetter($letter_name,$fileData)
     {
         $letterList = $this->getLetterList(true);
         if (empty($letterList[$letter_name])) {
@@ -58,8 +59,8 @@ trait ManageTemplatesLettersService
             $methodName = $letterList[$letter_name]['letter_class_action'];
             if (class_exists($className)) {
                 $data=array();
-                if(is_array($_POST['clinikal_api'])){
-                    $data= $_POST['clinikal_api'];
+                if(is_array($fileData)){
+                    $data= $fileData;
                 }
                 $class = new $className($this->container,$data);
                 //$info= $this->container->get('GenericTools\Model\FacilityTable');

@@ -38,9 +38,6 @@ class ApiBuilder
     {
           $this->container = $container;
           $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
-          if(Assert::isJson(file_get_contents('php://input'))){  // $_POST is empty here
-              $_POST['clinikal_api']=json_decode(file_get_contents('php://input'),true);
-          }
     }
 
 
@@ -116,7 +113,11 @@ class ApiBuilder
             },
             "POST /api/letters/:letter_name" => function ($letter_name) {
                 $this->checkAcl("clinikal_api", "general_settings");
-                return $this->createLetter($letter_name);
+                $fileData=null;
+                if(Assert::isJson(file_get_contents('php://input'))){  // $_POST is empty here
+                    $fileData=json_decode(file_get_contents('php://input'),true);
+                }
+                return $this->createLetter($letter_name,$fileData);
             },
 
         ];
