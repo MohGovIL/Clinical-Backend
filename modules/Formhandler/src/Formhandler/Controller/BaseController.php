@@ -48,9 +48,9 @@ class BaseController extends AbstractActionController
     {
 
 
-                     $this->jsFiles[] = '/datatables.net/js/jquery.dataTables.js';
+                    // $this->jsFiles[] = '/datatables.net/js/jquery.dataTables.js';
                  //   $this->jsFiles[] = '/jquery-ui-1-10-4/ui/i18n/jquery.ui.datepicker-he.js';
-                    $this->jsFiles[] = '/../../interface/modules/zend_modules/public/js/Formhandler/jquery_ui/ui/i18n/datepicker-he.js';
+                    $this->jsFiles[] = '/../../interface/modules/zend_modules/public/js/formhandler/jquery_ui/ui/i18n/datepicker-he.js';
 
 
         return $this->jsFiles;
@@ -65,7 +65,7 @@ class BaseController extends AbstractActionController
     {
 
 
-        $this->cssFiles[] = '/datatables.net-jqui/css/dataTables.jqueryui.css';
+       // $this->cssFiles[] = '/datatables.net-jqui/css/dataTables.jqueryui.css';
 
         return $this->cssFiles;
     }
@@ -270,17 +270,17 @@ class BaseController extends AbstractActionController
     {
         $this->layout()->setVariable('validateJs', json_encode($this->validate));
         $this->layout()->setVariable('constraintsJs', json_encode($this->getJsValidateConstraints()));
-        $this->jsFiles[] =  '/../../../openemr/interface/modules/zend_modules/public/js/validateMatrix/validate.js';
+        $this->jsFiles[] =  '/../../../openemr/interface/modules/zend_modules/public/js/formhandler/validateMatrix/validate.js';
 
 
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/Formhandler/custom_validate.js";
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/Formhandler/moment.js";
-        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/Formhandler/styles.css";
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/Formhandler/ui_addons.js"; //prevent js cache
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/lib/select2/select2.full.min.js";
-        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/select2/select2.min.css";
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/lib/tooltipster.bundle.min.js";
-        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/tooltipster.bundle.min.css";
+        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/formhandler/custom_validate.js";
+        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/formhandler/moment.js";
+        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/formhandler/styles.css";
+        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/formhandler/ui_addons.js"; //prevent js cache
+       // $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/lib/select2/select2.full.min.js";
+      //  $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/select2/select2.min.css";
+        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/clinikalmohil/lib/tooltipster.bundle.min.js";
+        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/clinikalmohil/tooltipster.bundle.min.css";
 
     }
 
