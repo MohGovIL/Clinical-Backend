@@ -141,8 +141,8 @@ class FormhandlerController extends BaseController
         else {
             $tableName = $this->params('tableName');
         }
-        $formName=$this->getLabel($tableName);
         $getDocument=$this->getDocument($tableName);
+        $formName=$this->getLabel($getDocument);
         foreach($getDocument->body['document']['fields_table'] as $key=>$value){
 
             if(!$tableParams[$value]) {
@@ -156,7 +156,7 @@ class FormhandlerController extends BaseController
 
 
         /** START CUSTOM SERVER VALIDATION**/
-        $validationMatrix=$couchDBConnection->getValidationMatrix($tableName);
+        $validationMatrix=$this->getValidationMatrix($getDocument->body);
         $validatorhandler=new ServerValidationHandler($PostParams,$validationMatrix);
         $serverValidationRes=$validatorhandler->isValid();
         $passServerValidation=$validatorhandler->checkResult();
@@ -245,8 +245,9 @@ class FormhandlerController extends BaseController
 
         $tableParams=array();
         $tableName=$this->params('tableName');
-        $formName=$this->getLabel($tableName);
         $getDocument=$this->getDocument($tableName);
+        $formName=$this->getLabel($getDocument);
+
 
         //check if need to do action after saving
         $afterMath=$getDocument->body['AfterMath'];
@@ -271,7 +272,7 @@ class FormhandlerController extends BaseController
 
 
         /** START CUSTOM SERVER VALIDATION**/
-        $validationMatrix=$couchDBConnection->getValidationMatrix($tableName);
+        $validationMatrix=$this->getValidationMatrix($getDocument->body);
         $validatorhandler=new ServerValidationHandler($PostParams,$validationMatrix);
         $serverValidationRes=$validatorhandler->isValid();
         $passServerValidation=$validatorhandler->checkResult();
@@ -283,7 +284,7 @@ class FormhandlerController extends BaseController
         /**   END OF CUSTOM SERVER VALIDATION***/
 
         /** START OF GENERIC TABLES VALIDATIONS */
-        $validationMatrix=$couchDBConnection->getValidationMatrixGenericTable($tableName);
+        $validationMatrix=$this->getValidationMatrixGenericTable($getDocument->body);
 
         foreach($validationMatrix as $table=>$rowsToValidate) {
 
@@ -952,7 +953,6 @@ class FormhandlerController extends BaseController
         $this->getJsFiles(__METHOD__);
         $this->getCssFiles(__METHOD__);
 
-        $couchDBConnection = new CouchDBHandle();
         $form_name = $this->params()->fromQuery('form');
         $JSAddons = null;
         $PHPAddons = null;
@@ -1047,6 +1047,7 @@ class FormhandlerController extends BaseController
                     }
 
                 }
+
                 foreach ($arrayOfFields as $key => $controllers) {
                     if ($sqlResualt[$key])
                     {
@@ -1084,6 +1085,7 @@ class FormhandlerController extends BaseController
 
                     $controllers = $this->replaceMacros($controllers);
                     $controllers = $this->translateControlElement($controllers);
+
                     $form->add($controllers);
                     if ($controllers[self::ATTRIBUTES][self::REQUIRED]) {
                         $this->addCustomClientSideValidation($controllers[self::NAME], "require");
@@ -1316,7 +1318,6 @@ class FormhandlerController extends BaseController
         $this->layout()->setVariable('formId',$formId);
 
        // return array('validationLog'=>$validators ,'address'=> $address,'form' => $form,"conditions"=>$conditions,'form_title'=>$form_title ,'translate' => $this->translate,'JSAddons'=>$JSAddons);
-
 
 
         return array('validationLog'=>$validators,
@@ -2096,20 +2097,68 @@ class FormhandlerController extends BaseController
 
     private function getDocument($docId)
     {
-        //$couchDBConnection=new CouchDBHandle();
-        //return $couchDBConnection->getDocument($docId);
-
-        $json = file_get_contents(self::$newFormDirPath. $docId . '/' . $docId . '.json');
-        return $json;
+        if ($GLOBALS['formhandler_couchdb']) {
+            $couchDBConnection=new CouchDBHandle();
+            return $couchDBConnection->getDocument($docId);
+        } else {
+            $json = json_decode(file_get_contents(self::$newFormDirPath. $docId . '/' . $docId . '.json'),true);
+            $obj = new \stdClass();
+            $obj->body = $json;
+            return $obj;
+        }
 
     }
 
     /* Return document title*/
-    private function getLabel($tableName)
+    private function getLabel($docBody)
     {
-        $couchDBConnection=new CouchDBHandle();
-        $couchDBConnection->getLabel($tableName);
+        $form_title = $docBody[self::DOCUMENT][self::LABEL];
+        return $form_title;
     }
+
+
+    public function getValidationMatrix($docBody)
+    {
+        $fildesArr=$docBody[self::DOCUMENT][self::FIELDS];
+        $validationMatrix=[];
+        foreach ($fildesArr as $fieldName => $content){
+            $attributes=$content[SELF::ATTRIBUTES];
+            if (array_key_exists(SELF::VALIDATION, $attributes)) {
+                $validationMatrix[$fieldName]=$attributes[SELF::VALIDATION];
+            }
+            if($attributes[self::REQUIRED] == true){
+                $validationMatrix[$fieldName][]["name"] = self::REQUIRED;
+            }
+        }
+        return $validationMatrix;
+    }
+
+    public function getValidationMatrixGenericTable($docBody)
+    {
+
+        $filedsArr = $docBody[self::DOCUMENT][self::FIELDS];
+        $tableConstraints = $document['table_conditions'];
+
+
+        $validationMatrix = [];
+        foreach ($filedsArr as $fieldName => $content) {
+            if (FormhandlerController::str_contains( $fieldName,"_table_generic")) {
+                foreach ($tableConstraints as $tableName => $values) {
+                    if($tableName == $fieldName) {
+
+                        foreach ($values as $name => $validation) {
+                            $validationMatrix[$fieldName][][$name]=$validation;
+                        }
+                    }
+                }
+            }
+
+        }
+        return $validationMatrix;
+
+
+    }
+
 }
 
 

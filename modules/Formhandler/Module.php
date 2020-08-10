@@ -22,6 +22,11 @@ use Formhandler\View\Helper\Form\TwbBundleFormUrl;
 use Formhandler\View\Helper\HelperFactory;
 
 
+use Laminas\Mvc\MvcEvent;
+use OpenEMR\Events\Globals\GlobalsInitializedEvent;
+use OpenEMR\Events\RestApiExtend\RestApiCreateEvent;
+use OpenEMR\Services\Globals\GlobalSetting;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use function GuzzleHttp\Psr7\parse_request;
 use Interop\Container\ContainerInterface;
 use Laminas\ModuleManager\ModuleManager;
@@ -105,7 +110,32 @@ class Module {
         }, 100);
     }
 
-    public function getViewHelperConfig()
+
+    /**
+     * @param MvcEvent $e
+     *
+     * Register our event listeners here
+     */
+    public function onBootstrap(MvcEvent $e)
+    {
+        // Get application service manager and get instance of event dispatcher
+        $serviceManager = $e->getApplication()->getServiceManager();
+        $oemrDispatcher = $serviceManager->get(EventDispatcherInterface::class);
+        $this->container = $serviceManager;
+        // listen for view events for routes in zend_modules
+        $oemrDispatcher->addListener(GlobalsInitializedEvent::EVENT_HANDLE, [$this, 'addCustomGlobals']);
+    }
+
+    public function addCustomGlobals(GlobalsInitializedEvent $event)
+    {
+        /*******************************************************************/
+        $event->getGlobalsService()->createSection("clinikal settings", "Connectors");
+        $setting = new GlobalSetting("Formhandler -load forms settings from CouchDB", 'bool', 0, "Formhandler -load forms settings from CouchDB");
+        $event->getGlobalsService()->appendToSection("clinikal settings", "formhandler_couchdb", $setting);
+        /*******************************************************************/
+    }
+
+        public function getViewHelperConfig()
     {
         return array(
             'factories' => array(
