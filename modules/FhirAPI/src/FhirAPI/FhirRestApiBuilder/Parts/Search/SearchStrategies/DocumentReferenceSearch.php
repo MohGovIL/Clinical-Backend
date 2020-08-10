@@ -23,6 +23,8 @@ class DocumentReferenceSearch extends BaseSearch
         $this->paramHandler('_id','id');
         $this->paramHandler('encounter','encounter_id');
         $this->paramHandler('patient','foreign_id');
+        $this->paramHandler('category','category_id','cat_to_doc');
+
         $documentsDataFromDb = $this->searchThisTable->buildGenericSelect($this->paramsToDB);
 
         if($summary !== "true") {
