@@ -1,8 +1,9 @@
 <?php
 /**
- *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
+ * @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * FHIR ADDRESS trait
  */
+
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits;
 
 
@@ -12,14 +13,23 @@ trait FHIRElementValidation
 {
     private $valueSet = null;
 
-    private function getAddress($type) {
+    private function getAddress($type)
+    {
         return $this->address[$type];
     }
 
-    public function validate($validator, $data,$mainTable=null)
+    /**
+     * map and run a validation function
+     *
+     * @param $validator array
+     * @param $data array
+     * @param $mainTable string
+     *
+     * @return bool
+     */
+    public function validate($validator, $data, $mainTable = null)
     {
-
-        $this->valueSet=new ValueSet(array (
+        $this->valueSet = new ValueSet(array(
             'paramsFromUrl' => array(),
             'paramsFromBody' => array(),
             'container' => $this->container
@@ -28,83 +38,110 @@ trait FHIRElementValidation
         switch ($validator['validation']) {
             case 'blockedStatusFinished':
                 return self::blockedStatusFinished($data);
-           break;
+                break;
             case 'required':
-                    return self::checkRequired($validator,$data,$mainTable);
+                return self::checkRequired($validator, $data, $mainTable);
                 break;
             case 'valueset':
-                return self::checkIfInList($validator,$data,$mainTable);
+                return self::checkIfInList($validator, $data, $mainTable);
                 break;
         }
         return true;
     }
 
-    public function checkRequired($validator,$data,$mainTable)
+
+    /**
+     * check if value is not empty
+     *
+     * @param $validator array
+     * @param $data array
+     * @param $mainTable string
+     *
+     * @return bool
+     */
+    public function checkRequired($validator, $data, $mainTable)
     {
-        if(is_array($data['new'])){
-                    $requiredField=null;
-                    if(!is_null($mainTable)){
-                        $requiredField=$data['new'][$mainTable][$validator['filed_name']];
-                    }else{
-                        $requiredField=$data['new'][$validator['filed_name']];
-                    }
-                    if($requiredField!=="" && $requiredField!==null){
-                        return true;
-                    }
+        if (is_array($data['new'])) {
+            $requiredField = null;
+            if (!is_null($mainTable)) {
+                $requiredField = $data['new'][$mainTable][$validator['filed_name']];
+            } else {
+                $requiredField = $data['new'][$validator['filed_name']];
+            }
+            if ($requiredField !== "" && $requiredField !== null) {
+                return true;
+            }
 
         }
         return false;
-        }
+    }
 
-
-
-
-
+    /**
+     * return false if trying to update when status is finished
+     *
+     * @param $data array
+     *
+     * @return bool
+     */
     public function blockedStatusFinished($data)
     {
-        if($data['old'][0]['status']==="finished"){
+        if ($data['old'][0]['status'] === "finished") {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
 
-
-    public function checkIfInList($validator,$data,$mainTable)
+    /**
+     * check if value is in valueset
+     *
+     * @param $validator array
+     * @param $data array
+     * @param $mainTable string
+     *
+     * @return bool
+     */
+    public function checkIfInList($validator, $data, $mainTable)
     {
-        if(is_array($data['new'])){
-            $value=null;
-            if(!is_null($mainTable)){
-                $value=$data['new'][$mainTable][$validator['filed_name']];
-            }else{
-                $value=$data['new'][$validator['filed_name']];
+        if (is_array($data['new'])) {
+            $value = null;
+            if (!is_null($mainTable)) {
+                $value = $data['new'][$mainTable][$validator['filed_name']];
+            } else {
+                $value = $data['new'][$validator['filed_name']];
             }
 
-            $param= array(
-                "0"=> $validator['validation_param'],
+            $param = array(
+                "0" => $validator['validation_param'],
                 "1" => '$expand'
             );
 
             $this->valueSet->setParamsFromUrl($param);
             $this->valueSet->setOperations($param);
-            $list=$this->valueSet->read();
-            $codes=$this->getCodeArrayFromValueSet($list);
+            $list = $this->valueSet->read();
+            $codes = $this->getCodeArrayFromValueSet($list);
 
-            if(in_array($value,$codes)){
+            if (in_array($value, $codes)) {
                 return true;
             }
         }
         return false;
     }
 
-
+    /**
+     * create array of codes from fhir valueset
+     *
+     * @param $valueSet ValueSet
+     *
+     * @return array
+     */
     private function getCodeArrayFromValueSet($valueSet)
     {
-        $codes=array();
-        if(method_exists($valueSet,'get_fhirElementName') && $valueSet->get_fhirElementName()==="ValueSet"){
-            $contains=$valueSet->getExpansion()->getContains();;
-            foreach($contains as $index => $codeInfo){
-                $codes[]=$codeInfo->getCode()->getValue();;
+        $codes = array();
+        if (method_exists($valueSet, 'get_fhirElementName') && $valueSet->get_fhirElementName() === "ValueSet") {
+            $contains = $valueSet->getExpansion()->getContains();;
+            foreach ($contains as $index => $codeInfo) {
+                $codes[] = $codeInfo->getCode()->getValue();;
             }
         }
         return $codes;
