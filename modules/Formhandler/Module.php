@@ -129,9 +129,9 @@ class Module {
     public function addCustomGlobals(GlobalsInitializedEvent $event)
     {
         /*******************************************************************/
-        $event->getGlobalsService()->createSection("clinikal settings", "Connectors");
+        $event->getGlobalsService()->createSection("Formhandler settings", "Connectors");
         $setting = new GlobalSetting("Formhandler -load forms settings from CouchDB", 'bool', 0, "Formhandler -load forms settings from CouchDB");
-        $event->getGlobalsService()->appendToSection("clinikal settings", "formhandler_couchdb", $setting);
+        $event->getGlobalsService()->appendToSection("Formhandler settings", "formhandler_couchdb", $setting);
         /*******************************************************************/
     }
 
