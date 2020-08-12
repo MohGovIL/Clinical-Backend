@@ -340,3 +340,17 @@ INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
 ('drug_route', 'Drug Route');
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 ('drug_route', 'drug_route', 'All');
+
+
+
+CREATE TABLE `fhir_validation_settings` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`fhir_element` VARCHAR(255) NOT NULL ,
+`filed_name` VARCHAR(255) NOT NULL ,
+`request_action` ENUM('ALL','WRITE','UPDATE','POST','PUT','PATCH','DELETE','GET') NOT NULL ,
+`validation` VARCHAR(255) NOT NULL ,
+`validation_param` VARCHAR(255) NOT NULL ,
+`type` ENUM('FHIR','DB') NOT NULL,
+`active` BOOLEAN NOT NULL DEFAULT 0,
+ PRIMARY KEY(`id`)
+)  ENGINE = InnoDB;

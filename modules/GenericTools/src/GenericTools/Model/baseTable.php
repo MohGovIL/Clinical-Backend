@@ -37,6 +37,11 @@ trait baseTable
      *
      */
 
+    public function getTableName(){
+        return $this->tableGateway->getTable();
+    }
+
+
     public function getDataByParams(array $FilterData)
     {
         $rsArray = array();
@@ -271,6 +276,7 @@ trait baseTable
 
     public function buildOrAndPredicateWhereToWhere($val,&$where,$field,$predicate)
     {
+        $op =null;
         //check modifiers
         if (isset($val[self::$MODIFIER]) && !is_null($val[self::$MODIFIER]) && $val[self::$MODIFIER] != self::$EXACT) {
             if ($val[self::$MODIFIER] == "not") {

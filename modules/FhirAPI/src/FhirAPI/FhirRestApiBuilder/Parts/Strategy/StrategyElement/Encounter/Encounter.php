@@ -49,7 +49,7 @@ class Encounter Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
     }
 
     public function doAlgorithm($arrParams)
@@ -62,9 +62,10 @@ class Encounter Extends Restful implements  Strategy
     }
 
 
-    private function setMapping($container)
+    private function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirEncounterMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
     public function getJoinArray(){
@@ -122,6 +123,17 @@ class Encounter Extends Restful implements  Strategy
         unset($dBdata['form_encounter']['id']);
         $dBdata["status_update_date"]= date("Y-m-d H:i:s");
         $formEncounterTable = $this->container->get(FormEncounterTable::class);
+
+
+        /*********************************** validate *******************************/
+        $alldata=array('new'=>$dBdata,'old'=>array());
+        $mainTable=$formEncounterTable->getTableName();
+        $isValid=$this->mapping->validateDb($alldata,$mainTable);
+        if(!$isValid){
+            ErrorCodes::http_response_code("406","failed validation");
+        }
+        /***************************************************************************/
+
         $inserted=$formEncounterTable->safeInsertEncounter($dBdata);
         $this->paramsFromUrl[0]=$inserted[0]['id'];
         return $this-> read();

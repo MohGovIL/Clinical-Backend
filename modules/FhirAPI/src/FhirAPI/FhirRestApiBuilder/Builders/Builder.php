@@ -14,11 +14,13 @@ use FhirAPI\FhirRestApiBuilder\Parts\Restful;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchStrategies;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Context;
 //use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Organization\Encounter;
+use FhirAPI\Model\FhirValidationSettingsTable;
 use FhirAPI\Service\FhirRequestParamsHandler;
 use ClinikalAPI\Model\ClinikalPatientTrackingChangesTable;
 use GenericTools\Model\LogServiceTable;
 use GenericTools\Service\AclCheckExtendedService;
 use Interop\Container\ContainerInterface;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 
 Abstract class Builder
 {
@@ -33,6 +35,8 @@ Abstract class Builder
     private static $part = null;
     private static $container = null;
     private $searchParams;
+
+    use FHIRElementValidation;
 
     public static function setContainer($container){
         if(is_null(self::$container))
@@ -269,6 +273,54 @@ Abstract class Builder
         }
     }
 
+    public static function validateRequest($functionType, $FHIRResource, $container)
+    {
+        $FhirValidationSettingsTable= $container->get(FhirValidationSettingsTable::class);
+        $fhirValidation=$FhirValidationSettingsTable->getActiveValidation('FHIR',$FHIRResource);
+        $request=json_decode(file_get_contents('php://input'),true);
+        foreach ($fhirValidation as $index => $validator ){
+            if($validator['fhir_element']===$FHIRResource){
+                $reqAction = $validator['request_action'];
+                $checkFlag = false;
+                switch ($reqAction) {
+                    case 'ALL':
+                        $checkFlag =true;
+                        break;
+                    case 'WRITE':
+                        $checkFlag =($functionType==="update" || $functionType==="patch" || $functionType==="create");;
+                        break;
+                    case 'UPDATE':
+                        $checkFlag =($functionType==="update" || $functionType==="patch");
+                        break;
+                    case 'POST':
+                        $checkFlag = ($functionType==="create");
+                        break;
+                    case 'PUT':
+                        $checkFlag = ($functionType==="update");
+                        break;
+                    case 'PATCH':
+                        $checkFlag = ($functionType==="patch");
+                        break;
+                    case 'DELETE':
+                        $checkFlag = ($functionType==="delete");
+                        break;
+                    case 'GET':
+                        $checkFlag = ($functionType==="read" || $functionType==="search");
+                        break;
+                }
+
+                if($checkFlag){
+                    $valid=FHIRElementValidation::validate($validator,$request);
+                    if($valid===false){
+                       return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+
     public static function logRequest($functionType, $FHIRResource, $container)
     {
 
@@ -337,16 +389,17 @@ Abstract class Builder
 
         $FHIRResource = self::$type;
         $container = self::getContainer();
-     //   Registry::setNewRouting($key , function($params) use ($key, $functionType) {
 
-          //(self::$type)::setPart($functionType,self::ROUTES, $key ,function($params,$functionType){ return self::doRoutingFunction($params,self::$type,$functionType);});
          Restful::setPart(
             self::$type,$functionType,
             self::ROUTES, $key , function (...$paramsFromUrl) use ($functionType, $FHIRResource, $container) {
-
-
              $FhirRequestParamsHandler = $container->get(FhirRequestParamsHandler::class);
              $paramsFromBody = $FhirRequestParamsHandler->getRequestParams();
+
+             $valid=self::validateRequest($functionType, $FHIRResource, $container);
+             if(!$valid){
+                 ErrorCodes::http_response_code('500','bad data in request');
+             }
 
              self::logRequest($functionType, $FHIRResource, $container);
 
