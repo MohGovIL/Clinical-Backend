@@ -126,7 +126,7 @@ abstract  class Restful extends Registry implements FHIRRestInt
         $this->container = $container;
     }
 
-    protected function setOperations($paramsFromUrl)
+    public function setOperations($paramsFromUrl)
     {
         $this->operations = array_filter($paramsFromUrl, [$this, "isOperation"]);
     }

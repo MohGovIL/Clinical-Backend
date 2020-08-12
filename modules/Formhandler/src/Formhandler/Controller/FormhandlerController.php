@@ -20,6 +20,7 @@ use Laminas\View\Model\ViewModel;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
 use Formhandler\Model\customDB;
+use OpenEMR\Common\Acl\AclMain;
 use TwbBundle\Form\Element\StaticElement;
 class FormhandlerController extends BaseController
 {
@@ -87,6 +88,7 @@ class FormhandlerController extends BaseController
         die(json_encode(json_decode(json_encode($allDocumentArray),true)));
     }
     public function saveDraftAction(){
+        // todo - move from couchdb to file
         $params=$this->getPostParamsArray();
         if(!$params) die("no params where sent");
         $jasonnyArray=json_decode($params['couchElement']);
@@ -119,7 +121,6 @@ class FormhandlerController extends BaseController
 
         /*get Db handlers */
         $customDBHandler=$this->getCustomDB();  //SQL
-        $couchDBConnection=new CouchDBHandle(); //couch
 
         /*get and prepare form data*/
         $PostParams=$this->getPostParamsArray();
@@ -140,8 +141,8 @@ class FormhandlerController extends BaseController
         else {
             $tableName = $this->params('tableName');
         }
-        $formName=$couchDBConnection->getLabel($tableName);
-        $getDocument=$couchDBConnection->getDocument($tableName);
+        $getDocument=$this->getDocument($tableName);
+        $formName=$this->getLabel($getDocument);
         foreach($getDocument->body['document']['fields_table'] as $key=>$value){
 
             if(!$tableParams[$value]) {
@@ -155,7 +156,7 @@ class FormhandlerController extends BaseController
 
 
         /** START CUSTOM SERVER VALIDATION**/
-        $validationMatrix=$couchDBConnection->getValidationMatrix($tableName);
+        $validationMatrix=$this->getValidationMatrix($getDocument->body);
         $validatorhandler=new ServerValidationHandler($PostParams,$validationMatrix);
         $serverValidationRes=$validatorhandler->isValid();
         $passServerValidation=$validatorhandler->checkResult();
@@ -244,8 +245,9 @@ class FormhandlerController extends BaseController
 
         $tableParams=array();
         $tableName=$this->params('tableName');
-        $formName=$couchDBConnection->getLabel($tableName);
-        $getDocument=$couchDBConnection->getDocument($tableName);
+        $getDocument=$this->getDocument($tableName);
+        $formName=$this->getLabel($getDocument);
+
 
         //check if need to do action after saving
         $afterMath=$getDocument->body['AfterMath'];
@@ -270,7 +272,7 @@ class FormhandlerController extends BaseController
 
 
         /** START CUSTOM SERVER VALIDATION**/
-        $validationMatrix=$couchDBConnection->getValidationMatrix($tableName);
+        $validationMatrix=$this->getValidationMatrix($getDocument->body);
         $validatorhandler=new ServerValidationHandler($PostParams,$validationMatrix);
         $serverValidationRes=$validatorhandler->isValid();
         $passServerValidation=$validatorhandler->checkResult();
@@ -282,7 +284,7 @@ class FormhandlerController extends BaseController
         /**   END OF CUSTOM SERVER VALIDATION***/
 
         /** START OF GENERIC TABLES VALIDATIONS */
-        $validationMatrix=$couchDBConnection->getValidationMatrixGenericTable($tableName);
+        $validationMatrix=$this->getValidationMatrixGenericTable($getDocument->body);
 
         foreach($validationMatrix as $table=>$rowsToValidate) {
 
@@ -471,15 +473,14 @@ class FormhandlerController extends BaseController
         $form_name = $this->params()->fromQuery('form');
         $acl = $this->getCustomDB()->getFormsAclFromRegistry($form_name);
         $acl = explode('|',$acl);
-        if(!acl_check($acl[0], $acl[1],false,'view')){
+        if(!AclMain::aclCheckCore($acl[0], $acl[1],false,'view')){
            exit();
         }
 
         /* get parms from report get*/
         $parms=(array)$this->getRequest()->getQuery();
         $customDBHandler=$this->getCustomDB();
-        $couchDBConnection=new CouchDBHandle();
-        $formStructure=$couchDBConnection->getDocument($parms['form']);
+        $formStructure=$this->getDocument($parms['form']);
         /* get the structure of the form */
         if(!strpos($parms['form'],"form_")) {
             $parms['form']=$this->AlterFormPrefixName($parms['form']);
@@ -721,12 +722,11 @@ class FormhandlerController extends BaseController
       /* get parms from report get*/
       $parms=(array)$this->getRequest()->getQuery();
       $customDBHandler=$this->getCustomDB();
-      $couchDBConnection=new CouchDBHandle();
       /* get the structure of the form */
        // if(!strpos($parms['form'],"form_")<0) {
           //  $parms['form']="form_".$parms['form'];
        // }
-      $formStructure=$couchDBConnection->getDocument($parms['form']);
+      $formStructure=$this->getDocument($parms['form']);
       /* get data from a spesific table*/
       $sqlResualt=$customDBHandler->getSqlReportTable($parms);
       $tableFieldCounter=count($sqlResualt)-self::SQL_MUST_PARM_AMOUNT;
@@ -945,7 +945,7 @@ class FormhandlerController extends BaseController
         $form_name = $this->params()->fromQuery('form');
         $acl = $this->getCustomDB()->getFormsAclFromRegistry($form_name);
         $acl = explode('|',$acl);
-        if(!acl_check($acl[0], $acl[1],false,'write')){
+        if(!AclMain::aclCheckCore($acl[0], $acl[1],false,'write')){
             return $this->redirect()->toRoute('errors', array('action' => 'access-denied'));
         }
 
@@ -953,7 +953,6 @@ class FormhandlerController extends BaseController
         $this->getJsFiles(__METHOD__);
         $this->getCssFiles(__METHOD__);
 
-        $couchDBConnection = new CouchDBHandle();
         $form_name = $this->params()->fromQuery('form');
         $JSAddons = null;
         $PHPAddons = null;
@@ -968,7 +967,7 @@ class FormhandlerController extends BaseController
 
         $validators=$this->params()->fromQuery('validate');
 
-        $forms = $couchDBConnection->getDocument($form_name);
+        $forms = $this->getDocument($form_name);
         $returnurl = $GLOBALS['concurrent_layout'] ? 'encounter_top.php' : 'patient_encounter.php';
         // not create new frame in cancel button
         //$returnurl = 'forms.php';
@@ -1048,6 +1047,7 @@ class FormhandlerController extends BaseController
                     }
 
                 }
+
                 foreach ($arrayOfFields as $key => $controllers) {
                     if ($sqlResualt[$key])
                     {
@@ -1085,6 +1085,7 @@ class FormhandlerController extends BaseController
 
                     $controllers = $this->replaceMacros($controllers);
                     $controllers = $this->translateControlElement($controllers);
+
                     $form->add($controllers);
                     if ($controllers[self::ATTRIBUTES][self::REQUIRED]) {
                         $this->addCustomClientSideValidation($controllers[self::NAME], "require");
@@ -1317,7 +1318,6 @@ class FormhandlerController extends BaseController
         $this->layout()->setVariable('formId',$formId);
 
        // return array('validationLog'=>$validators ,'address'=> $address,'form' => $form,"conditions"=>$conditions,'form_title'=>$form_title ,'translate' => $this->translate,'JSAddons'=>$JSAddons);
-
 
 
         return array('validationLog'=>$validators,
@@ -1982,7 +1982,7 @@ class FormhandlerController extends BaseController
             $this->editFormFiles($form_name, $form_title, $sql, $des_dir, $template_names);
             $couchDBConnection=new CouchDBHandle();
             $id=$jasonnyArray->_id;
-            $document=$couchDBConnection->getDocument($id);
+            $document=$this->getDocument($id);
             if(!isset($document->body['error']))
             {
                 die ("Document allready exists in, db please change form_id");
@@ -2094,6 +2094,71 @@ class FormhandlerController extends BaseController
             return $this->ajaxOutPut($this->translate->z_xlt($message));
         }
     }
+
+    private function getDocument($docId)
+    {
+        if ($GLOBALS['formhandler_couchdb']) {
+            $couchDBConnection=new CouchDBHandle();
+            return $couchDBConnection->getDocument($docId);
+        } else {
+            $json = json_decode(file_get_contents(self::$newFormDirPath. $docId . '/' . $docId . '.json'),true);
+            $obj = new \stdClass();
+            $obj->body = $json;
+            return $obj;
+        }
+
+    }
+
+    /* Return document title*/
+    private function getLabel($docBody)
+    {
+        $form_title = $docBody[self::DOCUMENT][self::LABEL];
+        return $form_title;
+    }
+
+
+    public function getValidationMatrix($docBody)
+    {
+        $fildesArr=$docBody[self::DOCUMENT][self::FIELDS];
+        $validationMatrix=[];
+        foreach ($fildesArr as $fieldName => $content){
+            $attributes=$content[SELF::ATTRIBUTES];
+            if (array_key_exists(SELF::VALIDATION, $attributes)) {
+                $validationMatrix[$fieldName]=$attributes[SELF::VALIDATION];
+            }
+            if($attributes[self::REQUIRED] == true){
+                $validationMatrix[$fieldName][]["name"] = self::REQUIRED;
+            }
+        }
+        return $validationMatrix;
+    }
+
+    public function getValidationMatrixGenericTable($docBody)
+    {
+
+        $filedsArr = $docBody[self::DOCUMENT][self::FIELDS];
+        $tableConstraints = $document['table_conditions'];
+
+
+        $validationMatrix = [];
+        foreach ($filedsArr as $fieldName => $content) {
+            if (FormhandlerController::str_contains( $fieldName,"_table_generic")) {
+                foreach ($tableConstraints as $tableName => $values) {
+                    if($tableName == $fieldName) {
+
+                        foreach ($values as $name => $validation) {
+                            $validationMatrix[$fieldName][][$name]=$validation;
+                        }
+                    }
+                }
+            }
+
+        }
+        return $validationMatrix;
+
+
+    }
+
 }
 
 

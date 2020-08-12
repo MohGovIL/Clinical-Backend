@@ -248,3 +248,4 @@ CREATE TABLE manage_templates_letters(
     PRIMARY KEY (`id`)
 );
 #EndIf
+

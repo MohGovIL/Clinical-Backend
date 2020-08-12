@@ -30,6 +30,7 @@ return $ACL_UPGRADE = array(
         AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'medicationstatement','Medication Statement');
         AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'observation','Observation');
         AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'medicationrequest','MedicationRequest');
+        AclExtended::addObjectAcl('fhir_api', 'FHIR API', 'servicerequest','ServiceRequest');
 
     }
 );

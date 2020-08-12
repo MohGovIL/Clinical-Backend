@@ -9,7 +9,7 @@ echo $this->doctype(); ?>
 
     <meta charset="utf-8">
 
-    <?php  Header::setupHeader(['datetime-picker','jquery-ui', 'jquery-ui-base']); ?>
+    <?php  Header::setupHeader(['datetime-picker','jquery-ui', 'jquery-ui-base', 'datatables']); ?>
 
     <?php $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0');
      echo $this->headMeta();
@@ -87,7 +87,7 @@ echo $this->doctype(); ?>
 
 
         <div class="col-md-12">
-            <nav class="navbar fh-navbar navbar-default navbar-static-top">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="#"><?php echo ($this->navBarHeader)?$this->navBarHeader:'';?></a>
 

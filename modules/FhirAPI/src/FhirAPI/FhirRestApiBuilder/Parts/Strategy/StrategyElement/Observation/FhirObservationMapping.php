@@ -11,7 +11,7 @@ use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
-use GenericTools\Model\ListsOpenEmrTable;
+use GenericTools\Model\FormVitalsTable;
 use GenericTools\Model\ListsTable;
 use Interop\Container\ContainerInterface;
 
@@ -359,7 +359,7 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
 
     public function updateDbData($data,$id)
     {
-        $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
+        $listsOpenEmrTable = $this->container->get(FormVitalsTable::class);
         $flag=$this->validateDb($data);
         if($flag){
             $primaryKey='id';

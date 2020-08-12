@@ -511,6 +511,34 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`
 ('clinikal_service_categories', '30', 'Specialist Radiology/Imaging', 10, 0, 0, '', '', '', 0, 0, 1, '', 1);
 #EndIf
 
+#IfNotTable fhir_service_request
+CREATE TABLE `fhir_service_request` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category` varchar(255) DEFAULT NULL,
+  `encounter` int(11) DEFAULT NULL,
+  `reason_code` varchar(255) DEFAULT NULL,
+  `patient` int(11) DEFAULT NULL,
+  `instruction_code` varchar(255) DEFAULT NULL,
+  `order_detail_code` varchar(255) DEFAULT NULL,
+  `order_detail_system` varchar(255) DEFAULT NULL,
+  `patient_instruction` text DEFAULT NULL,
+  `requester` int(11) DEFAULT NULL,
+  `authored_on` datetime DEFAULT NULL,
+  `status` varchar(30) NOT NULL,
+  `intent` varchar(30) NOT NULL,
+  `note` text DEFAULT NULL,
+  `performer` int(11) DEFAULT NULL,
+  `occurrence_datetime` datetime DEFAULT NULL,
+  `reason_reference_doc_id` int(11) DEFAULT NULL,
+   PRIMARY KEY(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+#EndIf
+
+#IfNotRow fhir_rest_elements name ServiceRequest
+INSERT INTO `fhir_rest_elements` (`name`, `active`) VALUES
+('ServiceRequest', 1);
+#EndIf
+
 #IfNotRow fhir_value_sets id drug_interval
 INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
 ('drug_interval', 'Drug Interval');
@@ -531,3 +559,17 @@ INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 ('drug_route', 'drug_route', 'All');
 #EndIf
+
+#IfNotColumnType fhir_service_request category varchar(255)
+ALTER TABLE fhir_service_request MODIFY `category`  varchar(255) DEFAULT NULL;
+#EndIf
+
+#IfNotColumnType fhir_service_request reason_code varchar(255)
+ALTER TABLE fhir_service_request MODIFY `reason_code`  varchar(255) DEFAULT NULL;
+#EndIf
+
+#IfNotColumnType fhir_service_request instruction_code varchar(255)
+ALTER TABLE fhir_service_request MODIFY `instruction_code`  varchar(255) DEFAULT NULL;
+#EndIf
+
+

@@ -6,6 +6,9 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
 use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRValueSet;
+use OpenEMR\FHIR\R4\FHIRElement\FHIRBackboneElement;
+use OpenEMR\FHIR\R4\FHIRResource\FHIRValueSet\FHIRValueSetContains;
+use OpenEMR\FHIR\R4\FHIRResource\FHIRValueSet\FHIRValueSetExpansion;
 
 class FhirValueSetMapping extends FhirBaseMapping  implements MappingData
 {
@@ -25,36 +28,40 @@ class FhirValueSetMapping extends FhirBaseMapping  implements MappingData
 
     public function DBToFhir(...$params){
         $data = $params[0];
-        $vs_id = $data[0]['vs_id'];
-        $vs_title = $data[0]['vs_title'];
-        $vs_status = $data[0]['vs_status'];
-        $operations = $params[1];
+        $FHIRValueSet =$this->FHIRValueSet;
 
-        $dbArray = [];
-        $dbArray['id'] = $this->createFHIRId($vs_id);
-        $dbArray['title'] = $this->createFHIRString($vs_title);
-        $dbArray['status'] = $this->createFHIRCode($vs_status);
+        $FHIRValueSet->getId()->setValue($data[0]['vs_id']);
+        $FHIRValueSet->getTitle()->setValue($data[0]['vs_title']);
+        $FHIRValueSet->getStatus()->setValue($data[0]['vs_status']);
+
+        $operations = $params[1];
 
         // build expansion (contains the actual codes)
         if(in_array('$expand', $operations)) {
-            $expansion = [];
-            $expansion['timestamp'] = $this->createFHIRDateTime(date("Y-m-d h:i:s"));
+
+            $FHIRExpansion=$FHIRValueSet->getExpansion();
+
+            $FHIRDateTime=$this->createFHIRDateTime(null,null,date("Y-m-d h:i:s"));
+            $FHIRExpansion->setTimestamp($FHIRDateTime);
 
             // build 'contains'
-            $contains = [];
-            foreach ($data as $row) {
-                $contains[] = array(
-                    'system' =>  self::LIST_SYSTEM_LINK . $this->createFHIRUri($row['system']),
-                    'code' => $this->createFHIRCode($row['code']),
-                    'display' => $this->createFHIRString($row['display'])
-                );
-            }
-            $expansion['contains'] = $contains;
+            $contains=$FHIRExpansion->getContains();
+            foreach ($data as $index => $row) {
 
-            $dbArray['expansion'] = $expansion;
+                    $row['system'] = self::LIST_SYSTEM_LINK . $row['system'];
+
+                    if($index==0){
+                        $contains[$index]->getDisplay()->setValue($row['display']);
+                        $contains[$index]->getCode()->setValue($row['code']);
+                        $contains[$index]->getSystem()->setValue($row['system']);
+                    }else{
+                        $FHIRValueSetContains= $this->createFHIRValueSetContains($row);
+                        $FHIRExpansion->addContains($FHIRValueSetContains);
+                    }
+            }
         }
 
-        $this->FHIRValueSet = new FHIRValueSet($dbArray);
+        $this->FHIRValueSet = $FHIRValueSet;
         return $this->FHIRValueSet;
     }
 
@@ -64,12 +71,108 @@ class FhirValueSetMapping extends FhirBaseMapping  implements MappingData
 
     public function initFhirObject()
     {
-        // TODO: Implement initFhirObject() method.
-        /*
         $FHIRValueSet = new FHIRValueSet;
+
+  ;
+        $FhirId = $this->createFHIRId(null);
+        $FHIRValueSet->setId($FhirId);
+
+        $FHIRString= $this->createFHIRString(null);
+        $FHIRValueSet->setTitle($FHIRString);
+
+        $FHIRPublicationStatus=$this->createFHIRPublicationStatus(null);
+        $FHIRValueSet->setStatus($FHIRPublicationStatus);
+
+        $FHIRValueSetExpansion= $this->createFHIRValueSetExpansion(array());
+        $FHIRValueSet->setExpansion($FHIRValueSetExpansion);
+
         $this->FHIRValueSet=$FHIRValueSet;
         return $FHIRValueSet;
-        */
+    }
+
+    /**
+     * create FHIRValueSetContains
+     *
+     * @param $string
+     *
+     * @return FHIRValueSetContains | null
+     */
+    public function createFHIRValueSetContains(array $data )
+    {
+        $FHIRValueSetContains = new FHIRValueSetContains;
+
+        if(!empty($data['system'])){
+            $FHIRUri= $this->createFHIRUri($data['system']);
+        }else{
+            $FHIRUri= $this->createFHIRUri(null);
+        }
+        $FHIRValueSetContains->setSystem($FHIRUri);
+
+        if(!empty($data['code'])){
+            $FHIRCode= $this->createFHIRCode($data['code']);
+        }else{
+            $FHIRCode= $this->createFHIRCode(null);
+        }
+        $FHIRValueSetContains->setCode($FHIRCode);
+
+        if(!empty($data['display'])){
+            $FHIRString= $this->createFHIRString($data['display']);
+        }else{
+            $FHIRString= $this->createFHIRString(null);
+        }
+        $FHIRValueSetContains->setDisplay($FHIRString);
+
+        return $FHIRValueSetContains;
+    }
+
+    /**
+     * create FHIRValueSetExpansion
+     *
+     * @param $string
+     *
+     * @return FHIRValueSetExpansion | null
+     */
+    public function createFHIRValueSetExpansion(array $data )
+    {
+        $FHIRValueSetExpansion = new FHIRValueSetExpansion;
+
+
+        if(!empty($data['contains']) && is_array($data['contains'])){
+            foreach($data['contains'] as $index => $contain){
+                $FHIRValueSetContains = $this->createFHIRValueSetContains($contain);
+                $FHIRValueSetExpansion->addContains($FHIRValueSetContains);
+            }
+        }else{
+            $FHIRValueSetContains = $this->createFHIRValueSetContains(array());
+            $FHIRValueSetExpansion->addContains($FHIRValueSetContains);
+        }
+
+
+        if(!empty($data['timestamp'])){
+            $FHIRDateTime= $this->createFHIRDateTime(null,null,$data['timestamp']);
+        }else{
+            $FHIRDateTime= $this->createFHIRDateTime(null);
+        }
+        $FHIRValueSetExpansion->setTimestamp($FHIRDateTime);
+
+
+        if(!empty($data['offset'])){
+            $FHIRInteger= $this->createFHIRInteger($data['offset']);
+        }else{
+            $FHIRInteger= $this->createFHIRInteger(null);
+        }
+        $FHIRValueSetExpansion->setOffset($FHIRInteger);
+
+
+        if(!empty($data['total'])){
+            $FHIRInteger= $this->createFHIRInteger($data['total']);
+        }else{
+            $FHIRInteger= $this->createFHIRInteger(null);
+        }
+        $FHIRValueSetExpansion->setTotal($FHIRInteger);
+
+
+        return $FHIRValueSetExpansion;
     }
 
 

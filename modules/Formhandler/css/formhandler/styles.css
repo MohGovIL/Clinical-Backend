@@ -1,0 +1,261 @@
+.pointer{
+    cursor: pointer;
+}
+
+/* error message = new validation */
+.error-message{
+    color:red;
+    display:block;
+    white-space: nowrap;
+    font-weight: normal;
+    font-size: 11px;
+}
+.warning-message{
+    color: red;
+    display: block;
+    white-space: nowrap;
+    font-weight: normal;
+    font-size: 11px;
+}
+
+.error-border{
+    border: 1px solid red !important;
+}
+
+/* pump configuration */
+#pump-conf-info{
+    position: relative;
+    left: 122px;
+    top: -72px;
+}
+
+#pump-form #save{
+    margin-bottom: 25px;
+}
+
+#replace-pump{
+    display: none;
+}
+#replace-yes:hover, #replace-no:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+}
+#connect-message{
+    display: none;
+}
+/* edit bottle */
+#error-message{
+    display: none;
+}
+
+/* bottle balance screen */
+.data-row{
+    padding-bottom: 15px;
+}
+.big-font{
+    font-size: 1.2em;
+}
+.balance-close-alert{
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+/*bottle exceptions screen */
+#delete-message{
+    display: none;
+}
+
+.delete-link{
+    cursor: pointer;
+}
+
+.delete-message span{
+    font-size: 1.3em;
+    margin-right: 15px;
+    transform:scale(0);
+    transition: transform 1s;
+}
+
+#delete-yes:hover, #delete-no:hover,#stop-yes:hover, #stop-no:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+.row-deleted{
+    background: rgba(224, 27, 27, 0.29) !important;
+}
+
+#exceptions-table tr td:nth-child(3){
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* rtl language */
+.rtl .dataTables_length{
+    float: none !important;
+}
+.rtl .dataTables_filter{
+    float: left !important;
+}
+.rtl .dataTables_info{
+    float: none !important;
+}
+.rtl .dataTables_paginate{
+    float: left !important;
+}
+
+
+/* calibration */
+.round{
+    padding: 8px;
+}
+#calibration-buttons{
+    margin-top: 20px;
+}
+#header-calibration-table{
+    font-weight: 600;
+    padding: 10px;
+}
+#calibration-table .round-div:nth-child(odd){
+    background:rgb(232, 226, 226);
+}
+#calibration-table .round-div:nth-child(even){
+    background:white;
+}
+.icon-status{
+    font-size: 1.7em;
+}
+.red{
+    color: red;
+}
+.green{
+    color: green;
+}
+.spinner {
+    height: 25px;
+    width: 25px;
+    animation: rotate 1s infinite linear;
+    border: 5px solid #632c69;
+    border-right-color: transparent;
+    border-radius: 50%;
+}
+
+@keyframes rotate {
+    0%    { transform: rotate(0deg); }
+    100%  { transform: rotate(360deg); }
+}
+
+#restart-calibration-message, #stop-pump-message{
+    display: none;
+}
+.alert-tube{
+    padding: 6px;
+}
+#tube-message, #fill-tube-message, #empty-tube-message{
+    display: none;
+}
+.round-num{
+    position: relative;
+    top: 7px;
+    font-weight: 600;
+}
+.header-calibration{
+    font-size: 1.2em;
+}
+.title-calibration{
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/*log calibration*/
+.thin-input{
+    width: 100px !important;
+}
+
+.rtl #calibration-log_filter #show_advanced, .rtl #calibration-log_filter #hide_advanced{
+    float: left;
+}
+.sub-th{
+    font-size: 0.9em;
+    font-weight: 600;
+    position: relative;
+    top:5px;
+}
+.level-message{
+    font-size: 0.9em;
+}
+.result-success{
+    color: #00A000;
+}
+.result-fail{
+    color: red;
+}
+.process-details .row{
+    border-bottom: 1px lightgray dashed;
+}
+.process-details .row:last-child{
+    border-bottom: 0px;
+}
+
+.process-details .row div:nth-child(1), div.sub-th:nth-child(1){
+    width: 18%;
+    font-size: 0.9em;
+}
+.process-details .row div:nth-child(2),div.sub-th:nth-child(2){
+    width: 11%;
+    font-size: 0.9em;
+}
+.process-details .row div:nth-child(3), div.sub-th:nth-child(3){
+    width:19%;
+    font-size: 0.9em;
+}
+.process-details .row div:last-child{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 45%;
+}
+/* inventory bottles */
+.advanced_filtering .filter-label{
+    width: 100px;
+}
+.advanced_filtering .row{
+    margin-bottom: 15px;
+}
+
+#loading{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 50px;
+    z-index: 100;
+    background: white;
+}
+#loading .loading-box{
+    margin-top: 100px;
+}
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+    color: #525552;
+    cursor: default;
+    background-color: #e7e7e7;
+}
+
+.nav{
+    margin-top: 5px;
+}
+
+
+.alert-warning-extended{
+    background-color: white;
+    border-color: white;
+    color: #ffa900;
+}
+
+#recommended_vaccines_table_generic_table tbody td:nth-child(2) {
+    min-width: 75px;
+}
+
+#vaccine_advisor_form_scss #questionnaire .radio-inline{
+    margin-left: 10px !important;
+}
