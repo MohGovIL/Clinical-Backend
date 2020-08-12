@@ -13,11 +13,6 @@ trait FHIRElementValidation
 {
     private $valueSet = null;
 
-    private function getAddress($type)
-    {
-        return $this->address[$type];
-    }
-
     /**
      * map and run a validation function
      *
