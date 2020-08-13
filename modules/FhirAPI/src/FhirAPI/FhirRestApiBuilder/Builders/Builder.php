@@ -33,7 +33,6 @@ Abstract class Builder
     private static $container = null;
     private $searchParams;
 
-
     public static function setContainer($container){
         if(is_null(self::$container))
             self::$container = $container;
@@ -268,8 +267,7 @@ Abstract class Builder
             }
         }
     }
-
-
+    
     public static function logRequest($functionType, $FHIRResource, $container)
     {
 
