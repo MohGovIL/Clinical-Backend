@@ -107,7 +107,7 @@ class ApiBuilder
                 $this->checkAcl("clinikal_api", "general_settings");
                 return $this->getIndicatorSettings(self::LIONIC_CODES);
             },
-            "GET /api/letter/list" => function () {
+            "GET /api/letters/list" => function () {
                 $this->checkAcl("clinikal_api", "general_settings");
                 return $this->getLetterList();
             },
