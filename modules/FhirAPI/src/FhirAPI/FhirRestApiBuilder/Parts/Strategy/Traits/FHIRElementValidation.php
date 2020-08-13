@@ -114,7 +114,7 @@ trait FHIRElementValidation
             $this->valueSet->setParamsFromUrl($param);
             $this->valueSet->setOperations($param);
             $list = $this->valueSet->read();
-            $codes = $this->getCodeArrayFromValueSet($list);
+            $codes = self::getCodeArrayFromValueSet($list);
 
             if (in_array($value, $codes)) {
                 return true;

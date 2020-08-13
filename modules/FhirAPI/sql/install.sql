@@ -354,3 +354,19 @@ CREATE TABLE `fhir_validation_settings` (
 `active` BOOLEAN NOT NULL DEFAULT 0,
  PRIMARY KEY(`id`)
 )  ENGINE = InnoDB;
+
+
+
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', '', 'UPDATE', 'blockedStatusFinished', '', 'DB', 1),
+('Encounter', 'status', 'WRITE', 'valueset', 'encounter_statuses', 'DB', 1),
+('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'pid', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'date', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'secondary_status', 'WRITE', 'valueset', 'encounter_secondary_statuses', 'DB', 1),
+('Encounter', 'service_type', 'WRITE', 'valueset', 'service_types', 'DB', 1),
+('Encounter', 'reason_codes_details', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'reason_codes_details', 'WRITE', 'valueset', 'reason_codes_1', 'DB', 1);
