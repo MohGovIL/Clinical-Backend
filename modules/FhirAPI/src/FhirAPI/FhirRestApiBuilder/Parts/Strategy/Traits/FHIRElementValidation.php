@@ -12,18 +12,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ValueSet\ValueSet;
 trait FHIRElementValidation
 {
     private $valueSet = null;
-
-    /**
-     * map and run a validation function
-     *
-     * @param $validator array
-     * @param $data array
-     * @param $mainTable string
-     *
-     * @return bool
-     */
-
-
+    
     /**
      * return initialized valueset class
      *
@@ -45,10 +34,17 @@ trait FHIRElementValidation
         return $this->valueSet;
     }
 
+    /**
+     * map and run a validation function
+     *
+     * @param $validator array
+     * @param $data array
+     * @param $mainTable string
+     *
+     * @return bool
+     */
     public function validate($validator, $data, $mainTable = null)
     {
-
-
         switch ($validator['validation']) {
             case 'blockedIfValue':
                 return self::blockedIfValue($validator,$data);
@@ -62,7 +58,6 @@ trait FHIRElementValidation
         }
         return true;
     }
-
 
     /**
      * check if value is not empty
