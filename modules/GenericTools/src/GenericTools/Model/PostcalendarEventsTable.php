@@ -84,8 +84,10 @@ class PostcalendarEventsTable
 
             // if element is not created clean db
             if(empty($insertedRecord)){
+                /*
                 $this->deleteDataByParams(array("pc_eid"=>$eid));
                 $postcalendarEventsTable->deleteValueSetsById($eid);
+                */
             }
 
             $con->commit();
