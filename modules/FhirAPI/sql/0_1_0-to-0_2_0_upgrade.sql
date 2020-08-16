@@ -611,5 +611,6 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Appointment', 'event_codeReason_map', 'WRITE', 'aptReasonCodes', 'reason_codes_', 'DB', 1),
 ('Appointment', 'pc_apptstatus', 'WRITE', 'valueset', 'appointment_statuses', 'DB', 1),
 ('Appointment', '', 'WRITE', 'aptDateRangeCheck', '', 'DB', 1),
-('Appointment', 'pc_healthcare_service_id', 'WRITE', 'required', '', 'DB', 1);
+('Appointment', 'pc_healthcare_service_id', 'WRITE', 'required', '', 'DB', 1),
+('Appointment', 'pc_pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
 #EndIf

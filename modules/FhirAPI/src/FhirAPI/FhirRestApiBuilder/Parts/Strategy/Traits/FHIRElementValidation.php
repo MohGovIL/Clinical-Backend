@@ -13,6 +13,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ValueSet\ValueSet;
 trait FHIRElementValidation
 {
     private $valueSet = null;
+    private $safeTables = array('patient_data'=>'id');
 
     /**
      * return initialized valueset class
@@ -34,6 +35,7 @@ trait FHIRElementValidation
 
         return $this->valueSet;
     }
+
 
     /**
      * map and run a validation function
@@ -61,6 +63,9 @@ trait FHIRElementValidation
                 break;
             case 'aptReasonCodes':
                 return self::aptReasonCodes($validator, $data, $mainTable);
+                break;
+            case 'ifExist':
+                return self::ifExist($validator, $data, $mainTable);
                 break;
         }
         return true;
@@ -93,6 +98,34 @@ trait FHIRElementValidation
     }
 
     /**
+     * check if value is not empty
+     *
+     * @param $validator array
+     * @param $data array
+     * @param array multidimensional
+     *
+     * @return bool
+     */
+    public function ifExist($validator, $data, $mainTable)
+    {
+        if (is_array($data['new'])) {
+            $existField = null;
+            if (!is_null($mainTable)) {
+                $existField = $data['new'][$mainTable][$validator['filed_name']];
+            } else {
+                $existField = $data['new'][$validator['filed_name']];
+            }
+            if ($existField !== "" && $existField !== null) {
+
+                $count=$this->countDbRecords($validator['validation_param'],$this->safeTables[$validator['validation_param']],$existField);
+                return ($count<=0) ? false : true ;
+            }
+
+        }
+        return false;
+    }
+
+    /**
      * return false if trying to update when status is finished
      *
      * @param $data array
@@ -113,7 +146,7 @@ trait FHIRElementValidation
      *
      * @param $validator array
      * @param $data array
-     * @param $mainTable string
+     * @param $mainTable array multidimensional
      *
      * @return bool
      */
@@ -222,7 +255,22 @@ trait FHIRElementValidation
         return ($begin < $finish) ;
     }
 
-
-
-
+    private function countDbRecords($table,$field,$value)
+    {
+            //Table and Column names CANNOT be replaced by parameters in PDO
+            if(in_array($table,array_keys($this->safeTables)) &&  in_array($field,$this->safeTables)){
+                $sql = "SELECT COUNT(*) AS 'countMe' FROM ".$table." WHERE ".$field." = ?";
+                $res = sqlStatement($sql, array($value));
+                $row = sqlFetchArray($res);
+                if($row) {
+                    $row = array_reverse($row);
+                    return $row['countMe'];
+                }
+                else{
+                    return 0;
+                }
+            }else{
+                return 0;
+            }
+      }
 }
