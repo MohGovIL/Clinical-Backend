@@ -603,3 +603,13 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Encounter', 'reason_codes_details', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'reason_codes_details', 'WRITE', 'valueset', 'reason_codes_1', 'DB', 1);
 #EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element Appointment
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Appointment', 'pc_service_type', 'WRITE', 'valueset', 'service_types', 'DB', 1),
+('Appointment', 'event_codeReason_map', 'WRITE', 'aptReasonCodes', 'reason_codes_', 'DB', 1),
+('Appointment', 'pc_apptstatus', 'WRITE', 'valueset', 'appointment_statuses', 'DB', 1),
+('Appointment', '', 'WRITE', 'aptDateRangeCheck', '', 'DB', 1),
+('Appointment', 'pc_healthcare_service_id', 'WRITE', 'required', '', 'DB', 1);
+#EndIf

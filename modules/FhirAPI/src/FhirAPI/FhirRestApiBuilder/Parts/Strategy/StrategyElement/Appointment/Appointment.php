@@ -10,6 +10,8 @@
 
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Appointment;
 /*must have use*/
+
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Patch\GenericPatch;
 use FhirAPI\FhirRestApiBuilder\Parts\Restful;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
@@ -49,7 +51,7 @@ class Appointment Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
     }
 
     public function doAlgorithm($arrParams)
@@ -61,9 +63,10 @@ class Appointment Extends Restful implements  Strategy
     }
 
 
-    public function setMapping($container)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirAppointmentMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
 /********************end of base internal functions********************************************************************/
@@ -151,6 +154,14 @@ class Appointment Extends Restful implements  Strategy
         unset($dBdata['openemr_postcalendar_events']['pc_eid']);
         $dBdata['openemr_postcalendar_events']['pc_time']=date('Y-m-d H:i:s');
         $postcalendarEventsTable = $this->container->get(PostcalendarEventsTable::class);
+        /*********************************** validate *******************************/
+        $alldata=array('new'=>$dBdata,'old'=>array());
+        $mainTable=$postcalendarEventsTable->getTableName();
+        $isValid=$this->mapping->validateDb($alldata,$mainTable);
+        if(!$isValid){
+            ErrorCodes::http_response_code("406","failed validation");
+        }
+        /***************************************************************************/
         $inserted=$postcalendarEventsTable->safeInsertApt($dBdata);
         return $this->mapping->DBToFhir($inserted[0], true);
     }

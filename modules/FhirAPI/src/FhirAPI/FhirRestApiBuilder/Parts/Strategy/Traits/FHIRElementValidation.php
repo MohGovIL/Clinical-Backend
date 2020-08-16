@@ -7,6 +7,7 @@
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits;
 
 
+use DateTime;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ValueSet\ValueSet;
 
 trait FHIRElementValidation
@@ -54,6 +55,12 @@ trait FHIRElementValidation
                 break;
             case 'valueset':
                 return self::checkIfInList($validator, $data, $mainTable);
+                break;
+            case 'aptDateRangeCheck':
+                return self::aptDateRangeCheck($data, $mainTable);
+                break;
+            case 'aptReasonCodes':
+                return self::aptReasonCodes($validator, $data, $mainTable);
                 break;
         }
         return true;
@@ -139,6 +146,48 @@ trait FHIRElementValidation
     }
 
     /**
+     * check date range
+     *
+     * @param $data array
+     * @param array multidimensional
+     *
+     * @return bool
+     */
+    public function aptDateRangeCheck( $data, $mainTable)
+    {
+        $info=$data['new'][$mainTable];
+        if(in_array(null,array($info['pc_eventDate'],$info['pc_startTime'],$info['pc_endDate'],$info['pc_endTime']))){
+            return false;
+        }
+        $start= $info['pc_eventDate'] . ' ' . $info['pc_startTime'];
+        $end= $info['pc_endDate'] . ' ' . $info['pc_endTime'];
+        return $this->checkRange($start,$end);
+    }
+
+    /**
+     * create array of codes from fhir valueset
+     *
+     * @param $validator array
+     * @param $data array
+     * @param array multidimensional
+     *
+     * @return bool
+     */
+    public function aptReasonCodes($validator, $data, $mainTable)
+    {
+        $validator['validation_param'].=$data['new'][$mainTable]['pc_service_type'];
+
+        foreach($data['new']['event_codeReason_map'] as $index =>$reason){
+
+            $check=array('new'=>array('event_codeReason_map'=>array('event_codeReason_map'=>$reason['option_id'])));
+            if(!$this->checkIfInList($validator,$check, 'event_codeReason_map') ){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * create array of codes from fhir valueset
      *
      * @param $valueSet ValueSet
@@ -156,4 +205,24 @@ trait FHIRElementValidation
         }
         return $codes;
     }
+
+    /**
+     * check if begin date smaller then end date
+     *
+     * @param $start string
+     * @param $end string
+     *
+     * @return bool
+     */
+    private function checkRange($start,$end)
+    {
+        $begin = new DateTime($start);
+        $finish = new DateTime($end);
+
+        return ($begin < $finish) ;
+    }
+
+
+
+
 }
