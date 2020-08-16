@@ -22,17 +22,36 @@ trait FHIRElementValidation
      *
      * @return bool
      */
+
+
+    /**
+     * return initialized valueset class
+     *
+     * @return ValueSet
+     */
+    public function getValueSet()
+    {
+        if ($this->valueSet===null) {
+            $this->valueSet = new ValueSet(array(
+                'paramsFromUrl' => array(),
+                'paramsFromBody' => array(),
+                'container' => $this->container
+            ));
+        } else {
+            $this->valueSet->setParamsFromUrl(array());
+            $this->valueSet->setOperations(array());
+        }
+
+        return $this->valueSet;
+    }
+
     public function validate($validator, $data, $mainTable = null)
     {
-        $this->valueSet = new ValueSet(array(
-            'paramsFromUrl' => array(),
-            'paramsFromBody' => array(),
-            'container' => $this->container
-        ));
+
 
         switch ($validator['validation']) {
-            case 'blockedStatusFinished':
-                return self::blockedStatusFinished($data);
+            case 'blockedIfValue':
+                return self::blockedIfValue($validator,$data);
                 break;
             case 'required':
                 return self::checkRequired($validator, $data, $mainTable);
@@ -78,9 +97,9 @@ trait FHIRElementValidation
      *
      * @return bool
      */
-    public function blockedStatusFinished($data)
+    public function blockedIfValue($validator,$data)
     {
-        if ($data['old'][0]['status'] === "finished") {
+        if ($data['old'][0]['status'] === $validator['validation_param']) {
             return false;
         } else {
             return true;
@@ -111,9 +130,10 @@ trait FHIRElementValidation
                 "1" => '$expand'
             );
 
-            $this->valueSet->setParamsFromUrl($param);
-            $this->valueSet->setOperations($param);
-            $list = $this->valueSet->read();
+            $valueSet=$this->getValueSet();
+            $valueSet->setParamsFromUrl($param);
+            $valueSet->setOperations($param);
+            $list = $valueSet->read();
             $codes = self::getCodeArrayFromValueSet($list);
 
             if (in_array($value, $codes)) {
