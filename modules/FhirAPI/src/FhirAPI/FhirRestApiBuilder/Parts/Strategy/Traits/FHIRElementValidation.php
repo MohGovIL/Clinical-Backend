@@ -12,7 +12,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ValueSet\ValueSet;
 trait FHIRElementValidation
 {
     private $valueSet = null;
-    
+
     /**
      * return initialized valueset class
      *
@@ -47,7 +47,7 @@ trait FHIRElementValidation
     {
         switch ($validator['validation']) {
             case 'blockedIfValue':
-                return self::blockedIfValue($validator,$data);
+                return self::blockStatusIfValue($validator,$data);
                 break;
             case 'required':
                 return self::checkRequired($validator, $data, $mainTable);
@@ -92,7 +92,7 @@ trait FHIRElementValidation
      *
      * @return bool
      */
-    public function blockedIfValue($validator,$data)
+    public function blockStatusIfValue($validator,$data)
     {
         if ($data['old'][0]['status'] === $validator['validation_param']) {
             return false;

@@ -591,7 +591,7 @@ CREATE TABLE `fhir_validation_settings` (
 #IfNotRow fhir_validation_settings fhir_element Encounter
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
 ('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
-('Encounter', '', 'UPDATE', 'blockedIfValue', 'finished', 'DB', 1),
+('Encounter', '', 'UPDATE', 'blockStatusIfValue', 'finished', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'valueset', 'encounter_statuses', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'pid', 'WRITE', 'required', '', 'DB', 1),
