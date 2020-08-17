@@ -649,3 +649,10 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('MedicationStatement', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
 ('MedicationStatement', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
 #EndIf
+
+#IfNotRow fhir_validation_settings fhir_element MedicationStatement
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Condition', 'activity', 'WRITE', 'valueset', 'observation_statuses', 'DB', 1),
+('Condition', 'date', 'WRITE', 'required', '', 'DB', 1),
+('Condition', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
+#EndIf

@@ -40,7 +40,7 @@ class Observation Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
 
     }
 
@@ -53,9 +53,10 @@ class Observation Extends Restful implements  Strategy
         return $this->$function();
     }
 
-    public function setMapping($container)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirObservationMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
     /********************end of base internal functions********************************************************************/
@@ -116,8 +117,14 @@ class Observation Extends Restful implements  Strategy
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
         $formVitalsTable = $this->container->get(FormVitalsTable::class);
-        $flag=$this->mapping->validateDb($dbData);
-        if($flag){
+
+        /*********************************** validate *******************************/
+        $allData=array('new'=>$dBdata,'old'=>array());
+        $mainTable=$formVitalsTable->getTableName();
+        $isValid=$this->mapping->validateDb($allData,$mainTable);
+        /***************************************************************************/
+
+        if($isValid){
             unset($dbData['id']);
             $rez=$formVitalsTable->safeInsert($dbData,'id');
             if(is_array($rez)){

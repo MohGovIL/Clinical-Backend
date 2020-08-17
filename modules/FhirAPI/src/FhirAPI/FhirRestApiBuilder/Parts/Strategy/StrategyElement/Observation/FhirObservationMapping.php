@@ -14,6 +14,7 @@ use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\FormVitalsTable;
 use GenericTools\Model\ListsTable;
 use Interop\Container\ContainerInterface;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 
 /*include FHIR*/
 
@@ -41,7 +42,7 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
     CONST CATEGORY_SYSTEM="http://hl7.org/fhir/ValueSet/observation-category";
     CONST CATEGORY_LIST="observation-category";
 
-
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
@@ -360,8 +361,15 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
     public function updateDbData($data,$id)
     {
         $listsOpenEmrTable = $this->container->get(FormVitalsTable::class);
-        $flag=$this->validateDb($data);
-        if($flag){
+
+        /*********************************** validate *******************************/
+        $encounterDataFromDb = $formEncounterTable->buildGenericSelect(["id"=>$id]);
+        $allData=array('new'=>$data,'old'=>$encounterDataFromDb);
+        $mainTable=$formEncounterTable->getTableName();
+        $isValid=$this->validateDb($allData,$mainTable);
+        /***************************************************************************/
+
+        if($isValid){
             $primaryKey='id';
             $primaryKeyValue=$id;
             unset($data[$primaryKey]);
@@ -374,7 +382,7 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
         }else{ // object is not valid
-            ErrorCodes::http_response_code('406','object is not valid');
+            ErrorCodes::http_response_code('406','failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return false;
