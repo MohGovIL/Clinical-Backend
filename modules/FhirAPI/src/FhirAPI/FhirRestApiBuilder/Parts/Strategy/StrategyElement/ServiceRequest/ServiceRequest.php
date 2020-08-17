@@ -143,7 +143,7 @@ class ServiceRequest Extends Restful implements  Strategy
     {
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
-        $formVitalsTable = $this->container->get(FhirServiceRequestTable::class);
+        $serviceRequestTable = $this->container->get(FhirServiceRequestTable::class);
 
         $allData=array('new'=>$dbData,'old'=>array());
         //$mainTable=$formVitalsTable->getTableName();
@@ -151,7 +151,7 @@ class ServiceRequest Extends Restful implements  Strategy
 
         if($isValid){
             unset($dbData['id']);
-            $rez=$formVitalsTable->safeInsert($dbData,'id');
+            $rez=$serviceRequestTable->safeInsert($dbData,'id');
             if(is_array($rez)){
                 $serviceRequest=$this->mapping->DBToFhir($rez);
                 return $serviceRequest;
