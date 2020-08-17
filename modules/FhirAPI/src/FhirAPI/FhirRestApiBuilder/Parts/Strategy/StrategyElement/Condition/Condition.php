@@ -53,7 +53,7 @@ class Condition Extends Restful implements  Strategy
         return $this->$function();
     }
 
-    private function setMapping($container,$strategyName)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirConditionMapping($container);
         $this->mapping->setSelfFHIRType($strategyName);

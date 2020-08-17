@@ -39,7 +39,7 @@ class MedicationStatement Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
 
     }
 
@@ -52,9 +52,10 @@ class MedicationStatement Extends Restful implements  Strategy
         return $this->$function();
     }
 
-    public function setMapping($container)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirMedicationStatementMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
     /********************end of base internal functions********************************************************************/
@@ -113,8 +114,13 @@ class MedicationStatement Extends Restful implements  Strategy
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
         $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
-        $flag=$this->mapping->validateDb($dbData);
-        if($flag){
+        /*********************************** validate *******************************/
+        $allData=array('new'=>$dbData,'old'=>array());
+        //$mainTable=$listsOpenEmrTable->getTableName();
+        $isValid=$this->mapping->validateDb($allData,null);
+        /***************************************************************************/
+
+        if($isValid){
             unset($dbData['id']);
             $dbData['reaction']= is_null($dbData['reaction']) ? "" : $dbData['reaction'];
             $rez=$listsOpenEmrTable->safeInsert($dbData,'id');

@@ -54,7 +54,7 @@ class RelatedPerson Extends Restful implements  Strategy
     }
 
 
-    private function setMapping($container,$strategyName)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirRelatedPersonMapping($container);
         $this->mapping->setSelfFHIRType($strategyName);

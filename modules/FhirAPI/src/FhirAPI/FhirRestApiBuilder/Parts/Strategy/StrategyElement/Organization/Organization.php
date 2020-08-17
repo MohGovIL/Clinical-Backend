@@ -56,7 +56,7 @@ class Organization Extends Restful implements  Strategy
     }
 
 
-    private function setMapping($container)
+    public function setMapping($container)
     {
         $this->mapping = new FHIROrganizationMapping($container);
     }

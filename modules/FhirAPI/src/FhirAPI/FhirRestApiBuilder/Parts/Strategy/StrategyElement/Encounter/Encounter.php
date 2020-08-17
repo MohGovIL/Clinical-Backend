@@ -62,7 +62,7 @@ class Encounter Extends Restful implements  Strategy
     }
 
 
-    private function setMapping($container,$strategyName)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirEncounterMapping($container);
         $this->mapping->setSelfFHIRType($strategyName);

@@ -59,7 +59,7 @@ class Patient Extends Restful implements  Strategy
         return $this->$function();
     }
 
-    private function setMapping($container,$strategyName)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirPatientMapping($container);
         $this->mapping->setSelfFHIRType($strategyName);
