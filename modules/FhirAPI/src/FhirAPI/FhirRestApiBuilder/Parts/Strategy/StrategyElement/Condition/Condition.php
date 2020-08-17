@@ -117,19 +117,16 @@ class Condition Extends Restful implements  Strategy
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
         $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
-        $flag=$this->mapping->validateDb($dbData);
-        if($flag){
+        /*********************************** validate *******************************/
+        $allData=array('new'=>$dbData,'old'=>array());
+        //$mainTable=$listsOpenEmrTable->getTableName();
+        $isValid=$this->mapping->validateDb($allData,$mainTable);
+        /***************************************************************************/
+        if($isValid){
             unset($dbData['id']);
             $dbData['reaction']= is_null($dbData['reaction']) ? "" : $dbData['reaction'];
 
-            /*********************************** validate *******************************/
-            $allData=array('new'=>$dbData,'old'=>array());
-            $mainTable=$listsOpenEmrTable->getTableName();
-            $isValid=$this->mapping->validateDb($allData,$mainTable);
-            if(!$isValid){
-                ErrorCodes::http_response_code("406","failed validation");
-            }
-            /***************************************************************************/
+
             $rez=$listsOpenEmrTable->safeInsert($dbData,'id');
             if(is_array($rez)){
                 $patient=$this->mapping->DBToFhir($rez);

@@ -406,7 +406,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         /*********************************** validate *******************************/
         $conditionDataFromDb = $listsOpenEmrTable->buildGenericSelect(["id"=>$id]);
         $allData=array('new'=>$data,'old'=>$conditionDataFromDb);
-        $mainTable=$listsOpenEmrTable->getTableName();
+        //$mainTable=$listsOpenEmrTable->getTableName();
         $isValid=$this->validateDb($allData,$mainTable);
         /***************************************************************************/
 
@@ -423,7 +423,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
         }else{ // object is not valid
-            ErrorCodes::http_response_code('406','object is not valid');
+            ErrorCodes::http_response_code('406','failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return false;

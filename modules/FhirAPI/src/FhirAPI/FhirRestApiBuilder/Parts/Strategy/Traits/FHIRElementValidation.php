@@ -13,7 +13,10 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ValueSet\ValueSet;
 trait FHIRElementValidation
 {
     private $valueSet = null;
-    private $safeTables = array('patient_data'=>'id');
+    private $safeTables = array(   // white list for pdo
+                                'patient_data'=>'id',
+                                'users'=>'id',
+                                );
 
     /**
      * return initialized valueset class

@@ -632,8 +632,12 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 #EndIf
 
 
-#IfNotRow fhir_validation_settings fhir_element RelatedPerson
+#IfNotRow fhir_validation_settings fhir_element Condition
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Condition', 'outcome', 'WRITE', 'valueset', 'condition_statuses', 'DB', 1),
+('Condition', 'type', 'WRITE', 'required', '', 'DB', 1),
+('Condition', 'date', 'WRITE', 'required', '', 'DB', 1),
+('Condition', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
 ('Condition', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
-('Condition', 'full_name', 'WRITE', 'required', '', 'DB', 1);
+('Condition', 'user', 'WRITE', 'ifExist', 'users', 'DB', 1);
 #EndIf
