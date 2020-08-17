@@ -37,7 +37,7 @@ class ServiceRequest Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
     }
 
     public function doAlgorithm($arrParams)
@@ -49,9 +49,10 @@ class ServiceRequest Extends Restful implements  Strategy
     }
 
 
-    public function setMapping($container)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirServiceRequestMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
     public function getFormQuestionMapping()
@@ -143,8 +144,12 @@ class ServiceRequest Extends Restful implements  Strategy
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
         $formVitalsTable = $this->container->get(FhirServiceRequestTable::class);
-        $flag=$this->mapping->validateDb($dbData);
-        if($flag){
+
+        $allData=array('new'=>$dBdata,'old'=>array());
+        //$mainTable=$formVitalsTable->getTableName();
+        $isValid=$this->mapping->validateDb($allData,null);
+
+        if($isValid){
             unset($dbData['id']);
             $rez=$formVitalsTable->safeInsert($dbData,'id');
             if(is_array($rez)){
@@ -154,7 +159,7 @@ class ServiceRequest Extends Restful implements  Strategy
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
         }else{ // object is not valid
-            ErrorCodes::http_response_code('406','object is not valid');
+            ErrorCodes::http_response_code('406','failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return new FHIRServiceRequest;

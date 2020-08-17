@@ -402,4 +402,9 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('MedicationRequest', 'interval', 'WRITE', 'valueset', 'drug_interval', 'DB', 1),
 ('MedicationRequest', 'active', 'WRITE', 'valueset', 'medicationrequest_status', 'DB', 1),
 ('MedicationRequest', 'patient_id', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
-('MedicationRequest', 'user', 'WRITE', 'ifExist', 'users', 'DB', 1);
+('MedicationRequest', 'user', 'WRITE', 'ifExist', 'users', 'DB', 1),
+('MedicationRequest', 'encounter', 'WRITE', 'required', '', 'DB', 1),
+('MedicationRequest', 'instruction_code', 'WRITE', 'valueset', 'tests_and_treatments', 'DB', 1),
+('MedicationRequest', 'status', 'WRITE', 'valueset', 'servicerequest_statuses', 'DB', 1),
+('MedicationRequest', 'intent', 'WRITE', 'valuesetNotRequired', 'servicerequest_intent', 'DB', 1),
+('MedicationRequest', 'patient', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
