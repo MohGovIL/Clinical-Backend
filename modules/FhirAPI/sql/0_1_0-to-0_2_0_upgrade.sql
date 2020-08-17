@@ -673,9 +673,9 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 
 #IfNotRow fhir_validation_settings fhir_element ServiceRequest
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
-('MedicationRequest', 'encounter', 'WRITE', 'required', '', 'DB', 1),
-('MedicationRequest', 'instruction_code', 'WRITE', 'valueset', 'tests_and_treatments', 'DB', 1),
-('MedicationRequest', 'status', 'WRITE', 'valueset', 'servicerequest_statuses', 'DB', 1),
-('MedicationRequest', 'intent', 'WRITE', 'valuesetNotRequired', 'servicerequest_intent', 'DB', 1),
-('MedicationRequest', 'patient', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
+('ServiceRequest', 'encounter', 'WRITE', 'required', '', 'DB', 1),
+('ServiceRequest', 'instruction_code', 'WRITE', 'valueset', 'tests_and_treatments', 'DB', 1),
+('ServiceRequest', 'status', 'WRITE', 'valueset', 'servicerequest_statuses', 'DB', 1),
+('ServiceRequest', 'intent', 'WRITE', 'valuesetNotRequired', 'servicerequest_intent', 'DB', 1),
+('ServiceRequest', 'patient', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
 #EndIf
