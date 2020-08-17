@@ -145,7 +145,7 @@ class ServiceRequest Extends Restful implements  Strategy
 
         $formVitalsTable = $this->container->get(FhirServiceRequestTable::class);
 
-        $allData=array('new'=>$dBdata,'old'=>array());
+        $allData=array('new'=>$dbData,'old'=>array());
         //$mainTable=$formVitalsTable->getTableName();
         $isValid=$this->mapping->validateDb($allData,null);
 
