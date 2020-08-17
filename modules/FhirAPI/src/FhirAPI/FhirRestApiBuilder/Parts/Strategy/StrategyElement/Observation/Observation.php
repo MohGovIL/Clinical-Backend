@@ -119,9 +119,9 @@ class Observation Extends Restful implements  Strategy
         $formVitalsTable = $this->container->get(FormVitalsTable::class);
 
         /*********************************** validate *******************************/
-        $allData=array('new'=>$dBdata,'old'=>array());
-        $mainTable=$formVitalsTable->getTableName();
-        $isValid=$this->mapping->validateDb($allData,$mainTable);
+        $allData=array('new'=>$dbData,'old'=>array());
+        //$mainTable=$formVitalsTable->getTableName();
+        $isValid=$this->mapping->validateDb($allData,null);
         /***************************************************************************/
 
         if($isValid){

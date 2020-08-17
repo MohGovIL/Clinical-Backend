@@ -363,10 +363,10 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         $listsOpenEmrTable = $this->container->get(FormVitalsTable::class);
 
         /*********************************** validate *******************************/
-        $encounterDataFromDb = $formEncounterTable->buildGenericSelect(["id"=>$id]);
+        $encounterDataFromDb = $listsOpenEmrTable->buildGenericSelect(["id"=>$id]);
         $allData=array('new'=>$data,'old'=>$encounterDataFromDb);
-        $mainTable=$formEncounterTable->getTableName();
-        $isValid=$this->validateDb($allData,$mainTable);
+        //$mainTable=$listsOpenEmrTable->getTableName();
+        $isValid=$this->validateDb($allData,null);
         /***************************************************************************/
 
         if($isValid){
