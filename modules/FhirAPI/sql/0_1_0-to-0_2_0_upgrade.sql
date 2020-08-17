@@ -618,3 +618,41 @@ INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 ('medicationrequest_status', 'medicationrequest_status', 'All');
 #EndIf
+
+#IfNotRow fhir_value_sets id servicerequest_statuses
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`,`notes`) VALUES
+('lists', 'servicerequest_statuses', 'Service Request Statuses', 0, 1,''),
+('servicerequest_statuses', 'draft', 'Draft', 10, 1,''),
+('servicerequest_statuses', 'active', 'Active', 20, 1,''),
+('servicerequest_statuses', 'on-hold', 'On Hold', 30, 1,''),
+('servicerequest_statuses', 'revoked', 'Revoked', 40, 1,''),
+('servicerequest_statuses', 'completed', 'Completed', 60, 1,''),
+('servicerequest_statuses', 'entered-in-error', 'Entered In Error',70, 1,''),
+('servicerequest_statuses', 'unknown', 'Unknown', 80, 1,'');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('servicerequest_statuses', 'Service Request Statuses');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('servicerequest_statuses', 'servicerequest_statuses', 'All');
+#EndIf
+
+#IfNotRow fhir_value_sets id servicerequest_intent
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`,`notes`) VALUES
+('lists', 'servicerequest_intent', 'Service Request Intent', 0, 1,''),
+('servicerequest_intent', 'proposal', 'Proposal', 10, 1,''),
+('servicerequest_intent', 'plan', 'Plan', 20, 1,''),
+('servicerequest_intent', 'directive', 'Directive', 30, 1,''),
+('servicerequest_intent', 'order', 'Order', 40, 1,''),
+('servicerequest_intent', 'original-order', 'Original Order', 60, 1,''),
+('servicerequest_intent', 'reflex-order', 'Reflex Order',70, 1,''),
+('servicerequest_intent', 'filler-order', 'Filler Order',70, 1,''),
+('servicerequest_intent', 'instance-order', 'Instance Order',70, 1,''),
+('servicerequest_intent', 'option', 'Option', 80, 1,'');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('servicerequest_intent', 'Service Request Intent');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('servicerequest_intent', 'servicerequest_intent', 'All');
+#EndIf
