@@ -150,19 +150,19 @@ class Appointment Extends Restful implements  Strategy
      */
     public function create()
     {
-        $dBdata = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
-        unset($dBdata['openemr_postcalendar_events']['pc_eid']);
-        $dBdata['openemr_postcalendar_events']['pc_time']=date('Y-m-d H:i:s');
+        $dBData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
+        unset($dBData['openemr_postcalendar_events']['pc_eid']);
+        $dBData['openemr_postcalendar_events']['pc_time']=date('Y-m-d H:i:s');
         $postcalendarEventsTable = $this->container->get(PostcalendarEventsTable::class);
         /*********************************** validate *******************************/
-        $alldata=array('new'=>$dBdata,'old'=>array());
+        $allData=array('new'=>$dBData,'old'=>array());
         $mainTable=$postcalendarEventsTable->getTableName();
-        $isValid=$this->mapping->validateDb($alldata,$mainTable);
+        $isValid=$this->mapping->validateDb($allData,$mainTable);
         if(!$isValid){
             ErrorCodes::http_response_code("406","failed validation");
         }
         /***************************************************************************/
-        $inserted=$postcalendarEventsTable->safeInsertApt($dBdata);
+        $inserted=$postcalendarEventsTable->safeInsertApt($dBData);
         return $this->mapping->DBToFhir($inserted[0], true);
     }
 

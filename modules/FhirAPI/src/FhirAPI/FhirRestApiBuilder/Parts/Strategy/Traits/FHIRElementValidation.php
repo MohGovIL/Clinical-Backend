@@ -92,7 +92,6 @@ trait FHIRElementValidation
             if ($requiredField !== "" && $requiredField !== null) {
                 return true;
             }
-
         }
         return false;
     }

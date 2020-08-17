@@ -533,8 +533,8 @@ class FhirAppointmentMapping extends FhirBaseMapping implements MappingData
         $eventCodeReasonMapTable->deleteValueSetsById($id);
 
         /*********************************** validate *******************************/
-        $encounterDataFromDb = $postcalendarEventsTable->buildGenericSelect(["id"=>$id]);
-        $alldata=array('new'=>$data,'old'=>$encounterDataFromDb);
+        $aptDataFromDb = $postcalendarEventsTable->buildGenericSelect(["id"=>$id]);
+        $alldata=array('new'=>$data,'old'=>$aptDataFromDb);
         $mainTable=$postcalendarEventsTable->getTableName();
         $isValid=$this->validateDb($alldata,$mainTable);
         if(!$isValid){

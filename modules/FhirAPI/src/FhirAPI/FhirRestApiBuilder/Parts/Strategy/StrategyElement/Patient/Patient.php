@@ -46,7 +46,7 @@ class Patient Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
 
     }
 
@@ -59,9 +59,10 @@ class Patient Extends Restful implements  Strategy
         return $this->$function();
     }
 
-    public function setMapping($container)
+    private function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirPatientMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
 /********************end of base internal functions********************************************************************/
@@ -122,8 +123,12 @@ class Patient Extends Restful implements  Strategy
             $dbData['uuid'] = (new UuidRegistry(['table_name' => 'patient_data']))->createUuid();
         }
 
-        $flag=$this->mapping->validateDb($dbData);
-        if($flag){
+        /*********************************** validate *******************************/
+        $allData=array('new'=>$dbData,'old'=>array());
+        //$mainTable=$patientTable->getTableName();
+        $isValid=$this->mapping->validateDb($allData,null);
+        /***************************************************************************/
+        if($isValid){
             $rez=$patientTable->safeInsert($dbData,'id','pid');
             if(is_array($rez)){
                 $patient=$this->mapping->DBToFhir($rez);
@@ -132,7 +137,7 @@ class Patient Extends Restful implements  Strategy
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
         }else{ // object is not valid
-            ErrorCodes::http_response_code('406','object is not valid');
+            ErrorCodes::http_response_code('406','failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return false;

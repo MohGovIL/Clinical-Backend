@@ -614,3 +614,12 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Appointment', 'pc_healthcare_service_id', 'WRITE', 'required', '', 'DB', 1),
 ('Appointment', 'pc_pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
 #EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element Patient
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Patient', 'lname', 'WRITE', 'required', '', 'DB', 1),
+('Patient', 'fname', 'WRITE', 'required', '', 'DB', 1),
+('Patient', 'sex', 'WRITE', 'required', '', 'DB', 1),
+('Patient', 'DOB', 'WRITE', 'required', '', 'DB', 1);
+#EndIf
