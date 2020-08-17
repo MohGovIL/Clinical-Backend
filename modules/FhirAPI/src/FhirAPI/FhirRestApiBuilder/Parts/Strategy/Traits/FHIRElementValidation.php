@@ -61,6 +61,9 @@ trait FHIRElementValidation
             case 'valueset':
                 return self::checkIfInList($validator, $data, $mainTable);
                 break;
+            case 'valuesetNotRequired':
+                return self::checkIfInList($validator, $data, $mainTable,true);
+                break;
             case 'aptDateRangeCheck':
                 return self::aptDateRangeCheck($data, $mainTable);
                 break;
@@ -152,7 +155,7 @@ trait FHIRElementValidation
      *
      * @return bool
      */
-    public function checkIfInList($validator, $data, $mainTable)
+    public function checkIfInList($validator, $data, $mainTable,$allowNull=false)
     {
         if (is_array($data['new'])) {
             $value = null;
@@ -160,6 +163,10 @@ trait FHIRElementValidation
                 $value = $data['new'][$mainTable][$validator['filed_name']];
             } else {
                 $value = $data['new'][$validator['filed_name']];
+            }
+
+            if($allowNull===true && is_null($value)){
+                return true;
             }
 
             $param = array(
