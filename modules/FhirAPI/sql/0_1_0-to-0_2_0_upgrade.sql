@@ -656,3 +656,16 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Observation', 'date', 'WRITE', 'required', '', 'DB', 1),
 ('Observation', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
 #EndIf
+
+#IfNotRow fhir_validation_settings fhir_element MedicationRequest
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('MedicationRequest', 'drug', 'WRITE', 'required', '', 'DB', 1),
+('MedicationRequest', 'datetime', 'WRITE', 'required', '', 'DB', 1),
+('MedicationRequest', 'drug_id', 'WRITE', 'valueset', 'drugs_list', 'DB', 1),
+('MedicationRequest', 'form', 'WRITE', 'valueset', 'drug_form', 'DB', 1),
+('MedicationRequest', 'route', 'WRITE', 'valueset', 'drug_route', 'DB', 1),
+('MedicationRequest', 'interval', 'WRITE', 'valueset', 'drug_interval', 'DB', 1),
+('MedicationRequest', 'active', 'WRITE', 'valueset', 'medicationrequest_status', 'DB', 1),
+('MedicationRequest', 'patient_id', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
+('MedicationRequest', 'user', 'WRITE', 'ifExist', 'users', 'DB', 1);
+#EndIf

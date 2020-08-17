@@ -215,10 +215,6 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
         return $dbObservation;
     }
 
-    public function validateDb($data){
-        $flag =true;
-        return $flag;
-    }
 
     public function initFhirObject(){
 
