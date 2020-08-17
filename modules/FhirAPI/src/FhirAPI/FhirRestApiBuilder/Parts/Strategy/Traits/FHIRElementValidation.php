@@ -165,7 +165,7 @@ trait FHIRElementValidation
                 $value = $data['new'][$validator['filed_name']];
             }
 
-            if($allowNull===true && is_null($value)){
+            if($allowNull===true && empty($value)){
                 return true;
             }
 
