@@ -14,7 +14,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\RelatedPersonTable;
 use Interop\Container\ContainerInterface;
-
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 
 
 /*include FHIR*/
@@ -31,6 +31,8 @@ class FhirRelatedPersonMapping extends FhirBaseMapping implements MappingData
     private $adapter = null;
     private $container = null;
     private $FHIRRelatedPerson = null;
+
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
@@ -125,19 +127,6 @@ class FhirRelatedPersonMapping extends FhirBaseMapping implements MappingData
 
 
     }
-
-
-    /**
-     * check if RelatedPerson data is valid
-     *
-     * @param array
-     * @return bool
-     */
-    public function validateDb($data)
-    {
-        return true;
-    }
-
 
 
     public function parsedJsonToDb($parsedData)
@@ -243,6 +232,17 @@ class FhirRelatedPersonMapping extends FhirBaseMapping implements MappingData
         $relatedPersonTable = $this->container->get(RelatedPersonTable::class);
         $primaryKey='id';
         unset($data['related_person']['id']);
+
+        /*********************************** validate *******************************/
+        $relatedPersonDataFromDb = $relatedPersonTable->buildGenericSelect(["id"=>$id]);
+        $allData=array('new'=>$data,'old'=>$relatedPersonDataFromDb);
+        $mainTable=$relatedPersonTable->getTableName();
+        $isValid=$this->validateDb($allData,$mainTable);
+        if(!$isValid){
+            ErrorCodes::http_response_code("406","failed validation");
+        }
+        /***************************************************************************/
+
         $updated=$relatedPersonTable->safeUpdate($data['related_person'],array($primaryKey=>$id));
 
         if(!is_array($updated)){

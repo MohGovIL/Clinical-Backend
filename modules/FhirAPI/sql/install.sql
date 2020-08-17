@@ -379,4 +379,6 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Patient', 'lname', 'WRITE', 'required', '', 'DB', 1),
 ('Patient', 'fname', 'WRITE', 'required', '', 'DB', 1),
 ('Patient', 'sex', 'WRITE', 'required', '', 'DB', 1),
-('Patient', 'DOB', 'WRITE', 'required', '', 'DB', 1);
+('Patient', 'DOB', 'WRITE', 'required', '', 'DB', 1),
+('RelatedPerson', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
+('RelatedPerson', 'full_name', 'WRITE', 'required', '', 'DB', 1);

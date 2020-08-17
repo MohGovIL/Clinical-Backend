@@ -623,3 +623,11 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Patient', 'sex', 'WRITE', 'required', '', 'DB', 1),
 ('Patient', 'DOB', 'WRITE', 'required', '', 'DB', 1);
 #EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element RelatedPerson
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('RelatedPerson', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
+('RelatedPerson', 'full_name', 'WRITE', 'required', '', 'DB', 1);
+#EndIf
+
