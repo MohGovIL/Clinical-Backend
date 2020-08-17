@@ -16,6 +16,7 @@ use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionStage;
 use GenericTools\Model\ListsOpenEmrTable;
 use GenericTools\Model\ListsTable;
 use Interop\Container\ContainerInterface;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 
 /*include FHIR*/
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRCondition;
@@ -29,13 +30,13 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
     const OUTCOME_LIST ='outcome';
     const OCCURRENCE_LIST ='occurrence';
 
-
     private $adapter = null;
     private $container = null;
     private $FHIRCondition = null;
     private $outcomeTypes= array();
     private $occurrenceTypes= array();
 
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
@@ -338,11 +339,6 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         return $dbPatient;
     }
 
-    public function validateDb($data){
-        $flag =true;
-        return $flag;
-    }
-
     public function initFhirObject(){
 
         $FHIRCondition = new FHIRCondition();
@@ -407,8 +403,14 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
     public function updateDbData($data,$id)
     {
         $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
-        $flag=$this->validateDb($data);
-        if($flag){
+        /*********************************** validate *******************************/
+        $conditionDataFromDb = $listsOpenEmrTable->buildGenericSelect(["id"=>$id]);
+        $allData=array('new'=>$data,'old'=>$conditionDataFromDb);
+        $mainTable=$listsOpenEmrTable->getTableName();
+        $isValid=$this->validateDb($allData,$mainTable);
+        /***************************************************************************/
+
+        if($isValid){
             $primaryKey='id';
             $primaryKeyValue=$id;
             unset($data[$primaryKey]);

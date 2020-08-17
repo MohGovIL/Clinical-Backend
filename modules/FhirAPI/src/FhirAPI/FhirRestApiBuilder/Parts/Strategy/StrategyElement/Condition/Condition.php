@@ -40,7 +40,7 @@ class Condition Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
 
     }
 
@@ -53,9 +53,10 @@ class Condition Extends Restful implements  Strategy
         return $this->$function();
     }
 
-    public function setMapping($container)
+    private function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirConditionMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
     /********************end of base internal functions********************************************************************/
@@ -120,6 +121,15 @@ class Condition Extends Restful implements  Strategy
         if($flag){
             unset($dbData['id']);
             $dbData['reaction']= is_null($dbData['reaction']) ? "" : $dbData['reaction'];
+
+            /*********************************** validate *******************************/
+            $allData=array('new'=>$dbData,'old'=>array());
+            $mainTable=$listsOpenEmrTable->getTableName();
+            $isValid=$this->mapping->validateDb($allData,$mainTable);
+            if(!$isValid){
+                ErrorCodes::http_response_code("406","failed validation");
+            }
+            /***************************************************************************/
             $rez=$listsOpenEmrTable->safeInsert($dbData,'id');
             if(is_array($rez)){
                 $patient=$this->mapping->DBToFhir($rez);
