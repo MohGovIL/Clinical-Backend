@@ -591,7 +591,7 @@ CREATE TABLE `fhir_validation_settings` (
 #IfNotRow fhir_validation_settings fhir_element Encounter
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
 ('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
-('Encounter', '', 'UPDATE', 'blockStatusIfValue', 'finished', 'DB', 1),
+('Encounter', 'status', 'UPDATE', 'blockedIfValue', 'finished', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'valueset', 'encounter_statuses', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'pid', 'WRITE', 'required', '', 'DB', 1),
@@ -653,6 +653,7 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 #IfNotRow fhir_validation_settings fhir_element Observation
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
 ('Observation', 'activity', 'WRITE', 'valueset', 'observation_statuses', 'DB', 1),
+('Observation', 'activity', 'UPDATE', 'blockedIfValue', 'final', 'DB', 1),
 ('Observation', 'date', 'WRITE', 'required', '', 'DB', 1),
 ('Observation', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
 #EndIf
@@ -676,6 +677,7 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('ServiceRequest', 'encounter', 'WRITE', 'required', '', 'DB', 1),
 ('ServiceRequest', 'instruction_code', 'WRITE', 'valueset', 'tests_and_treatments', 'DB', 1),
 ('ServiceRequest', 'status', 'WRITE', 'valueset', 'servicerequest_statuses', 'DB', 1),
+('ServiceRequest', 'status', 'UPDATE', 'blockedIfValue', 'completed', 'DB', 1),
 ('ServiceRequest', 'intent', 'WRITE', 'valueset', 'servicerequest_intent', 'DB', 1),
 ('ServiceRequest', 'patient', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
 #EndIf

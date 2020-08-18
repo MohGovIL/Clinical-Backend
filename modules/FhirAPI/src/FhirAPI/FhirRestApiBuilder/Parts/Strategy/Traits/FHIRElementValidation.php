@@ -53,7 +53,7 @@ trait FHIRElementValidation
     {
         switch ($validator['validation']) {
             case 'blockedIfValue':
-                return self::blockStatusIfValue($validator,$data);
+                return self::blockedIfValue($validator,$data);
                 break;
             case 'required':
                 return self::checkRequired($validator, $data, $mainTable);
@@ -137,9 +137,9 @@ trait FHIRElementValidation
      *
      * @return bool
      */
-    public function blockStatusIfValue($validator,$data)
+    public function blockedIfValue($validator,$data)
     {
-        if ($data['old'][0]['status'] === $validator['validation_param']) {
+        if ($data['old'][0][$validator['filed_name']] === $validator['validation_param']) {
             return false;
         } else {
             return true;
