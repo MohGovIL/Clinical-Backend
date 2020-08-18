@@ -605,6 +605,12 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`,`
 ('observation_statuses', 'unknown', 'Unknown', 80, 1,''),
 ('observation_statuses', 'cancelled', 'Cancelled', 50, 1,'');
 
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('observation_statuses', 'Observation Statuses');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('observation_statuses', 'observation_statuses', 'All');
+#EndIf
+
 
 #IfNotTable fhir_validation_settings
 CREATE TABLE `fhir_validation_settings` (
@@ -713,11 +719,6 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('ServiceRequest', 'status', 'UPDATE', 'blockedIfValue', 'completed', 'DB', 1),
 ('ServiceRequest', 'intent', 'WRITE', 'valueset', 'servicerequest_intent', 'DB', 1),
 ('ServiceRequest', 'patient', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
-#EndIf
-INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
-('observation_statuses', 'Observation Statuses');
-INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
-('observation_statuses', 'observation_statuses', 'All');
 #EndIf
 
 #IfNotRow fhir_value_sets id medicationrequest_status
