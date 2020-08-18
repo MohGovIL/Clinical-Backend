@@ -270,7 +270,7 @@ class BaseController extends AbstractActionController
     {
         $this->layout()->setVariable('validateJs', json_encode($this->validate));
         $this->layout()->setVariable('constraintsJs', json_encode($this->getJsValidateConstraints()));
-        $this->jsFiles[] =  '/../../../openemr/interface/modules/zend_modules/public/js/formhandler/validateMatrix/validate.js';
+        $this->FormhandleJSFiles[] =  $this->getRequest()->getbaseUrl() . '/js/formhandler/validateMatrix/validate.js';
 
 
         $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/formhandler/custom_validate.js";

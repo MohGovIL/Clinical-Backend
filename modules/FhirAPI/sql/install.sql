@@ -343,6 +343,84 @@ INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 
 
 
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('condition_statuses', 'Condition Clinical Statuses');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('condition_statuses', 'outcome', 'All');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('medication_statement_statuses', 'Medication Statement Statuses');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('medication_statement_statuses', 'outcome', 'All');
+
+INSERT INTO `fhir_value_sets` (`id`, `title`)
+VALUES ('reason_codes', 'All Reason Codes');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`)
+VALUES ('reason_codes', 'clinikal_reason_codes', 'All');
+
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`,`notes`) VALUES
+('lists', 'observation_statuses', 'Observation Statuses', 0, 1,''),
+('observation_statuses', 'registered', 'Registered', 10, 1,''),
+('observation_statuses', 'preliminary', 'Preliminary', 20, 1,''),
+('observation_statuses', 'final', 'Final', 30, 1,''),
+('observation_statuses', 'amended', 'Amended', 40, 1,''),
+('observation_statuses', 'corrected', 'Corrected', 60, 1,''),
+('observation_statuses', 'entered-in-error', 'Entered In Error',70, 1,''),
+('observation_statuses', 'unknown', 'Unknown', 80, 1,''),
+('observation_statuses', 'cancelled', 'Cancelled', 50, 1,'');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('observation_statuses', 'Observation Statuses');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('observation_statuses', 'observation_statuses', 'All');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('medicationrequest_status', 'Medication Request Statuses');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('medicationrequest_status', 'medicationrequest_status', 'All');
+
+
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`,`notes`) VALUES
+('lists', 'servicerequest_statuses', 'Service Request Statuses', 0, 1,''),
+('servicerequest_statuses', 'draft', 'Draft', 10, 1,''),
+('servicerequest_statuses', 'active', 'Active', 20, 1,''),
+('servicerequest_statuses', 'on-hold', 'On Hold', 30, 1,''),
+('servicerequest_statuses', 'revoked', 'Revoked', 40, 1,''),
+('servicerequest_statuses', 'completed', 'Completed', 60, 1,''),
+('servicerequest_statuses', 'entered-in-error', 'Entered In Error',70, 1,''),
+('servicerequest_statuses', 'unknown', 'Unknown', 80, 1,'');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('servicerequest_statuses', 'Service Request Statuses');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('servicerequest_statuses', 'servicerequest_statuses', 'All');
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`,`notes`) VALUES
+('lists', 'servicerequest_intent', 'Service Request Intent', 0, 1,''),
+('servicerequest_intent', 'proposal', 'Proposal', 10, 1,''),
+('servicerequest_intent', 'plan', 'Plan', 20, 1,''),
+('servicerequest_intent', 'directive', 'Directive', 30, 1,''),
+('servicerequest_intent', 'order', 'Order', 40, 1,''),
+('servicerequest_intent', 'original-order', 'Original Order', 60, 1,''),
+('servicerequest_intent', 'reflex-order', 'Reflex Order',70, 1,''),
+('servicerequest_intent', 'filler-order', 'Filler Order',70, 1,''),
+('servicerequest_intent', 'instance-order', 'Instance Order',70, 1,''),
+('servicerequest_intent', 'option', 'Option', 80, 1,'');
+
+
+INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
+('servicerequest_intent', 'Service Request Intent');
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
+('servicerequest_intent', 'servicerequest_intent', 'All');
+
+
+
 CREATE TABLE `fhir_validation_settings` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
 `fhir_element` VARCHAR(255) NOT NULL ,

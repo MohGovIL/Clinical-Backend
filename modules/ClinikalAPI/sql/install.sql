@@ -140,3 +140,13 @@ VALUES ('drugs_list', 'Drugs list');
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`,`filter`)
 VALUES ('drugs_list', '9911', 'Codes', NULL);
 
+
+CREATE TABLE manage_templates_letters(
+    id int(11) NOT NULL AUTO_INCREMENT,
+    `letter_name` varchar(255) NOT NULL,
+    `letter_class` varchar(255) NOT NULL,
+    `letter_class_action` varchar(255) NOT NULL,
+    `active` tinyint(1) NOT NULL,
+    `letter_post_json` mediumtext DEFAULT NULL,
+    PRIMARY KEY (`id`)
+);
