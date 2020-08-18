@@ -411,5 +411,5 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('ServiceRequest', 'encounter', 'WRITE', 'required', '', 'DB', 1),
 ('ServiceRequest', 'instruction_code', 'WRITE', 'valueset', 'tests_and_treatments', 'DB', 1),
 ('ServiceRequest', 'status', 'WRITE', 'valueset', 'servicerequest_statuses', 'DB', 1),
-('ServiceRequest', 'intent', 'WRITE', 'valuesetNotRequired', 'servicerequest_intent', 'DB', 1),
+('ServiceRequest', 'intent', 'WRITE', 'valueset', 'servicerequest_intent', 'DB', 1),
 ('ServiceRequest', 'patient', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
