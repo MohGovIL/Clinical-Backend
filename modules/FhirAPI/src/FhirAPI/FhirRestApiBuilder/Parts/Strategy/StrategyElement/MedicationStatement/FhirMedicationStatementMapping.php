@@ -28,6 +28,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
     const OUTCOME_LIST ='outcome';
     const OCCURRENCE_LIST ='occurrence';
+    const MED_CATEGORY="medication";
 
     private $adapter = null;
     private $container = null;
@@ -128,13 +129,9 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $categoryCoding = $FHIRMedicationStatement->getCategory()->getCoding()[0];
         $medicationStatementDataFromDb['list_option_id'] = $categoryCoding->getCode()->getValue();
+        
+        $medicationStatementDataFromDb['type'] = self::MED_CATEGORY;
 
-        if (!is_null($medicationStatementDataFromDb['list_option_id'])) {
-            $type = $categoryCoding->getSystem()->getValue();
-            $medicationStatementDataFromDb['type'] = substr($type, strrpos($type, '/') + 1);
-        } else {
-            $medicationStatementDataFromDb['type'] = null;
-        }
         $medicationStatementDataFromDb['title'] = $FHIRMedicationStatement->getCategory()->getText()->getValue();
 
         $period = $FHIRMedicationStatement->getEffectivePeriod();
