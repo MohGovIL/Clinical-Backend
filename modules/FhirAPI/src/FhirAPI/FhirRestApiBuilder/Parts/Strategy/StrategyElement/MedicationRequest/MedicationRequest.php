@@ -40,7 +40,7 @@ class MedicationRequest Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
 
     }
 
@@ -53,9 +53,10 @@ class MedicationRequest Extends Restful implements  Strategy
         return $this->$function();
     }
 
-    public function setMapping($container)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirMedicationRequestMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
     /********************end of base internal functions********************************************************************/
@@ -115,8 +116,12 @@ class MedicationRequest Extends Restful implements  Strategy
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
         $prescriptionsTable = $this->container->get(PrescriptionsTable::class);
-        $flag=$this->mapping->validateDb($dbData);
-        if($flag){
+        /*********************************** validate *******************************/
+        $allData=array('new'=>$dbData,'old'=>array());
+        //$mainTable=$prescriptionsTable->getTableName();
+        $isValid=$this->mapping->validateDb($allData,null);
+        /***************************************************************************/
+        if($isValid){
             unset($dbData['id']);
             $rez=$prescriptionsTable->safeInsert($dbData,'id');
             if(is_array($rez)){
@@ -127,7 +132,7 @@ class MedicationRequest Extends Restful implements  Strategy
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
         }else{ // object is not valid
-            ErrorCodes::http_response_code('406','object is not valid');
+            ErrorCodes::http_response_code('406','failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return false;

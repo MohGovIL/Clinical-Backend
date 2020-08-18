@@ -35,7 +35,7 @@ class ValueSet Extends Restful implements  Strategy
     }
 
 
-    private function setMapping($container)
+    public function setMapping($container)
     {
         $this->mapping = new FhirValueSetMapping($container);
     }

@@ -605,11 +605,120 @@ INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`,`
 ('observation_statuses', 'unknown', 'Unknown', 80, 1,''),
 ('observation_statuses', 'cancelled', 'Cancelled', 50, 1,'');
 
-
 INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
 ('observation_statuses', 'Observation Statuses');
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 ('observation_statuses', 'observation_statuses', 'All');
+#EndIf
+
+
+#IfNotTable fhir_validation_settings
+CREATE TABLE `fhir_validation_settings` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`fhir_element` VARCHAR(255) NOT NULL ,
+`filed_name` VARCHAR(255) NOT NULL ,
+`request_action` ENUM('ALL','WRITE','UPDATE','POST','PUT','PATCH','DELETE','GET') NOT NULL ,
+`validation` VARCHAR(255) NOT NULL ,
+`validation_param` VARCHAR(255) NOT NULL ,
+`type` ENUM('FHIR','DB') NOT NULL,
+`active` BOOLEAN NOT NULL DEFAULT 0,
+ PRIMARY KEY(`id`)
+)  ENGINE = InnoDB;
+#EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element Encounter
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'status', 'UPDATE', 'blockedIfValue', 'finished', 'DB', 1),
+('Encounter', 'status', 'WRITE', 'valueset', 'encounter_statuses', 'DB', 1),
+('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'pid', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'date', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'secondary_status', 'WRITE', 'valueset', 'encounter_secondary_statuses', 'DB', 1),
+('Encounter', 'service_type', 'WRITE', 'valueset', 'service_types', 'DB', 1),
+('Encounter', 'reason_codes_details', 'WRITE', 'required', '', 'DB', 1),
+('Encounter', 'reason_codes_details', 'WRITE', 'valueset', 'reason_codes_1', 'DB', 1);
+#EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element Appointment
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Appointment', 'pc_service_type', 'WRITE', 'valueset', 'service_types', 'DB', 1),
+('Appointment', 'event_codeReason_map', 'WRITE', 'aptReasonCodes', 'reason_codes_', 'DB', 1),
+('Appointment', 'pc_apptstatus', 'WRITE', 'valueset', 'appointment_statuses', 'DB', 1),
+('Appointment', '', 'WRITE', 'aptDateRangeCheck', '', 'DB', 1),
+('Appointment', 'pc_healthcare_service_id', 'WRITE', 'required', '', 'DB', 1),
+('Appointment', 'pc_pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
+#EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element Patient
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Patient', 'lname', 'WRITE', 'required', '', 'DB', 1),
+('Patient', 'fname', 'WRITE', 'required', '', 'DB', 1),
+('Patient', 'sex', 'WRITE', 'required', '', 'DB', 1),
+('Patient', 'DOB', 'WRITE', 'required', '', 'DB', 1);
+#EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element RelatedPerson
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('RelatedPerson', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
+('RelatedPerson', 'full_name', 'WRITE', 'required', '', 'DB', 1);
+#EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element Condition
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Condition', 'outcome', 'WRITE', 'valueset', 'condition_statuses', 'DB', 1),
+('Condition', 'type', 'WRITE', 'required', '', 'DB', 1),
+('Condition', 'date', 'WRITE', 'required', '', 'DB', 1),
+('Condition', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
+('Condition', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
+('Condition', 'user', 'WRITE', 'ifExist', 'users', 'DB', 1);
+#EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element MedicationStatement
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('MedicationStatement', 'outcome', 'WRITE', 'valueset', 'medication_statement_statuses', 'DB', 1),
+('MedicationStatement', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
+('MedicationStatement', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
+#EndIf
+
+#IfNotRow fhir_validation_settings fhir_element Observation
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('Observation', 'activity', 'WRITE', 'valueset', 'observation_statuses', 'DB', 1),
+('Observation', 'activity', 'UPDATE', 'blockedIfValue', 'final', 'DB', 1),
+('Observation', 'date', 'WRITE', 'required', '', 'DB', 1),
+('Observation', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
+#EndIf
+
+#IfNotRow fhir_validation_settings fhir_element MedicationRequest
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('MedicationRequest', 'drug', 'WRITE', 'required', '', 'DB', 1),
+('MedicationRequest', 'datetime', 'WRITE', 'required', '', 'DB', 1),
+('MedicationRequest', 'drug_id', 'WRITE', 'valueset', 'drugs_list', 'DB', 1),
+('MedicationRequest', 'form', 'WRITE', 'valueset', 'drug_form', 'DB', 1),
+('MedicationRequest', 'route', 'WRITE', 'valueset', 'drug_route', 'DB', 1),
+('MedicationRequest', 'interval', 'WRITE', 'valueset', 'drug_interval', 'DB', 1),
+('MedicationRequest', 'active', 'WRITE', 'valueset', 'medicationrequest_status', 'DB', 1),
+('MedicationRequest', 'patient_id', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
+('MedicationRequest', 'user', 'WRITE', 'ifExist', 'users', 'DB', 1);
+#EndIf
+
+
+#IfNotRow fhir_validation_settings fhir_element ServiceRequest
+INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
+('ServiceRequest', 'encounter', 'WRITE', 'required', '', 'DB', 1),
+('ServiceRequest', 'instruction_code', 'WRITE', 'valueset', 'tests_and_treatments', 'DB', 1),
+('ServiceRequest', 'status', 'WRITE', 'valueset', 'servicerequest_statuses', 'DB', 1),
+('ServiceRequest', 'status', 'UPDATE', 'blockedIfValue', 'completed', 'DB', 1),
+('ServiceRequest', 'intent', 'WRITE', 'valueset', 'servicerequest_intent', 'DB', 1),
+('ServiceRequest', 'patient', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
 #EndIf
 
 #IfNotRow fhir_value_sets id medicationrequest_status

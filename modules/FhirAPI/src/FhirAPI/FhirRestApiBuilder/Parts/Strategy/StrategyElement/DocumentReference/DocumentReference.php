@@ -41,7 +41,7 @@ class DocumentReference extends Restful implements  Strategy
         return $this->$function();
     }
 
-    private function setMapping($container)
+    public function setMapping($container)
     {
         $this->mapping = new FhirDocumentReferenceMapping($container);
     }

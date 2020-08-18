@@ -8,11 +8,10 @@
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Encounter;
 
 
-
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 use function DeepCopy\deep_copy;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
-
-
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\EncounterReasonCodeMapTable;
 use GenericTools\Model\FormEncounterTable;
@@ -20,9 +19,6 @@ use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIREncounter;
 use OpenEMR\FHIR\R4\FHIRElement\FHIREncounterStatus;
 use OpenEMR\FHIR\R4\FHIRResource\FHIREncounter\FHIREncounterParticipant;
-
-use  FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\ConversionsTrait;
-
 
 class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 {
@@ -42,6 +38,8 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     CONST STATUS_UPDATE_DATE_URL='statusUpdateDate';
 
     CONST EXTENSIONS_ENCOUNTER_URL='http://clinikal/extensions/encounter/';
+
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
@@ -291,11 +289,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         // TODO: Implement parsedJsonToDb() method.
     }
 
-    public function validateDb($data)
-    {
-        // TODO: Implement validateDb() method.
-        return true;
-    }
+
 
 
     public function getDbDataFromRequest($data)
@@ -379,11 +373,21 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         }else{
             unset($data['form_encounter']['status_update_date']);
         }
-        
-        $formEncounterTable = $this->container->get(FormEncounterTable::class);
+
         $data['form_encounter']['id']=$id;
         $encounterReasonCodeMapTable = $this->container->get(EncounterReasonCodeMapTable::class);
         $encounterReasonCodeMapTable->deleteValueSetsById($id);
+
+        /*********************************** validate *******************************/
+        $encounterDataFromDb = $formEncounterTable->buildGenericSelect(["id"=>$id]);
+        $alldata=array('new'=>$data,'old'=>$encounterDataFromDb);
+        $mainTable=$formEncounterTable->getTableName();
+        $isValid=$this->validateDb($alldata,$mainTable);
+        if(!$isValid){
+            ErrorCodes::http_response_code("406","failed validation");
+        }
+        /***************************************************************************/
+
         $updated=$formEncounterTable->safeUpdateEncounter($data);
         $this->initFhirObject();
         return $this->DBToFhir($updated[0], true);

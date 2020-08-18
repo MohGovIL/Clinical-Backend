@@ -48,6 +48,8 @@ use FhirAPI\Model\FhirQuestionnaireTable;
 use FhirAPI\Model\FhirQuestionnaire;
 use FhirAPI\Model\FhirServiceRequestTable;
 use FhirAPI\Model\FhirServiceRequest;
+use FhirAPI\Model\FhirValidationSettingsTable;
+use FhirAPI\Model\FhirValidationSettings;
 
 
 
@@ -118,6 +120,14 @@ class Module {
                     $resultSetPrototype->setArrayObjectPrototype(new FhirServiceRequest());
                     $tableGateway = new TableGateway('fhir_service_request', $dbAdapter, null, $resultSetPrototype);
                     $table = new FhirServiceRequestTable($tableGateway);
+                    return $table;
+                },
+                FhirValidationSettingsTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FhirValidationSettings());
+                    $tableGateway = new TableGateway('fhir_validation_settings', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FhirValidationSettingsTable($tableGateway);
                     return $table;
                 },
 

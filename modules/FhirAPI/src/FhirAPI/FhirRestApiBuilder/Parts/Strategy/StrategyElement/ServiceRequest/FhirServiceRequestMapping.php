@@ -19,10 +19,7 @@ use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
 use Interop\Container\ContainerInterface;
-
-
-/*include FHIR*/
-
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRQuestionnaire;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRPublicationStatus;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
@@ -30,7 +27,6 @@ use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
 
 class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
 {
-
     private $adapter = null;
     private $container = null;
     private $FHIRServiceRequest = null;
@@ -39,6 +35,8 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
     const CODE_SYSTEM = "tests_and_treatments";
     const CATEGORY_SYSTEM = "service_types";
     const EMPTY_TIME = "0000-00-00 00:00:00";
+
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
@@ -278,10 +276,6 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
 
     }
 
-    public function validateDb($data)
-    {
-        return true;
-    }
 
     public function parsedJsonToDb($parsedData)
     {
@@ -307,8 +301,13 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
     public function updateDbData($data, $id)
     {
         $FhirServiceRequestTable = $this->container->get(FhirServiceRequestTable::class);
-        $flag = $this->validateDb($data);
-        if ($flag) {
+
+        $serviceRequestDataFromDb = $FhirServiceRequestTable->buildGenericSelect(["id"=>$id]);
+        $allData=array('new'=>$data,'old'=>$serviceRequestDataFromDb);
+        //$mainTable=$formEncounterTable->getTableName();
+        $isValid=$this->validateDb($allData,null);
+
+        if ($isValid) {
             $primaryKey = 'id';
             $primaryKeyValue = $id;
             unset($data[$primaryKey]);

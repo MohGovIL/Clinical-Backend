@@ -27,6 +27,7 @@ use OpenEMR\FHIR\R4\FHIRResource\FHIRDosage;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRDosage\FHIRDosageDoseAndRate;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRMedicationRequest\FHIRMedicationRequestSubstitution;
 use phpDocumentor\Reflection\Types\Object_;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 use function DeepCopy\deep_copy;
 
 class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingData
@@ -49,6 +50,8 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
     const DRUG_SITE_LIST = "drug_site";
     const STATUS_LIST = "medicationrequest_status";
     const DOSAGE_UNIT_SYSTEM = "units";
+
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
@@ -367,11 +370,6 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
         return $dbObservation;
     }
 
-    public function validateDb($data)
-    {
-        $flag = true;
-        return $flag;
-    }
 
     public function initFhirObject()
     {
@@ -604,13 +602,20 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
 
     public function updateDbData($data, $id)
     {
-        $listsOpenEmrTable = $this->container->get(PrescriptionsTable::class);
-        $flag = $this->validateDb($data);
-        if ($flag) {
+        $prescriptionsTable = $this->container->get(PrescriptionsTable::class);
+
+        /*********************************** validate *******************************/
+        $prescriptionsDataFromDb = $prescriptionsTable->buildGenericSelect(["id"=>$id]);
+        $allData=array('new'=>$data,'old'=>$prescriptionsDataFromDb);
+        //$mainTable=$prescriptionsTable->getTableName();
+        $isValid=$this->validateDb($allData,null);
+        /***************************************************************************/
+
+        if ($isValid) {
             $primaryKey = 'id';
             $primaryKeyValue = $id;
             unset($data[$primaryKey]);
-            $rez = $listsOpenEmrTable->safeUpdate($data, array($primaryKey => $primaryKeyValue));
+            $rez = $prescriptionsTable->safeUpdate($data, array($primaryKey => $primaryKeyValue));
             if (is_array($rez)) {
                 $this->initFhirObject();
                 $patient = $this->DBToFhir($rez);
@@ -619,7 +624,7 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
                 ErrorCodes::http_response_code('500', 'insert object failed :' . $rez);
             }
         } else { // object is not valid
-            ErrorCodes::http_response_code('406', 'object is not valid');
+            ErrorCodes::http_response_code('406', 'failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return false;
