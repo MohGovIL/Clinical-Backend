@@ -15,10 +15,9 @@ use GenericTools\Model\ListsOpenEmrTable;
 use GenericTools\Model\ListsTable;
 use ImportData\Model\CodesTable;
 use Interop\Container\ContainerInterface;
-
-/*include FHIR*/
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRMedicationStatement;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 
 use OpenEMR\FHIR\R4\FHIRElement\FHIRMedicationStatusCodes;
 use function DeepCopy\deep_copy;
@@ -35,6 +34,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
     private $outcomeTypes= array();
     private $occurrenceTypes= array();
 
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
@@ -254,10 +254,6 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         return $dbMedicationStatement;
     }
 
-    public function validateDb($data){
-        $flag =true;
-        return $flag;
-    }
 
     public function initFhirObject(){
 
@@ -312,8 +308,15 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
     public function updateDbData($data,$id)
     {
         $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
-        $flag=$this->validateDb($data);
-        if($flag){
+        /*********************************** validate *******************************/
+        $encounterDataFromDb = $listsOpenEmrTable->buildGenericSelect(["id"=>$id]);
+        $allData=array('new'=>$data,'old'=>$encounterDataFromDb);
+        //$mainTable=$listsOpenEmrTable->getTableName();
+        $isValid=$this->validateDb($allData,null);
+        /***************************************************************************/
+
+
+        if($isValid){
             $primaryKey='id';
             $primaryKeyValue=$id;
             unset($data[$primaryKey]);

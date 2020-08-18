@@ -10,6 +10,7 @@ namespace FhirAPI\Service;
 use DateTime;
 use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
+use FhirAPI\Model\FhirValidationSettingsTable;
 use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRElement;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDecimal;
@@ -76,6 +77,8 @@ class FhirBaseMapping
     private $adapter = null;
     private $container = null;
     private $fhirRequestParamsHandler = null;
+    private $strategyName = null;
+
 
     CONST   LIST_SYSTEM_LINK="http://clinikal/valueset/";
     CONST   PATIENT_URI="Patient/";
@@ -97,6 +100,17 @@ class FhirBaseMapping
 
 
     }
+
+    public function setSelfFHIRType($strategyName)
+    {
+        $this->strategyName = $strategyName;
+    }
+
+    public function getSelfFHIRType()
+    {
+        return $this->strategyName;
+    }
+
 
     /**
      * check if elment is of fhir type
@@ -1459,6 +1473,53 @@ class FhirBaseMapping
         return $FHIRInteger;
     }
 
+
+
+    public function validateDb($data,$mainTable=null)
+    {
+        $FhirValidationSettingsTable= $this->container->get(FhirValidationSettingsTable::class);
+        $fhirElm=$this->getSelfFHIRType();
+        $fhirValidation=$FhirValidationSettingsTable->getActiveValidation('DB',$fhirElm);
+        $reqType=$_SERVER['REQUEST_METHOD'];
+        foreach ($fhirValidation as $index => $validator ){
+            $reqAction = $validator['request_action'];
+            $checkFlag = false;
+            switch ($reqAction) {
+                case 'ALL':
+                    $checkFlag =true;
+                    break;
+                case 'WRITE':
+                    $checkFlag =($reqType==="PUT" || $reqType==="PATCH" || $reqType==="POST");;
+                    break;
+                case 'UPDATE':
+                    $checkFlag =($reqType==="PUT" || $reqType==="PATCH");
+                    break;
+                case 'POST':
+                    $checkFlag = ($reqType==="POST");
+                    break;
+                case 'PUT':
+                    $checkFlag = ($reqType==="PUT");
+                    break;
+                case 'PATCH':
+                    $checkFlag = ($reqType==="PATCH");
+                    break;
+                case 'DELETE':
+                    $checkFlag = ($reqType==="DELETE");
+                    break;
+                case 'GET':
+                    $checkFlag = ($reqType==="GET");
+                    break;
+            }
+            if($checkFlag){
+                $valid=$this->validate($validator,$data,$mainTable);
+                if($valid===false){
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
 
 

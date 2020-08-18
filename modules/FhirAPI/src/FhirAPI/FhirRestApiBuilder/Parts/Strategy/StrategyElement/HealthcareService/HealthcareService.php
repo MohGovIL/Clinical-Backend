@@ -56,7 +56,7 @@ class HealthcareService Extends Restful implements  Strategy
     {
         $fhirHealthcareServiceMapping = $this->mapping;
         $healthcareServiceTable = $this->container->get(HealthcareServicesTable::class);
-        $params = array('id' => $this->paramsFromUrl[0]);
+        $params = array('fhir_healthcare_services.id' => $this->paramsFromUrl[0]);
         $healthcareServicesDataFromDb = $healthcareServiceTable->buildGenericSelect($params);
 
         if(empty($healthcareServicesDataFromDb))

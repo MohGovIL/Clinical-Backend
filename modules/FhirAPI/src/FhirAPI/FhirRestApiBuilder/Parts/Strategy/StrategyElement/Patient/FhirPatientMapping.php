@@ -16,6 +16,7 @@ use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\ListsTable;
 use GenericTools\Model\PatientsTable;
 use Interop\Container\ContainerInterface;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 
 /*include FHIR*/
 
@@ -37,6 +38,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
 
     use FHIRAddressTrait;
     use FHIROrganizationTelecomTrait;
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
@@ -163,7 +165,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
             }else{
                 $addressType=null;
             }
-            
+
             if ($addressType === "physical" || $addressType === "both") {
 
                 $street=$line[0]->getValue();
@@ -468,10 +470,6 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         return $dbPatient;
     }
 
-    public function validateDb($data){
-        $flag =true;
-        return $flag;
-    }
 
     public function initFhirObject(){
 
@@ -602,8 +600,15 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
     public function updateDbData($data,$id)
     {
         $patientTable = $this->container->get(PatientsTable::class);
-        $flag=$this->validateDb($data);
-        if($flag){
+
+
+        /*********************************** validate *******************************/
+        $patientDataFromDb = $patientTable->buildGenericSelect(["id"=>$id]);
+        $alldata=array('new'=>$data,'old'=>$patientDataFromDb);
+        //$mainTable=$patientTable->getTableName();
+        $isValid=$this->validateDb($alldata,null);
+        /***************************************************************************/
+        if($isValid){
             $primaryKey='pid';
             $primaryKeyValue=$id;
             unset($data[$primaryKey]);
@@ -616,7 +621,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
         }else{ // object is not valid
-            ErrorCodes::http_response_code('406','object is not valid');
+            ErrorCodes::http_response_code('406','failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return false;
