@@ -120,7 +120,7 @@ class Condition Extends Restful implements  Strategy
         /*********************************** validate *******************************/
         $allData=array('new'=>$dbData,'old'=>array());
         //$mainTable=$listsOpenEmrTable->getTableName();
-        $isValid=$this->mapping->validateDb($allData,$mainTable);
+        $isValid=$this->mapping->validateDb($allData,null);
         /***************************************************************************/
         if($isValid){
             unset($dbData['id']);
