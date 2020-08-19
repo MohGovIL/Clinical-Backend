@@ -1,0 +1,89 @@
+
+<style>
+
+
+    #pdf_data {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    #pdf_data td, #pdf_data th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+
+
+
+
+    #pdf_data th {
+        text-align: right;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #75a0af;
+        color: white;
+    }
+
+    div.section{
+        border: 1px solid black;
+        padding: 5px;
+        margin-bottom: 15px ;
+    }
+    span.title{
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .pdf-label{
+        font-weight: bold;
+    }
+    .border-bottom{
+        border-bottom: 7px solid black;
+    }
+    hr{
+        padding: 0px;
+        margin: 0px;
+    }
+    h3
+    {
+        font-family:Arial;
+    }
+    p{
+        font-family:Arial;
+        font-size:15px;
+        position: relative;
+    }
+</style>
+
+<main dir="<?php echo text($langDir); ?>"  lang="<?php echo text($langCode); ?>">
+    <h4 ><?php echo $title;?></h4>
+    <table  id="pdf_data"   >
+        <thead>
+        <tr>
+        <?php foreach($columns as $column):?>
+            <th align="right"><?php echo $column['title'];?></th>
+        <?php endforeach;?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php $records= $data['data']?>
+
+        <?php foreach($records as $elementRow):?>
+            <tr>
+                <?php foreach($columns as $column):?>
+                    <td>
+                        <?php
+                        $elementRow=(array)$elementRow;
+                        echo $elementRow[$column['name']]!=""?xlt($elementRow[$column['name']]):"  ";
+                        ?>
+                    </td>
+                <?php endforeach;?>
+            </tr>
+        <?php endforeach;?>
+        </tbody>
+    </table>
+
+</main>
+
+<!-- end body content -->
