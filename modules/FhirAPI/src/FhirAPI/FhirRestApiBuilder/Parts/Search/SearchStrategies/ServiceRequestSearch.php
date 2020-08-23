@@ -30,6 +30,7 @@ class ServiceRequestSearch extends BaseSearch
         $this->paramHandler('status','status');
 
         $this->addSortParams('authored','authored_on');
+        $this->addSortParams('occurrence','occurrence_datetime');
         $this->includeParamHandler('ServiceRequest:requester','requester','Practitioner');
         $this->includeParamHandler('ServiceRequest:performer','performer','Practitioner');
 

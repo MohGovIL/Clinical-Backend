@@ -202,7 +202,7 @@ abstract class BaseSearch implements SearchInt
          *  if number of commas are not equal - add nothing - this should not happen
          */
 
-        if( $fhirPlaceCount!==0 &&  $fhirPlaceCount === $openemrColumnCount) {
+        if( !empty($sortParam['fhir_place']) &&  $fhirPlaceCount === $openemrColumnCount) {
             $fhir=",".$fhir;
             $db=",".$db;
 
