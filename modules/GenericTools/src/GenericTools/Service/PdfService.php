@@ -13,6 +13,7 @@ use Laminas\View\Model\ViewModel;
 use Mpdf\Mpdf;
 use GenericTools\Controller\GenericToolsController;
 use Interop\Container\ContainerInterface;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
 
 class PdfService
 {
@@ -40,6 +41,7 @@ class PdfService
         $langDir =(!is_null($_SESSION['language_direction'])) ? $_SESSION['language_direction'] : $langLanguagesTable->getLanguageDir($langId);
         $langCode= $langLanguagesTable->getLangCode($langId);
         $this->langParameter = array('langDir' => $langDir, 'langCode' => $langCode );
+        $_SESSION['language_choice']=$langId;
     }
 
     /**
