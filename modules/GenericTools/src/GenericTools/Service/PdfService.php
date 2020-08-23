@@ -8,6 +8,7 @@
 
 namespace GenericTools\Service;
 
+use GenericTools\Model\LangLanguagesTable;
 use Laminas\View\Model\ViewModel;
 use Mpdf\Mpdf;
 use GenericTools\Controller\GenericToolsController;
@@ -33,7 +34,12 @@ class PdfService
     {
         $this->continer = $container;
         $this->renderer = $this->continer->get('Laminas\View\Renderer\PhpRenderer');
-        $this->langParameter = array('langDir' => $_SESSION['language_direction'], 'langCode' => $this->continer->get('GenericTools\Model\LangLanguagesTable')->getLangCode($_SESSION['language_choice']));
+
+        $langLanguagesTable= $this->container->get(LangLanguagesTable::class);
+        $langId=(!is_null($_SESSION['language_choice'])) ? $_SESSION['language_choice'] : $langLanguagesTable->getLangIdByGlobals();
+        $langDir =(!is_null($_SESSION['language_direction'])) ? $_SESSION['language_direction'] : $langLanguagesTable->getLanguageDir($langId);
+        $langCode= $langLanguagesTable->getLangCode($langId);
+        $this->langParameter = array('langDir' => $langDir, 'langCode' => $langCode );
     }
 
     /**
