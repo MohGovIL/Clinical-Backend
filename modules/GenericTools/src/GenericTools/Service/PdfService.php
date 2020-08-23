@@ -37,11 +37,8 @@ class PdfService
         $this->renderer = $this->continer->get('Laminas\View\Renderer\PhpRenderer');
 
         $langLanguagesTable= $this->container->get(LangLanguagesTable::class);
-        $langId=(!is_null($_SESSION['language_choice'])) ? $_SESSION['language_choice'] : $langLanguagesTable->getLangIdByGlobals();
-        $langDir =(!is_null($_SESSION['language_direction'])) ? $_SESSION['language_direction'] : $langLanguagesTable->getLanguageDir($langId);
-        $langCode= $langLanguagesTable->getLangCode($langId);
-        $this->langParameter = array('langDir' => $langDir, 'langCode' => $langCode );
-        $_SESSION['language_choice']=$langId;
+        $this->langParameter = $langLanguagesTable->getLanguageSettings();
+
     }
 
     /**
