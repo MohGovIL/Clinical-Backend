@@ -31,12 +31,7 @@ class PatchBase
         $FHIRElement = $this->getElementFromDb();
         $FHIRElement= $this->processPatchRequest($FHIRElement);
         $dataToUpdate = $this->mapping->fhirToDb($FHIRElement);
-        $valid = $this->mapping->validateDb($dataToUpdate);
-        if ($valid) {
-            return $dataToUpdate;
-        } else {
-            return array();
-        }
+        return $dataToUpdate;
     }
 
     private function initParams($initials){

@@ -129,7 +129,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $categoryCoding = $FHIRMedicationStatement->getCategory()->getCoding()[0];
         $medicationStatementDataFromDb['list_option_id'] = $categoryCoding->getCode()->getValue();
-        
+
         $medicationStatementDataFromDb['type'] = self::MED_CATEGORY;
 
         $medicationStatementDataFromDb['title'] = $FHIRMedicationStatement->getCategory()->getText()->getValue();
@@ -163,7 +163,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
             $medicationStatementDataFromDb['user'] = substr($userRef, strrpos($userRef, '/') + 1);
         }
 
-        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText()->getValue();;
+        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText();
 
         return $medicationStatementDataFromDb;
     }
