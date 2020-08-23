@@ -155,7 +155,8 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         }
         $dbCondition['diagnosis']=$codForDb;
 
-        $dbCondition['comments']=$FHIRCondition->getNote()[0]->getText()->getValue();
+        $dbCondition['comments']=$FHIRCondition->getNote()[0]->getText();
+
 
 
         $pidRef=$FHIRCondition->getSubject()->getReference()->getValue() ;
@@ -196,7 +197,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
             $outcome=$outcomeList[$conditionDataFromDb['outcome']];
             $outcomeCoding= $FHIRCondition->getClinicalStatus()->getCoding()[0];
 
-            $outcomeCoding->setCode($conditionDataFromDb['outcome']);
+            $outcomeCoding->getCode()->setValue($conditionDataFromDb['outcome']);
             $outcomeCoding->getSystem()->setValue(self::LIST_SYSTEM_LINK.'outcome');
             $FHIRCondition->getClinicalStatus()->setText($outcome);
         }
