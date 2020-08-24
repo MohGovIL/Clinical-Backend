@@ -43,6 +43,26 @@ class PdfBaseController extends GenericBaseController
         }
     }
 
+    public function getPatientInfo($id = null)
+    {
+        if (!is_null($id)) {
+            $info = $this->container->get('GenericTools\Model\PatientsTable')->getPatientDataById(intval($id));
+            $data = array();
+            $data['name'] = $info['fname']." ".$info['lname'];
+            $data['id_number'] = $info['ss'];
+            $data['id_type'] = $info['mh_type_id'];
+            $data['Gender'] = $info['sex'];
+            $data['birthdate'] = $info['DOB_DMY'];
+            $data['age'] = $info['age'];
+            $data['phone'] = ($info['phone_cell'] ? $info['phone_cell']  : ($info['phone_home'] ? $info['phone_home'] : ($info['phone_contact'] ? $info['phone_contact'] :""))) ;
+            $data['HMO'] = $info['insurance_organiz_name'];
+            return $data;
+
+        } else {
+            return array();
+        }
+    }
+
     public function saveDocToStorage($data, $fileName, $date)
     {
         $dataToSave = array();
