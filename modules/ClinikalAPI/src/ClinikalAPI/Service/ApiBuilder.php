@@ -8,6 +8,7 @@
 namespace ClinikalAPI\Service;
 
 use Exception;
+use GenericTools\Model\LangLanguagesTable;
 use OpenEMR\Common\Acl\AclMain;
 use PHPUnit\Framework\Assert;
 use RestConfig;
@@ -49,6 +50,9 @@ class ApiBuilder
      */
     public function getApi()
     {
+        $langLanguagesTable= $this->container->get(LangLanguagesTable::class);
+        $this->langParameter = $langLanguagesTable->getLanguageSettings();
+
         $extend_route_map = [
             "GET /api/translation/:lid" => function ($lid) {
                 //exit php or return 401 if not authorized
