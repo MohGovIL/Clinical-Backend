@@ -81,7 +81,7 @@ class LangLanguagesTable
         $langId=(!is_null($_SESSION['language_choice'])) ? $_SESSION['language_choice'] : $this->getLangIdByGlobals();
         $langDir =(!is_null($_SESSION['language_direction'])) ? $_SESSION['language_direction'] : $this->getLanguageDir($langId);
         $langCode= $this->getLangCode($langId);
-        $_SESSION['language_choice'] =(!is_null($_SESSION['language_choice'])) ? $_SESSION['language_direction'] : $langId;
+        $_SESSION['language_choice'] =(!is_null($_SESSION['language_choice'])) ? $_SESSION['language_choice'] : $langId;
         return array('langDir' => $langDir, 'langCode' => $langCode );
 
     }

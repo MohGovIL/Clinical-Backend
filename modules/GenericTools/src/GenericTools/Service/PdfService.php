@@ -38,7 +38,6 @@ class PdfService
     {
         $this->container = $container;
         $this->renderer = $this->container->get('Laminas\View\Renderer\PhpRenderer');
-
         $langLanguagesTable= $this->container->get(LangLanguagesTable::class);
         $this->langParameter = $langLanguagesTable->getLanguageSettings();
 
