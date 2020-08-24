@@ -493,3 +493,6 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('ServiceRequest', 'status', 'UPDATE', 'blockedIfValue', 'completed', 'DB', 1),
 ('ServiceRequest', 'intent', 'WRITE', 'valueset', 'servicerequest_intent', 'DB', 1),
 ('ServiceRequest', 'patient', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
+
+
+ALTER TABLE `lists` ADD `diagnosis_valueset` VARCHAR(255) NULL AFTER `diagnosis`;

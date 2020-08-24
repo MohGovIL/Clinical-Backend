@@ -24,6 +24,7 @@ class ListsOpenEmr
     public $outcome;
     public $user;
     public $reaction;
+    public $diagnosis_valueset;
 
     public function exchangeArray($data)
     {
@@ -40,6 +41,7 @@ class ListsOpenEmr
         $this->referredby = (!empty($data['referredby'])) ? $data['referredby'] : null;
         $this->extrainfo = (!empty($data['extrainfo'])) ? $data['extrainfo'] : null;
         $this->diagnosis = (!empty($data['diagnosis'])) ? $data['diagnosis'] : null;
+        $this->diagnosis_valueset = (!empty($data['diagnosis_valueset'])) ? $data['diagnosis_valueset'] : null;
         $this->activity = (!empty($data['activity'])) ? $data['activity'] : null;
         $this->comments = (!empty($data['comments'])) ? $data['comments'] : null;
         $this->pid = (!empty($data['pid'])) ? $data['pid'] : null;
