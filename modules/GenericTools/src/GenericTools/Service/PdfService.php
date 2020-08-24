@@ -25,6 +25,9 @@ class PdfService
     private $footerHeight = 16;
     private $exportType = 'I';
     private $fileName = 'Export';
+    private $container = null;
+    private $renderer = null;
+    private $langParameter = null;
 
     /**
      * PdfService constructor.
@@ -33,8 +36,8 @@ class PdfService
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->continer = $container;
-        $this->renderer = $this->continer->get('Laminas\View\Renderer\PhpRenderer');
+        $this->container = $container;
+        $this->renderer = $this->container->get('Laminas\View\Renderer\PhpRenderer');
 
         $langLanguagesTable= $this->container->get(LangLanguagesTable::class);
         $this->langParameter = $langLanguagesTable->getLanguageSettings();
