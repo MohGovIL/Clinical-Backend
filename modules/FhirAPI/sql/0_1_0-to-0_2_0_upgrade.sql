@@ -629,18 +629,12 @@ CREATE TABLE `fhir_validation_settings` (
 
 #IfNotRow fhir_validation_settings fhir_element Encounter
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
-('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'status', 'UPDATE', 'blockedIfValue', 'finished', 'DB', 1),
-('Encounter', 'status', 'WRITE', 'valueset', 'encounter_statuses', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'pid', 'WRITE', 'required', '', 'DB', 1),
-('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'date', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
-('Encounter', 'secondary_status', 'WRITE', 'valueset', 'encounter_secondary_statuses', 'DB', 1),
-('Encounter', 'service_type', 'WRITE', 'valueset', 'service_types', 'DB', 1),
-('Encounter', 'reason_codes_details', 'WRITE', 'required', '', 'DB', 1),
-('Encounter', 'reason_codes_details', 'WRITE', 'valueset', 'reason_codes_1', 'DB', 1);
+('Encounter', 'service_type', 'WRITE', 'valuesetNotRequired', 'service_types', 'DB', 1);
 #EndIf
 
 
@@ -673,7 +667,6 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 
 #IfNotRow fhir_validation_settings fhir_element Condition
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
-('Condition', 'outcome', 'WRITE', 'valueset', 'condition_statuses', 'DB', 1),
 ('Condition', 'type', 'WRITE', 'required', '', 'DB', 1),
 ('Condition', 'date', 'WRITE', 'required', '', 'DB', 1),
 ('Condition', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
@@ -764,4 +757,9 @@ INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
 ('servicerequest_intent', 'Service Request Intent');
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 ('servicerequest_intent', 'servicerequest_intent', 'All');
+#EndIf
+
+
+#IfMissingColumn lists diagnosis_valueset
+ALTER TABLE `lists` ADD `diagnosis_valueset` VARCHAR(255) NULL AFTER `diagnosis`;
 #EndIf

@@ -10,6 +10,7 @@
 
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Encounter;
 
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Patch\GenericPatch;
 use FhirAPI\FhirRestApiBuilder\Parts\Registry;
 use FhirAPI\FhirRestApiBuilder\Parts\Restful;
