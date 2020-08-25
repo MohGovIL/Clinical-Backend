@@ -634,7 +634,7 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Encounter', 'pid', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'date', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
-('Encounter', 'service_type', 'WRITE', 'valuesetNotRequired', 'service_types', 'DB', 1),
+('Encounter', 'service_type', 'WRITE', 'valuesetNotRequired', 'service_types', 'DB', 1);
 #EndIf
 
 
