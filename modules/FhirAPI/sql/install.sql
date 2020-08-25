@@ -436,18 +436,13 @@ CREATE TABLE `fhir_validation_settings` (
 
 
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
-('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'status', 'UPDATE', 'blockedIfValue', 'finished', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'valueset', 'encounter_statuses', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'pid', 'WRITE', 'required', '', 'DB', 1),
-('Encounter', 'service_type', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'date', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
-('Encounter', 'secondary_status', 'WRITE', 'valueset', 'encounter_secondary_statuses', 'DB', 1),
-('Encounter', 'service_type', 'WRITE', 'valueset', 'service_types', 'DB', 1),
-('Encounter', 'reason_codes_details', 'WRITE', 'required', '', 'DB', 1),
-('Encounter', 'reason_codes_details', 'WRITE', 'valueset', 'reason_codes_1', 'DB', 1),
+('Encounter', 'service_type', 'WRITE', 'valuesetNotRequired', 'service_types', 'DB', 1),
 ('Appointment', 'pc_service_type', 'WRITE', 'valueset', 'service_types', 'DB', 1),
 ('Appointment', 'event_codeReason_map', 'WRITE', 'aptReasonCodes', 'reason_codes_', 'DB', 1),
 ('Appointment', 'pc_apptstatus', 'WRITE', 'valueset', 'appointment_statuses', 'DB', 1),
