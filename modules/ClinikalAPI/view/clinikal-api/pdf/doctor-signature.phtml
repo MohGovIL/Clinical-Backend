@@ -1,1 +1,44 @@
+<style>
+.position{
 
+    margin-top:75%;
+    margin-left:<?php echo $langDir==="rtl"?'0':'70%'?>;
+    margin-right:<?php echo $langDir==="rtl"?'70%':'0'?>;
+}
+.Input-text-Copy-34 {
+width: 52px;
+height: 18px;
+opacity: 0.6;
+font-family: OpenSansHebrew;
+font-size: 12px;
+font-weight: normal;
+font-stretch: normal;
+font-style: normal;
+line-height: 1.5;
+letter-spacing: normal;
+text-align: right;
+color: #000b40;
+}
+</style>
+<br/>
+<br/>
+<table  class='position' dir="<?php echo text($langDir); ?>"  lang="<?php echo text($langCode); ?>">
+    <tbody>
+    <tr>
+        <td>
+            <span class="Input-text-Copy-34"><?php echo(xl("Doctor's name"));?> : </span>
+        </td>
+        <td>
+            <span class="Input-text-Copy-34"><?php echo($name);?></span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="Input-text-Copy-34"><?php echo(xl("License number"));?> : </span>
+        </td>
+        <td>
+            <span class="Input-text-Copy-34"><?php echo($state_license_number);?></span>
+        </td>
+    </tr>
+    </tbody>
+</table>

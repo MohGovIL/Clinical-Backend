@@ -63,6 +63,20 @@ class PdfBaseController extends GenericBaseController
         }
     }
 
+    public function getUserInfo($id = null)
+    {
+        if (!is_null($id)) {
+            $info = $this->container->get('GenericTools\Model\UserTable')->getUser(intval($id));
+            $data = array();
+            $data['name'] = xl("Dr.")." ".($info->fname?$info->fname:"")." ". ($info->mname?$info->mname:"")." ".($info->lname?$info->lname:"");
+            $data['state_license_number'] = $info->state_license_number?$info->state_license_number:"";
+            return $data;
+
+        } else {
+            return array();
+        }
+    }
+
     public function saveDocToStorage($data, $fileName, $date)
     {
         $dataToSave = array();
