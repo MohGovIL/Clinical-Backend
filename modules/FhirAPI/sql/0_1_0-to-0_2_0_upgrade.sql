@@ -765,3 +765,8 @@ INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 ('servicerequest_intent', 'servicerequest_intent', 'All');
 #EndIf
+
+
+#IfMissingColumn lists diagnosis_valueset
+ALTER TABLE `lists` ADD `diagnosis_valueset` VARCHAR(255) NULL AFTER `diagnosis`;
+#EndIf

@@ -11,6 +11,7 @@ use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
+use GenericTools\Model\ValueSetsTable;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionEvidence;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionStage;
 use GenericTools\Model\ListsOpenEmrTable;
@@ -143,9 +144,14 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
         $codFromDb=array();
 
-        $codFromDb[0]=$code->getSystem()->getValue();
-        $codFromDb[0]=substr($codFromDb[0], strrpos($codFromDb[0], '/') + 1);
+        $valueSet=$code->getSystem()->getValue();
+        $valueSet=substr($valueSet, strrpos($valueSet, '/') + 1);
+        $dbCondition['diagnosis_valueset']=$valueSet;
 
+        $valueSetsTable = $this->container->get(ValueSetsTable::class);
+        $codeType=$valueSetsTable->getCodeTypeByValueSet($valueSet);
+
+        $codFromDb[0]=$codeType;
         $codFromDb[1]=$code->getCode()->getValue();
 
         if(!empty($codFromDb[0]) && !empty($codFromDb[1])){
@@ -237,7 +243,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
         if(count($codeFromDb)>1){
             $code->getCode()->setValue($codeFromDb[1]);
-            $code->getSystem()->setValue(self::LIST_SYSTEM_LINK.$codeFromDb[0]);
+            $code->getSystem()->setValue(self::LIST_SYSTEM_LINK.$conditionDataFromDb['diagnosis_valueset']);
 
             $CodesTable =$this->container->get('ImportData\Model\CodesTable');
             $title=$CodesTable->getCodeTitle($codeFromDb[1],$codeFromDb[0]);
