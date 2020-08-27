@@ -47,9 +47,9 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $ListsTable = $this->container->get(ListsTable::class);
 
-        $listOutcome = $ListsTable->getListNormalized(self::OUTCOME_LIST);
+        $listOutcome = $ListsTable->getListNormalized(self::OUTCOME_LIST,null, null, null, false); // not translated
         $this->setOutcomeTypes($listOutcome);
-        $listOccurrence = $ListsTable->getListNormalized(self::OCCURRENCE_LIST);
+        $listOccurrence = $ListsTable->getListNormalized(self::OCCURRENCE_LIST, null, null, null, false); // not translated
 
         $this->setOccurrenceTypes($listOccurrence);
     }
