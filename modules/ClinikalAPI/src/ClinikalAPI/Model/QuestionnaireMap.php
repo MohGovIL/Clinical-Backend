@@ -8,7 +8,7 @@
 namespace ClinikalAPI\Model;
 
 
-class FormDiagnosisAndRecommendationsQuestionnaireMap
+class QuestionnaireMap
 {
 
     public  $id,

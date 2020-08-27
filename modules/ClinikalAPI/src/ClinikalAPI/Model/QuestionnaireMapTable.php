@@ -12,7 +12,7 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
 use Zend\Db\TableGateway\TableGateway;
 
-class FormDiagnosisAndRecommendationsQuestionnaireMapTable
+class QuestionnaireMapTable
 {
     public function __construct(\Laminas\Db\TableGateway\TableGateway $tableGateway)
     {

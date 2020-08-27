@@ -57,6 +57,35 @@ class EncounterReasonCodeMapTable
 
     }
 
+    public function fatchAllByEID($eid,$asString = false){
+
+        $sql="SELECT * FROM " . $this->tableGateway->table . " WHERE eid = ?";
+
+        $statement = $this->tableGateway->adapter->createStatement($sql, array($eid));
+        $return = $statement->execute();
+
+        $results = array();
+
+
+        foreach ($return as $row) {
+            $results[] = $row;
+        }
+        if(!$asString) {
+            return $results[0];
+        }
+        else{
+            $arrTemp=[];
+
+            foreach ($results as $code) {
+                array_push($arrTemp,$code['reason_code']);
+            }
+            $str = implode(",",$arrTemp);
+            $results = [$str];
+        }
+
+        return $results[0];
+    }
+
 
 
 
