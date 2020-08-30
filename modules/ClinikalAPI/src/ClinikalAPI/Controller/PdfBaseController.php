@@ -175,30 +175,12 @@ class PdfBaseController extends GenericBaseController
     }
 
 
-    public function getMedicalAdmissionQData($qid,$class){
+    public function getQData($qid,$class){
         $FormMedicalAdmissionQTable= $this->container->get($class);
         $dbData=$FormMedicalAdmissionQTable->getLastQuestionnaireAnswer($this->postData['encounter'],$qid);
         return $dbData['answer'];
     }
-
-
-    public function getPregnancyState(){
-        //form_medical_admission_questionnaire.answer
-        //where form_id =  encounter = <ENC_ID>, qid = 4 )
-        return $this->getMedicalAdmissionQData(4,'FormMedicalAdmissionQuestionnaireMapTable');
-    }
-
-    public function getFindings(){
-        //form_medical_admission_questionnaire.answer
-        //where form_id =  encounter = <ENC_ID>, qid = 2 )
-        return $this->getMedicalAdmissionQData(2,'FormDiagnosisAndRecommendationsQuestionnaireMapTable');
-    }
-
-    public function getDiagnostics(){
-        //form_diagnosis_and_recommendations_questionnaire.answer
-        //where encounter = <ENC_ID>, qid = 1 )
-        return $this->getMedicalAdmissionQData(1,'FormDiagnosisAndRecommendationsQuestionnaireMapTable');
-    }
+    
     public function getServiceTypeAndReasonCode(){
         //get encounter
         $FormMedicalAdmissionQTable= $this->container->get(FormEncounterTable::class);
