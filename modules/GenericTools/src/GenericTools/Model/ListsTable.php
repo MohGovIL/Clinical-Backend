@@ -209,4 +209,15 @@ class ListsTable
         }
         return $rsArray;
     }
+
+    public function getTitles($listId, $optionIds)
+    {
+        $sql= "SELECT * FROM " . $this->tableGateway->table . " WHERE list_id = ? AND option_id in ({$optionIds})";
+        $statement = $this->tableGateway->adapter->createStatement($sql, array($listId));
+        $rs = $statement->execute();
+        foreach($rs as $r) {
+            $rsArray[$r['option_id']]=$r['title'];
+        }
+        return $rsArray;
+    }
 }

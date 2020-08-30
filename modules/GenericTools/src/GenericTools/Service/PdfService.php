@@ -216,7 +216,8 @@ class PdfService
         $mpdf->WriteHTML($this->body);
 
         /*slow ? Consider the following:
-         * https://mpdf.github.io/troubleshooting/slow.html
+         * https://
+         * /troubleshooting/slow.html
          */
         $mpdf->useSubstitutions = false;
         $mpdf->simpleTables = true;
