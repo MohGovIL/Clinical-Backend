@@ -76,7 +76,7 @@ CREATE TABLE `fhir_value_set_systems` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `vs_id` VARCHAR(125) NOT NULL,
     `system` VARCHAR(125) NOT NULL,
-    `type` ENUM('All', 'Partial', 'Exclude', 'Filter') NOT NULL,
+    `type` ENUM('All', 'Partial', 'Exclude', 'Filter', 'Codes') NOT NULL,
     `filter` VARCHAR(125) DEFAULT NULL,
     PRIMARY KEY(`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=UTF8;
