@@ -62,19 +62,19 @@ class FhirMedicationRequestMapping extends FhirBaseMapping implements MappingDat
 
         $ListsTable = $this->container->get(ListsTable::class);
 
-        $listForm = $ListsTable->getList(self::DRUG_FORM_LIST);
+        $listForm = $ListsTable->getList(self::DRUG_FORM_LIST, null, null, false);
         $this->setFormList($listForm);
 
-        $listInterval = $ListsTable->getList(self::DRUG_INTERVAL_LIST);
+        $listInterval = $ListsTable->getList(self::DRUG_INTERVAL_LIST, null, null, false);
         $this->setIntervalList($listInterval);
 
-        $listRoute = $ListsTable->getList(self::DRUG_ROUTE_LIST);
+        $listRoute = $ListsTable->getList(self::DRUG_ROUTE_LIST, null, null, false);
         $this->setRouteList($listRoute);
 
-        $listSite = $ListsTable->getList(self::DRUG_SITE_LIST);
+        $listSite = $ListsTable->getList(self::DRUG_SITE_LIST, null, null, false);
         $this->setSiteList($listSite);
 
-        $listStatus = $ListsTable->getList(self::STATUS_LIST);
+        $listStatus = $ListsTable->getList(self::STATUS_LIST, null, null, false);
         $this->setStatusList($listStatus);
 
         //todo : implement this function
