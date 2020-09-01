@@ -149,7 +149,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         $medicationCode = $code->getCode()->getValue();
         $medicationSystem = $code->getSystem()->getValue();
         $medicationSystem = substr($medicationSystem, strrpos($medicationSystem, '/') + 1);
-        $dbCondition['diagnosis_valueset']=$medicationSystem;
+        $medicationStatementDataFromDb['diagnosis_valueset']=$medicationSystem;
 
         $valueSetsTable = $this->container->get(ValueSetsTable::class);
         $codeType=$valueSetsTable->getCodeTypeByValueSet($medicationSystem);
