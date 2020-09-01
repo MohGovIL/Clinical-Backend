@@ -172,6 +172,12 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText();
 
+        $encounterRef=$FHIRMedicationStatement->getContext()->getReference()->getValue() ;
+        if(!empty($encounterRef)){
+            $encounterRef=substr($encounterRef, strrpos($encounterRef, '/') + 1);
+        }
+        $medicationStatementDataFromDb['encounter']=$encounterRef;
+
         return $medicationStatementDataFromDb;
     }
 
@@ -247,6 +253,10 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $FHIRMedicationStatement->getNote()[0]->setText($medicationStatementDataFromDb['comments']);
 
+        if(!empty($medicationStatementDataFromDb['encounter'])){
+            $FHIRMedicationStatement->getContext()->getReference()->setValue(self::ENCOUNTER_URI.$medicationStatementDataFromDb['encounter']);
+        }
+
         $this->FHIRMedicationStatement = $FHIRMedicationStatement;
 
         return $FHIRMedicationStatement;
@@ -257,7 +267,6 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         $dbMedicationStatement = array();
         return $dbMedicationStatement;
     }
-
 
     public function initFhirObject(){
 
@@ -286,6 +295,8 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         $FHIRMedicationStatement->setSubject(deep_copy($FHIRReference));
 
         $FHIRMedicationStatement->setInformationSource(deep_copy($FHIRReference));
+
+        $FHIRMedicationStatement->setContext(deep_copy($FHIRReference));
 
         $this->FHIRMedicationStatement=$FHIRMedicationStatement;
 

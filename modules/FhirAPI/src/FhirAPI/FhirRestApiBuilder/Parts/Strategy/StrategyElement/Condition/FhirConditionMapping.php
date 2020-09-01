@@ -181,6 +181,12 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
         $dbCondition['reaction']= $evidenceCode->getCode()->getValue();
 
+        $encounterRef=$FHIRCondition->getEncounter()->getReference()->getValue() ;
+        if(!empty($encounterRef)){
+            $encounterRef=substr($encounterRef, strrpos($encounterRef, '/') + 1);
+        }
+        $dbCondition['encounter']=$encounterRef;
+
         return $dbCondition;
     }
 
@@ -253,11 +259,11 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         $FHIRCondition->getNote()[0]->setText($conditionDataFromDb['comments']);
 
         if(!empty($conditionDataFromDb['pid'])){
-            $FHIRCondition->getSubject()->getReference()->setValue("Patient/".$conditionDataFromDb['pid']) ;
+            $FHIRCondition->getSubject()->getReference()->setValue(self::PATIENT_URI.$conditionDataFromDb['pid']) ;
         }
 
         if(!empty($conditionDataFromDb['user'])){
-            $FHIRCondition->getRecorder()->getReference()->setValue("Practitioner/".$conditionDataFromDb['user']);
+            $FHIRCondition->getRecorder()->getReference()->setValue(self::PRACTITIONER_URI.$conditionDataFromDb['user']);
         }
 
         $evidenceCode=$FHIRCondition->getEvidence()[0]->getCode()[0]->getCoding()[0];
@@ -267,6 +273,11 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
             $evidenceCode->getCode()->setValue($conditionDataFromDb['reaction']);
             $evidenceCode->getSystem()->setValue(self::LIST_SYSTEM_LINK.'reaction');
         }
+
+        if(!empty($conditionDataFromDb['encounter'])){
+            $FHIRCondition->getEncounter()->getReference()->setValue(self::ENCOUNTER_URI.$conditionDataFromDb['encounter']);
+        }
+
 
         $this->FHIRCondition=$FHIRCondition;
 
@@ -381,6 +392,8 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         $FHIRConditionEvidence =$this->createFHIRConditionEvidence(array());
         $FHIRCondition->addEvidence($FHIRConditionEvidence);
 
+        $FHIRCondition->setEncounter(deep_copy($FHIRReference));
+
         $this->FHIRCondition=$FHIRCondition;
 
         return $FHIRCondition;
@@ -414,7 +427,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         $conditionDataFromDb = $listsOpenEmrTable->buildGenericSelect(["id"=>$id]);
         $allData=array('new'=>$data,'old'=>$conditionDataFromDb);
         //$mainTable=$listsOpenEmrTable->getTableName();
-        $isValid=$this->validateDb($allData,$mainTable);
+        $isValid=$this->validateDb($allData,null);
         /***************************************************************************/
 
         if($isValid){
@@ -435,7 +448,6 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         //this never happens since ErrorCodes call to exit()
         return false;
     }
-
 
     /**
      * create FHIRConditionStage
@@ -473,7 +485,6 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
         return $FHIRConditionStage;
     }
-
 
     /**
      * create FHIRConditionEvidence
