@@ -549,6 +549,38 @@ abstract class BaseSearch implements SearchInt
     }
 
 
+    public function addSortDate($fieldPath)
+    {
+        if(isset($this->searchParams[$fieldPath])) {
+            //value is only date not datetime
+            if (strlen($this->searchParams[$fieldPath][0]['value']) === 10 ){
+
+                $operator= $this->searchParams[$fieldPath][0]['operator'];
+                if ($operator === 'eq') {
+                    $dayDate = $this->searchParams[$fieldPath][0]['value'];
+                    $this->searchParams[$fieldPath][0] = [
+                        'value' => $dayDate . ' 00:00:00|' .$dayDate . ' 23:59:59',
+                        //between operator
+                        'operator' => 'be',
+                        'modifier' => null
+                    ];
+                }
+
+                elseif ($operator === 'le') {
+                    $dayDate = $this->searchParams[$fieldPath][0]['value'];
+                    $this->searchParams[$fieldPath][0] = [
+                        'value' => $dayDate . ' 23:59:59',
+                        //between operator
+                        'operator' => 'le',
+                        'modifier' => null
+                    ];
+                }
+            }
+        }
+    }
+
+
+
 
 
 }

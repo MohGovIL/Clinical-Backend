@@ -53,32 +53,8 @@ class EncounterSearch extends BaseSearch
              unset(($this->searchParams)['all_statuses']);
          }
 
-        if(isset($this->searchParams['form_encounter.date'])) {
-            //value is only date not datetime
-            if (strlen($this->searchParams['form_encounter.date'][0]['value']) === 10 ){
-
-                $operator= $this->searchParams['form_encounter.date'][0]['operator'];
-                if ($operator === 'eq') {
-                    $dayDate = $this->searchParams['form_encounter.date'][0]['value'];
-                    $this->searchParams['form_encounter.date'][0] = [
-                        'value' => $dayDate . ' 00:00:00|' .$dayDate . ' 23:59:59',
-                        //between operator
-                        'operator' => 'be',
-                        'modifier' => null
-                    ];
-                }
-
-                elseif ($operator === 'le') {
-                    $dayDate = $this->searchParams['form_encounter.date'][0]['value'];
-                    $this->searchParams['form_encounter.date'][0] = [
-                        'value' => $dayDate . ' 23:59:59',
-                        //between operator
-                        'operator' => 'le',
-                        'modifier' => null
-                    ];
-                }
-            }
-        }
+        $this->addSortDate('form_encounter.date');
+        $this->addSortDate('form_encounter.status_update_date');
 
         $dataFromDb = $this->searchThisTable->buildGenericSelect($this->searchParams,implode(",",$this->orderParams),$this->specialParams);
         foreach ($dataFromDb  as $key => $data) {
