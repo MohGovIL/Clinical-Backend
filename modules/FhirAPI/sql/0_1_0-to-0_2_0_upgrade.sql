@@ -135,6 +135,8 @@ CREATE TABLE `fhir_value_set_systems` (
 ) ENGINE=INNODB DEFAULT CHARSET=UTF8;
 #EndIf
 
+ALTER TABLE `fhir_value_set_systems` MODIFY COLUMN `type` ENUM('All', 'Partial', 'Exclude', 'Filter', 'Codes') NOT NULL AFTER `system`;
+
 #IfNotTable fhir_value_set_codes
 CREATE TABLE `fhir_value_set_codes` (
     `vss_id` INT NOT NULL,
@@ -765,3 +767,4 @@ INSERT INTO `fhir_value_sets` (`id`, `title`) VALUES
 INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 ('servicerequest_intent', 'servicerequest_intent', 'All');
 #EndIf
+
