@@ -111,7 +111,7 @@ CREATE TABLE `related_person` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `identifier` varchar(255) DEFAULT NULL,
   `identifier_type` varchar(255) DEFAULT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT 0,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
   `pid` bigint(20) NOT NULL,
   `relationship` varchar(255) DEFAULT NULL,
   `phone_home` varchar(255) DEFAULT NULL,

@@ -767,3 +767,6 @@ ALTER TABLE `lists` ADD `diagnosis_valueset` VARCHAR(255) NULL AFTER `diagnosis`
 #IfMissingColumn lists encounter
 ALTER TABLE `lists` ADD `encounter` BIGINT(20) NULL DEFAULT NULL AFTER `list_option_id`;
 #EndIf
+
+
+ALTER TABLE `related_person` CHANGE `active` `active` TINYINT(1) NOT NULL DEFAULT '1';
