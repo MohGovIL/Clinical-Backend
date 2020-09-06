@@ -1,0 +1,37 @@
+<?php
+use OpenEMR\Core\Header;
+/*require_once $GLOBALS['fileroot'].'/clinikal/ui-components/ValidateJS/ValidateJsFunctions.php';*/
+require_once $GLOBALS['fileroot'].'/clinikal/ui-components/DataTableExtended/DataTableExtended.php';
+?>
+<!-- Layout -->
+<html>
+<head>
+
+   <?php Header::setupHeader(['jquery','bootstrap','datetime-picker','main-theme', 'fontawesome', 'select2', 'sumoselect','moment','tooltipster']); ?>
+    <script><?php require($GLOBALS['srcdir'] . '/formatting_DateToYYYYMMDD_js.js.php'); ?></script>
+    <?php  $table_handler= new DataTableExtended\DataTableExtended($table_id,$table_col_names);?>
+    <?php  $table_handler->LoadEssentialCssJs();?>
+    <title><?php echo xlt($this->title) ?></title>
+
+
+</head>
+<style>
+    #report_tool_container table.dataTable{
+        max-width: 98vw !important;
+    }
+    table#rabies-patients-tracking_table {
+        padding-left: 26px;
+    }
+</style>
+<body  class="body_top">
+<div class="container-fluid">
+    <div id="report_tool_container" class='row'>
+        <div class="col-md-12">
+            <?php echo $this->content; ?>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
