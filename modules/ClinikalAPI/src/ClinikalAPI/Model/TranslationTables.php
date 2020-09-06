@@ -30,7 +30,7 @@ class TranslationTables
         $return = $statement->execute();
         $results = array();
         foreach ($return as $row) {
-            $results[$row['constant_name']] = $row['definition'];
+            $results[trim($row['constant_name'])] = $row['definition'];
         }
         return (isset($results)) ? $results : array();
 

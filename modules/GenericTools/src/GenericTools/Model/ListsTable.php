@@ -35,7 +35,7 @@ class ListsTable
      * @param null $optional_value => Additional value to check for in said column.
      * @return array
      */
-    public function getList($listId, $optinal_cloumn_name = null, $optional_value = null)
+    public function getList($listId, $optinal_cloumn_name = null, $optional_value = null, $translated=null)
     {
         $sql="SELECT * FROM " . $this->tableGateway->table . " WHERE list_id = ? AND activity = 1 ";
         $sqlBindArray = array($listId);
@@ -53,7 +53,9 @@ class ListsTable
 
         $results = array();
         foreach ($return as $row) {
-            $row['title']=xlt($row['title']);
+            if($translated!==false) {
+                $row['title'] = xlt($row['title']);
+            }
             $results[$row['option_id']] = $row;
         }
 
@@ -204,6 +206,17 @@ class ListsTable
         foreach($rs as $r) {
             $record=(array)$r;
             $rsArray[$record['option_id']]=$record;
+        }
+        return $rsArray;
+    }
+
+    public function getTitles($listId, $optionIds)
+    {
+        $sql= "SELECT * FROM " . $this->tableGateway->table . " WHERE list_id = ? AND option_id in ({$optionIds})";
+        $statement = $this->tableGateway->adapter->createStatement($sql, array($listId));
+        $rs = $statement->execute();
+        foreach($rs as $r) {
+            $rsArray[$r['option_id']]=$r['title'];
         }
         return $rsArray;
     }

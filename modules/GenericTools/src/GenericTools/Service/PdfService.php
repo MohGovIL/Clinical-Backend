@@ -8,10 +8,12 @@
 
 namespace GenericTools\Service;
 
+use GenericTools\Model\LangLanguagesTable;
 use Laminas\View\Model\ViewModel;
 use Mpdf\Mpdf;
 use GenericTools\Controller\GenericToolsController;
 use Interop\Container\ContainerInterface;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
 
 class PdfService
 {
@@ -23,6 +25,9 @@ class PdfService
     private $footerHeight = 16;
     private $exportType = 'I';
     private $fileName = 'Export';
+    private $container = null;
+    private $renderer = null;
+    private $langParameter = null;
 
     /**
      * PdfService constructor.
@@ -31,9 +36,11 @@ class PdfService
      */
     public function __construct(ContainerInterface $container)
     {
-        $this->continer = $container;
-        $this->renderer = $this->continer->get('Laminas\View\Renderer\PhpRenderer');
-        $this->langParameter = array('langDir' => $_SESSION['language_direction'], 'langCode' => $this->continer->get('GenericTools\Model\LangLanguagesTable')->getLangCode($_SESSION['language_choice']));
+        $this->container = $container;
+        $this->renderer = $this->container->get('Laminas\View\Renderer\PhpRenderer');
+        $langLanguagesTable= $this->container->get(LangLanguagesTable::class);
+        $this->langParameter = $langLanguagesTable->getLanguageSettings();
+
     }
 
     /**
@@ -209,7 +216,8 @@ class PdfService
         $mpdf->WriteHTML($this->body);
 
         /*slow ? Consider the following:
-         * https://mpdf.github.io/troubleshooting/slow.html
+         * https://
+         * /troubleshooting/slow.html
          */
         $mpdf->useSubstitutions = false;
         $mpdf->simpleTables = true;

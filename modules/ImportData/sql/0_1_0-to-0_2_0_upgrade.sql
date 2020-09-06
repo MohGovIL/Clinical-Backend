@@ -20,7 +20,7 @@ REPLACE INTO `moh_import_data` (`id`, `external_name`, `clinikal_name`, `static_
 (19, 'MOH_KUPAT_CHOLIM_BRANCHES', 'MOH_KUPAT_CHOLIM_BRANCHES', 'mkcb', 'CSV', '2017-03-29 00:00:00'),
 (20, 'MOH_DRUGS', '	codes', 'moh_drugs', 'EDM', '2020-03-29 00:00:00');
 
-#IfNotRow code_types ct_key MOH_DRUGS
+#IfNotRow2D code_types ct_key MOH_DRUGS ct_id 9911
 INSERT INTO `code_types` (`ct_key`, `ct_id`, `ct_seq`, `ct_mod`, `ct_just`, `ct_mask`, `ct_fee`, `ct_rel`, `ct_nofs`, `ct_diag`, `ct_active`, `ct_label`, `ct_external`, `ct_claim`, `ct_proc`, `ct_term`, `ct_problem`, `ct_drug`)
 VALUES
 ('MOH_DRUGS', 9911, 9911, 12, 'MOH_DRUGS', '', 1, 0, 1, 0, 1, 'MOH DRUGS LIST', 0, 1, 0, 1, 1, 0);

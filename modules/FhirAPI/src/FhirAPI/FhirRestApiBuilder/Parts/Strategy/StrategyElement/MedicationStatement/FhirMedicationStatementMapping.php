@@ -13,6 +13,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\ListsOpenEmrTable;
 use GenericTools\Model\ListsTable;
+use GenericTools\Model\ValueSetsTable;
 use ImportData\Model\CodesTable;
 use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRMedicationStatement;
@@ -46,9 +47,9 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $ListsTable = $this->container->get(ListsTable::class);
 
-        $listOutcome = $ListsTable->getListNormalized(self::OUTCOME_LIST);
+        $listOutcome = $ListsTable->getListNormalized(self::OUTCOME_LIST,null, null, null, false); // not translated
         $this->setOutcomeTypes($listOutcome);
-        $listOccurrence = $ListsTable->getListNormalized(self::OCCURRENCE_LIST);
+        $listOccurrence = $ListsTable->getListNormalized(self::OCCURRENCE_LIST, null, null, null, false); // not translated
 
         $this->setOccurrenceTypes($listOccurrence);
     }
@@ -129,7 +130,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
 
         $categoryCoding = $FHIRMedicationStatement->getCategory()->getCoding()[0];
         $medicationStatementDataFromDb['list_option_id'] = $categoryCoding->getCode()->getValue();
-        
+
         $medicationStatementDataFromDb['type'] = self::MED_CATEGORY;
 
         $medicationStatementDataFromDb['title'] = $FHIRMedicationStatement->getCategory()->getText()->getValue();
@@ -143,12 +144,18 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         $medicationStatementDataFromDb['date'] = $FHIRMedicationStatement->getDateAsserted()->getValue();;
 
         $code = $FHIRMedicationStatement->getMedicationCodeableConcept()->getCoding()[0];
+
+
         $medicationCode = $code->getCode()->getValue();
         $medicationSystem = $code->getSystem()->getValue();
         $medicationSystem = substr($medicationSystem, strrpos($medicationSystem, '/') + 1);
+        $dbCondition['diagnosis_valueset']=$medicationSystem;
+
+        $valueSetsTable = $this->container->get(ValueSetsTable::class);
+        $codeType=$valueSetsTable->getCodeTypeByValueSet($medicationSystem);
 
         if (!is_null($medicationCode) && !is_null($medicationSystem)) {
-            $medicationStatementDataFromDb['diagnosis'] = $medicationSystem . ":" . $medicationCode;
+            $medicationStatementDataFromDb['diagnosis'] = $codeType . ":" . $medicationCode;
         } else {
             $medicationStatementDataFromDb['diagnosis'] = null;
         }
@@ -163,7 +170,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
             $medicationStatementDataFromDb['user'] = substr($userRef, strrpos($userRef, '/') + 1);
         }
 
-        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText()->getValue();;
+        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText();
 
         return $medicationStatementDataFromDb;
     }
@@ -223,7 +230,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         if (count($codeFromDb) > 1) {
             $code = $FHIRMedicationStatement->getMedicationCodeableConcept()->getCoding()[0];
             $code->getCode()->setValue($codeFromDb[1]);
-            $code->getSystem()->setValue(self::LIST_SYSTEM_LINK . $codeFromDb[0]);
+            $code->getSystem()->setValue(self::LIST_SYSTEM_LINK . $medicationStatementDataFromDb['diagnosis_valueset']);
 
             $CodesTable =$this->container->get('ImportData\Model\CodesTable');
             $title=$CodesTable->getCodeTitle($codeFromDb[1],$codeFromDb[0]);

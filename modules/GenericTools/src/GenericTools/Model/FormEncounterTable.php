@@ -176,5 +176,19 @@ class FormEncounterTable
 
         return $results[0];
     }
+    public function fetchById($id)
+    {
+        $sql="SELECT * FROM " . $this->tableGateway->table . " WHERE id = ?";
 
+        $statement = $this->tableGateway->adapter->createStatement($sql, array($id));
+        $return = $statement->execute();
+
+        $results = array();
+        foreach ($return as $row) {
+            $results[] = $row;
+        }
+
+        return $results[0];
+
+    }
 }

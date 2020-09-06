@@ -89,4 +89,27 @@ class ValueSetsTable
         return $results;
     }
 
+    public function getCodeTypeByValueSet($valueSet)
+    {
+        $params= array();
+        $params[]=$valueSet;
+
+        $sql  = "SELECT ct.ct_key FROM  code_types ct ";
+        $sql .= "LEFT JOIN fhir_value_set_systems vss ON vss.system=ct.ct_id ";
+        $sql .= "WHERE vss.vs_id = ? ";
+
+        $statement = $this->tableGateway->adapter->createStatement($sql, $params);
+        $return = $statement->execute();
+
+        $results = array();
+        foreach ($return as $row) {
+            $results[] = $row;
+        }
+        if (!empty($results)){
+            return $results[0]['ct_key'];
+        }else{
+            return null;
+        }
+     }
+
 }

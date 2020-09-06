@@ -23,6 +23,7 @@ use ClinikalAPI\Model\ListOptionsTable;
 use ClinikalAPI\Service\ApiBuilder;
 
 use Interop\Container\ContainerInterface;
+use Laminas\Db\TableGateway\TableGateway as ZendTableGateway;
 use OpenEMR\Events\RestApiExtend\RestApiCreateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Laminas\Db\TableGateway\TableGateway;
@@ -30,7 +31,6 @@ use Laminas\ModuleManager\ModuleManager;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Db\ResultSet\ResultSet;
 
-use Laminas\Db\TableGateway\TableGateway as ZendTableGateway;
 use ClinikalAPI\Model\ClinikalPatientTrackingChanges;
 use ClinikalAPI\Model\ClinikalPatientTrackingChangesTable;
 use ClinikalAPI\Model\FormContextMap;
@@ -113,7 +113,6 @@ class Module {
                 },
                 */
                 ManageTemplatesLettersTable::class =>  function(ContainerInterface $container) {
-
                     $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new ManageTemplatesLetters());
@@ -121,12 +120,9 @@ class Module {
                     $table = new ManageTemplatesLettersTable($tableGateway);
                     return $table;
                 },
-
             ),
         );
     }
-
-
     /**
      * @param MvcEvent $e
      *

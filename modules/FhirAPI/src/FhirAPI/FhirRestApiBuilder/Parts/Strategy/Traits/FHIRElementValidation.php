@@ -99,6 +99,7 @@ trait FHIRElementValidation
                 return true;
             }
         }
+        error_log("Validation checkRequired failed on field {$validator['filed_name']}");
         return false;
     }
 
@@ -127,6 +128,7 @@ trait FHIRElementValidation
             }
 
         }
+        error_log("Validation checkRequired failed on field {$validator['filed_name']}");
         return false;
     }
 
@@ -140,6 +142,7 @@ trait FHIRElementValidation
     public function blockedIfValue($validator,$data)
     {
         if ($data['old'][0][$validator['filed_name']] === $validator['validation_param']) {
+            error_log("Validation blockedIfValue failed on field {$validator['filed_name']}");
             return false;
         } else {
             return true;
@@ -184,6 +187,7 @@ trait FHIRElementValidation
                 return true;
             }
         }
+        error_log("Validation checkIfInList failed on field {$validator['filed_name']}");
         return false;
     }
 
@@ -199,6 +203,7 @@ trait FHIRElementValidation
     {
         $info=$data['new'][$mainTable];
         if(in_array(null,array($info['pc_eventDate'],$info['pc_startTime'],$info['pc_endDate'],$info['pc_endTime']))){
+            error_log("Validation aptDateRangeCheck failed");
             return false;
         }
         $start= $info['pc_eventDate'] . ' ' . $info['pc_startTime'];
@@ -223,6 +228,7 @@ trait FHIRElementValidation
 
             $check=array('new'=>array('event_codeReason_map'=>array('event_codeReason_map'=>$reason['option_id'])));
             if(!$this->checkIfInList($validator,$check, 'event_codeReason_map') ){
+                error_log("Validation aptReasonCodes failed");
                 return false;
             }
         }
