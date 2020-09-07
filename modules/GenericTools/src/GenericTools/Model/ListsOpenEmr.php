@@ -26,6 +26,7 @@ class ListsOpenEmr
     public $reaction;
     public $diagnosis_valueset;
     public $encounter;
+    public $resolved;
 
 
     public function exchangeArray($data)
@@ -51,6 +52,7 @@ class ListsOpenEmr
         $this->outcome = (!empty($data['outcome']) || $data['outcome']==="0") ? $data['outcome'] : null;
         $this->user = (!empty($data['user'])) ? $data['user'] : null;
         $this->reaction = (!empty($data['reaction'])) ? $data['reaction'] : "";
-        $this->encounter = (!empty($data['encounter'])) ? $data['encounter'] : "";
+        $this->encounter = (!empty($data['encounter'])) ? $data['encounter'] : null;
+        $this->resolved = (!empty($data['resolved']) || $data['resolved']==0) ? $data['resolved'] : null;
     }
 }

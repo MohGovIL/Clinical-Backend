@@ -17,6 +17,8 @@ use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Patient\FhirPatien
 /*************/
 
 use GenericTools\Model\ListsOpenEmrTable;
+use GenericTools\Model\IssueEncounterTable;
+
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRPatient;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
 
@@ -32,6 +34,7 @@ class Condition Extends Restful implements  Strategy
         if(!is_null($params))
         {
             $this->initParams($params);
+
         }
     }
 
@@ -72,7 +75,7 @@ class Condition Extends Restful implements  Strategy
     {
         $eid=$this->paramsFromUrl[0];
         $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
-        $condition =$listsOpenEmrTable->getDataByParams(array("id"=>intval($eid)));
+        $condition =$listsOpenEmrTable->buildGenericSelect(array("id"=>intval($eid)));
 
         if (!is_array($condition) || count($condition) != 1) {
             $FHIRBundle = new FHIRBundle;
@@ -120,17 +123,35 @@ class Condition Extends Restful implements  Strategy
         /*********************************** validate *******************************/
         $allData=array('new'=>$dbData,'old'=>array());
         //$mainTable=$listsOpenEmrTable->getTableName();
-        $isValid=$this->mapping->validateDb($allData,null);
+        $isValid=$this->mapping->validateDb($allData,'lists');
         /***************************************************************************/
         if($isValid){
-            unset($dbData['id']);
-            $dbData['reaction']= is_null($dbData['reaction']) ? "" : $dbData['reaction'];
+            unset($dbData['lists']['id']);
+            $dbData['lists']['reaction']= is_null($dbData['lists']['reaction']) ? "" : $dbData['lists']['reaction'];
 
+            $rez=$listsOpenEmrTable->safeInsert($dbData['lists'],'id');
 
-            $rez=$listsOpenEmrTable->safeInsert($dbData,'id');
             if(is_array($rez)){
-                $patient=$this->mapping->DBToFhir($rez);
-                return $patient;
+                if(!empty($dbData['issue_encounter']['encounter'])){
+                    $dbData['issue_encounter']['list_id']= $rez['id'];
+                    $issueEncounterTable = $this->container->get(IssueEncounterTable::class);
+
+                    // safe insert only support insert by single primary key
+                    $rez2=$issueEncounterTable->insert($dbData['issue_encounter']);
+
+                    if($rez2!==1){
+                        //todo : call delete by $dbData['lists']['id']
+                        ErrorCodes::http_response_code('500','insert encounter info failed :'.$rez);
+                    }else{
+                        $rez['encounter'] =  $dbData['issue_encounter']['encounter'];
+                    }
+                }
+
+                $this->mapping->initFhirObject();  // this is very important to clean old data
+
+                $condition=$this->mapping->DBToFhir($rez);
+
+                return $condition;
             }else{ //insert failed
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }

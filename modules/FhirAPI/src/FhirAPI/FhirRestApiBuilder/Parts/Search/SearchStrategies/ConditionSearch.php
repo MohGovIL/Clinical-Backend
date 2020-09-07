@@ -19,7 +19,7 @@ class ConditionSearch extends BaseSearch
         $this->paramHandler('_id','id');
         $this->paramHandler('active','active');
         $this->paramHandler('clinical-status','outcome');
-        $this->paramHandler('encounter','encounter');
+        $this->paramHandler('encounter','encounter','ie');
 
         if(isset($this->searchParams['code:of-type'])){
             $codeSearch=$this->searchParams['code:of-type'][0]['value'];     // format |system|code|identifier
