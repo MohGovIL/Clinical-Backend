@@ -35,6 +35,7 @@ class EncounterSearch extends BaseSearch
                 $statVal=$tempStatus['value'];
 
                  if(key_exists($statVal,$listStatus)){
+                     $this->searchParams['form_encounter.status']['nestGroup'] = 'status_group';
                      $this->searchParams['form_encounter.status'][] = [
                          'value' => $statVal,
                          'operator' => 'NULL',
@@ -42,11 +43,12 @@ class EncounterSearch extends BaseSearch
                          'sqlOp'=>'OR'
                      ];
                  }elseif(key_exists($statVal,$listSecondaryStatus)){
+                     $this->searchParams['form_encounter.secondary_status']['nestGroup'] = 'status_group';
                      $this->searchParams['form_encounter.secondary_status'][] = [
                          'value' =>$statVal,
                          'operator' => 'NULL',
                          'modifier' => 'exact',
-                         'sqlOp'=>'OR'
+                         'sqlOp'=>'OR',
                      ];
                  }
              }

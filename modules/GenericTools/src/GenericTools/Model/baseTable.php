@@ -196,43 +196,80 @@ trait baseTable
         $rsArray = array();
         $select = $this->tableGateway->getSql()->select();
 
-        if (isset($this->join)){
+        if (isset($this->join)) {
             $join = $this->join;
-        }else{
-            $join=null;
+        } else {
+            $join = null;
         }
 
-       // if( count($FilterData) <= 0 )return $rsArray;
-        if(!empty($join) && is_array($join['join_with'])) {
+        // if( count($FilterData) <= 0 )return $rsArray;
+        if (!empty($join) && is_array($join['join_with'])) {
 
-            for($key = 0; $key < count($join['join_with']); $key++) {
+            for ($key = 0; $key < count($join['join_with']); $key++) {
 
-                $joinType =  !empty($join['join_type'][$key]) ?  $join['join_type'][$key] : null;
-                $joinSelectColumns =  !empty($join[self::$SELECT][$key]) ?  $join[self::$SELECT][$key] : null;
-                $joinWith = !empty($join['join_with'][$key]) ? $join['join_with'][$key] : null;
-                $joinOrder= !empty($join['join_order'][$key]) ? $join['join_order'][$key] : null;
-                $joinON = !empty($join[self::$ON][$key]) ? $join[self::$ON][$key] : null;
+                $joinType = !empty($join['join_type'][$key])
+                    ? $join['join_type'][$key] : null;
+                $joinSelectColumns = !empty($join[self::$SELECT][$key])
+                    ? $join[self::$SELECT][$key] : null;
+                $joinWith = !empty($join['join_with'][$key])
+                    ? $join['join_with'][$key] : null;
+                $joinOrder = !empty($join['join_order'][$key])
+                    ? $join['join_order'][$key] : null;
+                $joinON = !empty($join[self::$ON][$key])
+                    ? $join[self::$ON][$key] : null;
 
 
-                $select->join($joinWith, $joinON, /*Select::SQL_STAR*/ $joinSelectColumns, $joinType);
-                if($joinOrder!="")
-                {
+                $select->join($joinWith, $joinON,
+                    /*Select::SQL_STAR*/ $joinSelectColumns, $joinType);
+                if ($joinOrder != "") {
                     $select->order($joinOrder);
                 }
             }
         }
 
-        if(!is_null($order) && $order!="") {
+        if (!is_null($order) && $order != "") {
             $select->order(new Expression($order));
         }
 
         $where = new Where();
-        foreach($FilterData as $field=>$value){
 
-
-            $last = (is_null($value[0]['sqlOp'])) ? self::$AND : $value[0]['sqlOp'];
-            $this->createQuery($value,$where,$field,$last,$FilterData);
+        //nesting where conditions
+        $standardWhere = [];
+        $groups = [];
+        foreach ($FilterData as $field => $value) {
+            if (is_array($value) && !is_null($value['nestGroup'])) {
+                $groups[$value['nestGroup']][][$field] = $FilterData[$field];
+            } else {
+                $standardWhere[$field] = $value;
+            }
         }
+
+        foreach ($standardWhere as $field => $value) {
+            //      $last = (is_null($value[0]['sqlOp'])) ? self::$AND : $value[0]['sqlOp'];
+            $last = self::$AND;
+            $this->createQuery($value, $where, $field, $last, $FilterData);
+        }
+
+        foreach ($groups as $index => $group) {
+            $nest = $where->and->nest();
+            foreach ($group as $i => $fieldArr) {
+                foreach ($fieldArr as $field => $value ) {
+                    unset($value['nestGroup']);
+                    $last = (is_null($value[0]['sqlOp'])) ? self::$AND
+                        : $value[0]['sqlOp'];
+                    $this->createQuery($value, $nest, $field, $last,
+                        $FilterData);
+                }
+            }
+        }
+
+
+           // $where->unnest();
+      //
+
+
+
+
         $select->where($where);
 
 
@@ -323,14 +360,14 @@ trait baseTable
 
     public function parsePredicateAnd($value,&$where,$field){
 
-        if(is_array($value)){
+       // if(is_array($value)){
             if(is_array($value[self::$VALUE])) {
                 foreach ($value[self::$VALUE] as $key => $val) {
                     $this->buildOrAndPredicateWhereToWhere($val,$where,$field,self::$AND);
                 }
                 return;
             }
-        }
+     //   }
         $this->buildOrAndPredicateWhereToWhere($value,$where,$field,self::$AND);
 
     }
@@ -368,11 +405,12 @@ trait baseTable
             }
             else {
                 //foreach ($value as $key => $value) {
+                $valueData = isset($value['value']) ? $value : $value[0];
                 if ($last == self::$AND) {
-                    $this->parsePredicateAnd($value[0], $where, $field);
-                    $last = self::$OR;
+                    $this->parsePredicateAnd($valueData, $where, $field);
+                    $last = self::$AND;
                 } else {
-                    $this->parsePredicateOr($value[0], $where, $field);
+                    $this->parsePredicateOr($valueData, $where, $field);
                     $last = self::$OR;
 
                 }
