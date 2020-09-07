@@ -349,7 +349,7 @@ class FhirServiceRequestMapping extends FhirBaseMapping implements MappingData
     }
 
 
-    private function getValueSetTitle($listName,$value,$operations='$expand')
+    public function getValueSetTitle($listName,$value,$operations='$expand')
     {
         $this->FhirValueSet->setOperations(array($operations));
         $this->FhirValueSet->setParamsFromUrl(array($listName));
