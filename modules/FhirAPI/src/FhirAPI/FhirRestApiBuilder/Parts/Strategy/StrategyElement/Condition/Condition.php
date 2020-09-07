@@ -128,7 +128,6 @@ class Condition Extends Restful implements  Strategy
         if($isValid){
             unset($dbData['lists']['id']);
             $dbData['lists']['reaction']= is_null($dbData['lists']['reaction']) ? "" : $dbData['lists']['reaction'];
-
             $rez=$listsOpenEmrTable->safeInsert($dbData['lists'],'id');
 
             if(is_array($rez)){

@@ -19,7 +19,7 @@ use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRMedicationStatement;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
-
+use GenericTools\Model\IssueEncounterTable;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRMedicationStatusCodes;
 use function DeepCopy\deep_copy;
 
@@ -29,6 +29,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
     const OUTCOME_LIST ='outcome';
     const OCCURRENCE_LIST ='occurrence';
     const MED_CATEGORY="medication";
+    const RESOLVED =array('completed' ,'entered-in-error' ,'stopped' , 'on-hold' );
 
     private $adapter = null;
     private $container = null;
@@ -170,15 +171,27 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
             $medicationStatementDataFromDb['user'] = substr($userRef, strrpos($userRef, '/') + 1);
         }
 
-        $medicationStatementDataFromDb['comments'] = $FHIRMedicationStatement->getNote()[0]->getText();
+        $comments =  $FHIRMedicationStatement->getNote()[0]->getText();
+        if(gettype($comments) === "object"){
+            $comments = $comments->getValue();
+        }
+        $medicationStatementDataFromDb['comments']=$comments;
 
         $encounterRef=$FHIRMedicationStatement->getContext()->getReference()->getValue() ;
         if(!empty($encounterRef)){
             $encounterRef=substr($encounterRef, strrpos($encounterRef, '/') + 1);
         }
-        $medicationStatementDataFromDb['encounter']=$encounterRef;
 
-        return $medicationStatementDataFromDb;
+        $issueEncounter=array(
+            'list_id'=>null,
+            'pid'=>$medicationStatementDataFromDb['pid'],
+            'encounter'=>$encounterRef,
+            'resolved'=>( in_array( $medicationStatementDataFromDb['outcome'],self::RESOLVED) ) ? 1 : 0,
+        );
+
+        $medicationStatementAll=array('lists'=>$medicationStatementDataFromDb,'issue_encounter'=>$issueEncounter);
+
+        return $medicationStatementAll;
     }
 
     /**
@@ -326,20 +339,49 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         /*********************************** validate *******************************/
         $encounterDataFromDb = $listsOpenEmrTable->buildGenericSelect(["id"=>$id]);
         $allData=array('new'=>$data,'old'=>$encounterDataFromDb);
-        //$mainTable=$listsOpenEmrTable->getTableName();
-        $isValid=$this->validateDb($allData,null);
+        $mainTable=$listsOpenEmrTable->getTableName();
+        $isValid=$this->validateDb($allData,$mainTable);
         /***************************************************************************/
 
 
         if($isValid){
             $primaryKey='id';
             $primaryKeyValue=$id;
-            unset($data[$primaryKey]);
-            $rez=$listsOpenEmrTable->safeUpdate($data,array($primaryKey=>$primaryKeyValue));
+            unset($data['lists'][$primaryKey]);
+            $rez=$listsOpenEmrTable->safeUpdate($data['lists'],array($primaryKey=>$primaryKeyValue));
             if(is_array($rez)){
+
+                /**********************************************/
+                $issueEncounterTable = $this->container->get(IssueEncounterTable::class);
+                $data['issue_encounter']['list_id']= $rez['id'];
+                $idArr= array(
+                    "list_id"=>$data['issue_encounter']['list_id']
+                );
+                /***********************************************/
+
+                if(!empty($data['issue_encounter']['encounter'])){
+
+                    $exist =$issueEncounterTable->getDataByParams($idArr);
+                    if(empty($exist)){
+                        $rez2=$issueEncounterTable->insert($data['issue_encounter']);
+                    }else{
+                        unset($data['issue_encounter']['list_id']);
+                        $rez2=$issueEncounterTable->updateData($idArr,$data['issue_encounter']);
+                    }
+
+                    if(!$rez2){
+                        //todo : call delete by $dbData['lists']['id']
+                        ErrorCodes::http_response_code('500','insert encounter info failed :'.$rez);
+                    }else{
+                        $rez['encounter'] =  $data['issue_encounter']['encounter'];
+                    }
+                }else{  // if no encounter delete issue encounter records
+                    $rez2=$issueEncounterTable->deleteDataByParams($idArr);
+                }
+
                 $this->initFhirObject();
-                $patient=$this->DBToFhir($rez);
-                return $patient;
+                return $this->DBToFhir($rez);
+
             }else{ //insert failed
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }

@@ -439,8 +439,8 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         /*********************************** validate *******************************/
         $conditionDataFromDb = $listsOpenEmrTable->buildGenericSelect(["id"=>$id]);
         $allData=array('new'=>$data,'old'=>$conditionDataFromDb);
-        //$mainTable=$listsOpenEmrTable->getTableName();
-        $isValid=$this->validateDb($allData,'lists');
+        $mainTable=$listsOpenEmrTable->getTableName();
+        $isValid=$this->validateDb($allData,$mainTable);
         /***************************************************************************/
 
         if($isValid){
@@ -479,9 +479,8 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
                 }
 
                 $this->initFhirObject();
-                $condition=$this->DBToFhir($rez);
-
-                return $condition;
+                return $this->DBToFhir($rez);
+                
             }else{ //insert failed
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
