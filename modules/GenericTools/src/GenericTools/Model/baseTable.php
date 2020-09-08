@@ -254,6 +254,7 @@ trait baseTable
             $nest = $where->and->nest();
             foreach ($group as $i => $fieldArr) {
                 foreach ($fieldArr as $field => $value ) {
+                    unset($fieldArr[$field]['nestGroup']);
                     unset($value['nestGroup']);
                     $last = (is_null($value[0]['sqlOp'])) ? self::$AND
                         : $value[0]['sqlOp'];
@@ -401,6 +402,7 @@ trait baseTable
                     //unset ($value[$key][self::$OPERATOR]);
                     //unset ($value[$key][self::$MODIFIER]);
                 }
+                $where->$last;
                 $where->in($field,$inThisValues);
             }
             else {
