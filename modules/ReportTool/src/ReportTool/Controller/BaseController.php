@@ -9,10 +9,10 @@
 namespace ReportTool\Controller;
 
 use ReportTool\Model\CustomDB;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\AbstractActionController;
 use GenericTools\Controller\BaseController as GenericBaseController;
 use Application\Listener\Listener;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 use ReportTool\Form\FiltersForm;
 use GenericTools\Controller\GenericToolsController;
 use Interop\Container\ContainerInterface;
@@ -123,9 +123,8 @@ class BaseController extends GenericBaseController
         ));
         $vm->setTemplate('report-tool/reports/header');
 
-        $renderer = $this->container->get('Zend\View\Renderer\PhpRenderer');
+        $renderer = $this->container->get('Laminas\View\Renderer\PhpRenderer');
         $this->header = $renderer->render($vm);
-
 
     }
 
@@ -221,7 +220,7 @@ class BaseController extends GenericBaseController
     }
 
 
-    protected function addLink($name, $title, $link = "javascript:;")
+    protected function addLink($name, $title, $link = "javascript:;",$selected=null, $newLine = false)
     {
         $this->filtersElements->add(array(
             'type' => 'url',

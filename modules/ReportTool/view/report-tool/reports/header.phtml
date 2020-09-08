@@ -1,5 +1,5 @@
 <?php
-require_once $GLOBALS['fileroot'].'/clinikal/ui-components/Header/ClinikalHeaders.php';
+require_once $GLOBALS['fileroot'].'/vendor/clinikal/clinikal-backend/modules/GenericTools/src/GenericTools/Library/UiComponents/Header/ClinikalHeaders.php';
 $headers = new ClinikalHeaders();
 echo $headers->titleWithButtons($title);
 ?>
@@ -121,7 +121,6 @@ echo $headers->titleWithButtons($title);
         });
     }
 
-
     function getAlerts(event){
         let element=event.target;
         let incident_id=element.getAttribute("data");
@@ -224,9 +223,6 @@ echo $headers->titleWithButtons($title);
         $("#filters-container #<?php echo $elements->get($filter)->getName();?>").val('<?php echo $elements->get($filter)->getValue();?>').trigger("change");
         <?php endforeach; ?>
     }
-
-
-
 
     $('#startFilter').on('click',function() {
         var from_date = $('#from_date').val();
