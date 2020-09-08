@@ -129,12 +129,12 @@ class BaseController extends GenericBaseController
 
     }
 
-    protected function renderReport($helperType, $data = null, $view = null)
+    protected function renderReport($helperType, $data = null, $view = null,$viewPath='report-tool/reports/')
     {
         //return
         $viewModel = new ViewModel(array('header' => $this->header, 'helper' => $helperType, 'data' => $data));
         if (!is_null($view)) {
-            $viewModel->setTemplate('report-tool/reports/' . $view);
+            $viewModel->setTemplate($viewPath . $view);
         } else {
             $viewModel->setTemplate('report-tool/reports/index');
         }
@@ -257,7 +257,7 @@ class BaseController extends GenericBaseController
     protected function GetCustomDB()
     {
 
-        $dbAdapter = $this->container->get('Zend\Db\Adapter\Adapter');
+        $dbAdapter = $this->container->get('Laminas\Db\Adapter\Adapter');
         $CustomDb = new CustomDB($dbAdapter);
         return $CustomDb;
     }

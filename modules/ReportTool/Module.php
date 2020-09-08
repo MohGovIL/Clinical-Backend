@@ -54,7 +54,7 @@ class Module
         return array(
             'factories' => array(
                 RegistryTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Registry());
                     $tableGateway = new TableGateway('registry', $dbAdapter, null, $resultSetPrototype);
@@ -93,7 +93,7 @@ class Module
             'factories' => array(
                 'reports_draw_table' => function(ContainerInterface $container) {
                     // Get the shared service manager instance
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $table= new DrawTable();
                     $table->setDbAdapter( $dbAdapter);
