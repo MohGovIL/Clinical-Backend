@@ -56,30 +56,12 @@ class EncounterSearch extends BaseSearch
          }
 
         if(isset($this->searchParams['form_encounter.date'])) {
-            //value is only date not datetime
-            if (strlen($this->searchParams['form_encounter.date'][0]['value']) === 10 ){
 
-                $operator= $this->searchParams['form_encounter.date'][0]['operator'];
-                if ($operator === 'eq') {
-                    $dayDate = $this->searchParams['form_encounter.date'][0]['value'];
-                    $this->searchParams['form_encounter.date'][0] = [
-                        'value' => $dayDate . ' 00:00:00|' .$dayDate . ' 23:59:59',
-                        //between operator
-                        'operator' => 'be',
-                        'modifier' => null
-                    ];
-                }
+            $this->searchByDate('form_encounter.date');
+        }
+        if(isset($this->searchParams['status_update_date'])) {
 
-                elseif ($operator === 'le') {
-                    $dayDate = $this->searchParams['form_encounter.date'][0]['value'];
-                    $this->searchParams['form_encounter.date'][0] = [
-                        'value' => $dayDate . ' 23:59:59',
-                        //between operator
-                        'operator' => 'le',
-                        'modifier' => null
-                    ];
-                }
-            }
+            $this->searchByDate('status_update_date');
         }
 
         $dataFromDb = $this->searchThisTable->buildGenericSelect($this->searchParams,implode(",",$this->orderParams),$this->specialParams);
@@ -92,9 +74,5 @@ class EncounterSearch extends BaseSearch
             // $this->FHIRBundle->deletePatient();
         }
     }
-
-
-
-
 
 }
