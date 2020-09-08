@@ -1314,6 +1314,29 @@
         "label": "Reports",
         "menu_id": "repimg",
         "children": [
+
+            {
+                "label": "Encounter report",
+                "menu_id": "er0",
+                "target": "er",
+                "url": "/interface/modules/zend_modules/public/EncounterReport",
+                "children": [],
+                "requirement": 0,
+                "acl_req": [
+                    [
+                        "acct",
+                        "eob",
+                        "write"
+                    ],
+                    [
+                        "acct",
+                        "bill",
+                        "write"
+                    ]
+                ],
+                "global_req": "!simplified_demographics"
+            },
+
             {
                 "label": "Clients",
                 "icon": "fa-caret-right",
