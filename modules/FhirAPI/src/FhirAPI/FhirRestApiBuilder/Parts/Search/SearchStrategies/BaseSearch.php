@@ -548,6 +548,36 @@ abstract class BaseSearch implements SearchInt
         }
     }
 
+    //enable search by date without time (search in whole day)
+    protected function searchByDate($columnName)
+    {
+        //value is only date not datetime
+        if (strlen($this->searchParams[$columnName][0]['value']) === 10 ){
+
+            $operator= $this->searchParams[$columnName][0]['operator'];
+            if ($operator === 'eq') {
+                $dayDate = $this->searchParams[$columnName][0]['value'];
+                $this->searchParams[$columnName][0] = [
+                    'value' => $dayDate . ' 00:00:00|' .$dayDate . ' 23:59:59',
+                    //between operator
+                    'operator' => 'be',
+                    'modifier' => null
+                ];
+            }
+
+            elseif ($operator === 'le') {
+                $dayDate = $this->searchParams[$columnName][0]['value'];
+                $this->searchParams[$columnName][0] = [
+                    'value' => $dayDate . ' 23:59:59',
+                    //between operator
+                    'operator' => 'le',
+                    'modifier' => null
+                ];
+            }
+        }
+    }
+
+
 
 
 
