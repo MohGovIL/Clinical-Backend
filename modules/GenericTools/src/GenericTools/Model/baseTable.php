@@ -245,7 +245,6 @@ trait baseTable
         }
 
         foreach ($standardWhere as $field => $value) {
-            //      $last = (is_null($value[0]['sqlOp'])) ? self::$AND : $value[0]['sqlOp'];
             $last = self::$AND;
             $this->createQuery($value, $where, $field, $last, $FilterData);
         }
@@ -264,15 +263,7 @@ trait baseTable
             }
         }
 
-
-           // $where->unnest();
-      //
-
-
-
-
         $select->where($where);
-
 
         if(!is_null($join[self::$GROUP]) && $join[self::$GROUP] != "" ) {
             $select->group($join[self::$GROUP]);
