@@ -57,12 +57,14 @@ class PdfBaseController extends GenericBaseController
 
     public function getPatientInfo($id = null)
     {
+
         if (!is_null($id)) {
             $info = $this->container->get('GenericTools\Model\PatientsTable')->getPatientDataById(intval($id));
+            $idTitle = $this->container->get(ListsTable::class)->getTitles("userlist3",'"'.$info['mh_type_id'].'"');
             $data = array();
             $data['name'] = $info['fname']." ".$info['lname'];
             $data['id_number'] = $info['ss'];
-            $data['id_type'] = $info['mh_type_id'];
+            $data['id_type'] = $idTitle[$info['mh_type_id']];
             $data['Gender'] = $info['sex'];
             $data['birthdate'] = $info['DOB_DMY'];
             $data['age'] = $info['age'];
@@ -171,7 +173,7 @@ class PdfBaseController extends GenericBaseController
         $this->getPdfService()->fileName($fileName);
         $this->getPdfService()->setCustomHeaderFooter($headerPath,$footerPath,$headerData,"datetime");
         //added multi-paged functionality to letter creator.
-        if(is_array($bodyDataTemp))
+        if(is_array($bodyPath))
         {
             foreach($bodyPath as $key=>$path) {
                 $bodyData=$bodyDataTemp[$key];
