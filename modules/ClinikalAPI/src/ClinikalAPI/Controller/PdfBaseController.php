@@ -213,11 +213,10 @@ class PdfBaseController extends GenericBaseController
         $dbData=$FormMedicalAdmissionQTable->getLastQuestionnaireAnswer($this->postData['encounter'],$qid);
         return $dbData['answer'];
     }
-
     public function getServiceTypeAndReasonCode(){
         //get encounter
         $FormMedicalAdmissionQTable= $this->container->get(FormEncounterTable::class);
-        $encounter = $dbData=$FormMedicalAdmissionQTable->fetchById($this->postData['encounter']);
+        $encounter = $FormMedicalAdmissionQTable->fetchById($this->postData['encounter']);
         //get clinikal_service_types and reason codes
         $service_type = $this->getTitleOfOptionFromListTable("clinikal_service_types",$encounter['service_type']);
         $reason_codes = $this->getReasonCodes($encounter['id'],true);
@@ -227,6 +226,11 @@ class PdfBaseController extends GenericBaseController
             $reason_codes_titles[$key] = xl($title);
         }
         return xl($service_type)." - ".implode(",",$reason_codes_titles) ."<br/>" . $encounter['reason_codes_details'];
+    }
+    public function getServiceTypeAndReasonCodeArray(){
+        $serviceTypeReasoncode=$this->getServiceTypeAndReasonCode();
+        $arrTemp=explode("<br/>",$serviceTypeReasoncode);
+        return ["service_and_reason"=>$arrTemp[0],"details"=>$arrTemp[1]];
     }
 
     public function getSensitivities(){
@@ -344,24 +348,27 @@ class PdfBaseController extends GenericBaseController
     public function getPrescriptions($eid,$pid){
      return $FhirServiceRequestTable = $this->container->get(PrescriptionsTable::class)->getPatientPrescription($eid,$pid);
     }
-    public function getServiceRequest($eid,$pid,$status,$xrayList){
+
+    public function getServiceRequest($eid,$pid,$status,$xrayList=null){
         $FhirServiceRequestTable = $this->container->get(FhirServiceRequestTable::class);
         $serviceRequests = $FhirServiceRequestTable->getTeastAndTreatmentsPreformed($eid,$pid,$status);
 
         foreach($serviceRequests as $key=>$value)
         {
            switch($value['instruction_code']) {
-               case "x_ray_type":
-                   $value['order_detail_code'] = xl($xrayList[$value['order_detail_code']]);
+               case "x_ray":
+                   $xrayValue = $this->getTitleOfValueSet($value['order_detail_code'],'details_x_ray');
+                   $serviceRequests[$key]['order_detail_code'] = xl($xrayValue[0]['display']);
                break;
                case "providing_medicine":
-                   $valueSetsTable = $this->container->get(ValueSetsTable::class);
-                   $where=array ('filter' => array (0 => array ('value' => $value['order_detail_code'], 'operator' => '=',),),);
-                   $drug = $valueSetsTable->getValueSetById('details_providing_medicine',$where);
-                   $serviceRequests[$key]['order_detail_code'] = xl($drug[0]['display']);
+                   $drugValue = $this->getTitleOfValueSet($value['order_detail_code'],'details_x_ray');
+                   $serviceRequests[$key]['order_detail_code'] = xl($drugValue[0]['display']);
                break;
            }
+            $tests_and_treatments = $this->getTitleOfValueSet($value['instruction_code'],'tests_and_treatments');
+            $serviceRequests[$key]['tests_and_treatments_title'] = xl($tests_and_treatments[0]['display']);
         }
+
         return $serviceRequests;
 
     }
