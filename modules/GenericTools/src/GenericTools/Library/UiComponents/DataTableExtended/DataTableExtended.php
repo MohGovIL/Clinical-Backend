@@ -60,7 +60,7 @@ class DataTableExtended
 
     public function LoadEssentialCssJs()
     {
-        $uiComponentsPath='/clinikal/clinikal-backend/modules/GenericTools/src/GenericTools/Library/UiComponents';
+        $uiComponentsPath='/vendor/clinikal/clinikal-backend/modules/GenericTools/src/GenericTools/Library/UiComponents';
         $header_html='';
         $header_html.='<link href="'.$GLOBALS['webroot'].$uiComponentsPath.'/DataTableExtended/src/css/jquery.dataTables.min.css" media="screen" rel="stylesheet" type="text/css">';
         $header_html.='<link href="'.$GLOBALS['webroot'].$uiComponentsPath.'/DataTableExtended/src/css/dataTablesExtend.css" media="screen" rel="stylesheet" type="text/css">';

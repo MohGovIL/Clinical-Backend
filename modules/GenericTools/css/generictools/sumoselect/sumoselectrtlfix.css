@@ -1,0 +1,5 @@
+.sumoselectrtlfix > .SumoSelect > .optWrapper > .options  li.opt label {
+    position: relative !important;
+    left: -30px !important;
+}
+
