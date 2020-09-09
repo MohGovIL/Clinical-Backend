@@ -489,5 +489,3 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 
 
 ALTER TABLE `lists` ADD `diagnosis_valueset` VARCHAR(255) NULL AFTER `diagnosis`;
-
-ALTER TABLE `lists` ADD `encounter` BIGINT(20) NULL DEFAULT NULL AFTER `list_option_id`;
