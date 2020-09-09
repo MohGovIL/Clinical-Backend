@@ -14,8 +14,16 @@ letter-spacing: normal;
 text-align: right;
 color: #000b40;
 }
-</style>
 
+.position{
+    position:absolute;
+    margin:10px 50px;
+   /* margin-left:<?php echo $langDir==="rtl"?'0':'2%'?>;
+    margin-right:<?php echo $langDir==="rtl"?'2%':'0'?>;*/
+}
+
+</style>
+<div class="position">
 <table dir="<?php echo text($langDir); ?>"  lang="<?php echo text($langCode); ?>">
     <tbody>
     <tr>
@@ -36,3 +44,4 @@ color: #000b40;
     </tr>
     </tbody>
 </table>
+</div>
