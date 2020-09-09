@@ -30,28 +30,4 @@ class IssueEncounterTable
         return $rsArray;
     }
 
-    public function fetchListUpToDate($listType,$endDate,$pid)
-    {
-
-        //type,enddate,pid
-
-        $rsArray = array();
-        $select = $this->tableGateway->getSql()->select();
-
-        $where = new Where();
-        $where->AND->equalTo("pid", $pid);
-        $where->AND->equalTo("type", $listType);
-        $where->AND->NEST->lessThan("enddate", $endDate)->OR->isNull('enddate')->UNNEST;
-
-
-        $select->where($where);
-        //$select->order(array('vaccination_date'));
-
-        $rs = $this->tableGateway->selectWith($select);
-        foreach ($rs as $r) {
-            $rsArray[] = get_object_vars($r);
-        }
-        return $rsArray;
-    }
-
 }
