@@ -368,16 +368,10 @@ class PdfBaseController extends GenericBaseController
 
         foreach($serviceRequests as $key=>$value)
         {
-           switch($value['instruction_code']) {
-               case "x_ray":
-                   $xrayValue = $this->getTitleOfValueSet($value['order_detail_code'],'details_x_ray');
-                   $serviceRequests[$key]['order_detail_code'] = xl($xrayValue[0]['display']);
-               break;
-               case "providing_medicine":
-                   $drugValue = $this->getTitleOfValueSet($value['order_detail_code'],'details_x_ray');
-                   $serviceRequests[$key]['order_detail_code'] = xl($drugValue[0]['display']);
-               break;
-           }
+            $valueSet = $this->getTitleOfValueSet($value['order_detail_code'],$value['order_detail_system']);
+            if($valueSet) {
+                $serviceRequests[$key]['order_detail_code'] = xl($valueSet[0]['display']);
+            }
             $tests_and_treatments = $this->getTitleOfValueSet($value['instruction_code'],'tests_and_treatments');
             $serviceRequests[$key]['tests_and_treatments_title'] = xl($tests_and_treatments[0]['display']);
         }
