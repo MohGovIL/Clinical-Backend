@@ -55,6 +55,9 @@ trait FHIRElementValidation
             case 'blockedIfValue':
                 return self::blockedIfValue($validator,$data);
                 break;
+            case 'blockedEncounter':
+                return self::blockedEncounter($validator,$data, $mainTable);
+                break;
             case 'required':
                 return self::checkRequired($validator, $data, $mainTable);
                 break;
@@ -133,7 +136,32 @@ trait FHIRElementValidation
     }
 
     /**
-     * return false if trying to update when status is finished
+     * return false if trying to update encounter when status is finished
+     *
+     * @param $data array
+     *
+     * @return bool
+     */
+    public function blockedEncounter($validator,$data, $mainTable)
+    {
+        $oldStatus = $data['old'][0][$validator['filed_name']];
+        $newStatus = $data['new'][$mainTable][$validator['filed_name']];
+        $lastUpdateStatusDate = substr($data['old'][0]['status_update_date'],0,10);
+        $blockedStatus = $validator['validation_param'];
+            // changes in finished status
+        if ( ($oldStatus === $blockedStatus && $newStatus === $blockedStatus) ||
+            // reopen encounter -only in same finished date
+            ($oldStatus === $blockedStatus && $newStatus !== $blockedStatus && $lastUpdateStatusDate < date('Y-m-d'))
+            ) {
+            error_log("Validation blockedEncounter failed on field {$blockedStatus}");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * return false if trying to update when status is finished/completed/etc.
      *
      * @param $data array
      *
@@ -148,6 +176,7 @@ trait FHIRElementValidation
             return true;
         }
     }
+
 
     /**
      * check if value is in valueset

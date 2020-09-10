@@ -765,3 +765,14 @@ INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`) VALUES
 #IfMissingColumn lists diagnosis_valueset
 ALTER TABLE `lists` ADD `diagnosis_valueset` VARCHAR(255) NULL AFTER `diagnosis`;
 #EndIf
+
+
+#IfNotRow3D fhir_validation_settings fhir_element Encounter filed_name status validation blockedEncounter
+UPDATE `fhir_validation_settings` SET `validation` = 'blockedEncounter' WHERE
+`fhir_element` = 'Encounter' and `filed_name` = 'status'AND `validation` = 'blockedIfValue';
+#EndIf
+
+#IfRow3D fhir_validation_settings fhir_element RelatedPerson filed_name full_name validation required
+DELETE FROM `fhir_validation_settings` WHERE
+`fhir_element` = 'RelatedPerson' and `filed_name` = 'full_name'AND `validation` = 'required';
+#EndIf
