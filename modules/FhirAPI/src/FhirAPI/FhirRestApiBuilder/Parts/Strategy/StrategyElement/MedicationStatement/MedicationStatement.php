@@ -15,6 +15,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Strategy;
 /*************/
 
+use GenericTools\Model\IssueEncounterTable;
 use GenericTools\Model\ListsOpenEmrTable;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRPatient;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
@@ -71,7 +72,7 @@ class MedicationStatement Extends Restful implements  Strategy
     {
         $eid=$this->paramsFromUrl[0];
         $listsOpenEmrTable = $this->container->get(ListsOpenEmrTable::class);
-        $medicationStatement =$listsOpenEmrTable->getDataByParams(array("id"=>intval($eid)));
+        $medicationStatement =$listsOpenEmrTable->buildGenericSelect(array("id"=>intval($eid)));
 
         if (!is_array($medicationStatement) || count($medicationStatement) != 1) {
             $FHIRBundle = new FHIRBundle;
@@ -121,17 +122,36 @@ class MedicationStatement Extends Restful implements  Strategy
         /***************************************************************************/
 
         if($isValid){
-            unset($dbData['id']);
-            $dbData['reaction']= is_null($dbData['reaction']) ? "" : $dbData['reaction'];
-            $rez=$listsOpenEmrTable->safeInsert($dbData,'id');
+            unset($dbData['lists']['id']);
+            $dbData['lists']['reaction']= is_null($dbData['lists']['reaction']) ? "" : $dbData['lists']['reaction'];
+            $rez=$listsOpenEmrTable->safeInsert($dbData['lists'],'id');
+
             if(is_array($rez)){
-                $patient=$this->mapping->DBToFhir($rez);
-                return $patient;
+                if(!empty($dbData['issue_encounter']['encounter'])){
+                    $dbData['issue_encounter']['list_id']= $rez['id'];
+                    $issueEncounterTable = $this->container->get(IssueEncounterTable::class);
+
+                    // safe insert only support insert by single primary key
+                    $rez2=$issueEncounterTable->insert($dbData['issue_encounter']);
+
+                    if($rez2!==1){
+                        //todo : call delete by $dbData['lists']['id']
+                        ErrorCodes::http_response_code('500','insert encounter info failed :'.$rez);
+                    }else{
+                        $rez['encounter'] =  $dbData['issue_encounter']['encounter'];
+                    }
+                }
+
+                $this->mapping->initFhirObject();  // this is very important to clean old data
+
+                $medicationStatement=$this->mapping->DBToFhir($rez);
+
+                return $medicationStatement;
             }else{ //insert failed
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
         }else{ // object is not valid
-            ErrorCodes::http_response_code('406','object is not valid');
+            ErrorCodes::http_response_code('406','failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return false;

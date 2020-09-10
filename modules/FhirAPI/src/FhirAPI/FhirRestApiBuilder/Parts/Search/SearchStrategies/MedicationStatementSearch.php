@@ -22,6 +22,7 @@ class MedicationStatementSearch extends BaseSearch
     {
         $this->paramHandler('_id', 'id');
         $this->paramHandler('active', 'active');
+        $this->paramHandler('context','encounter','ie');
 
         if (isset($this->searchParams['status'])) {
             $code = $this->searchParams['status'][0]['value'];

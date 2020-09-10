@@ -63,6 +63,9 @@ use GenericTools\Model\LogService;
 use GenericTools\Model\PrescriptionsTable;
 use GenericTools\Model\Prescriptions;
 
+use GenericTools\Model\IssueEncounterTable;
+use GenericTools\Model\IssueEncounter;
+
 // todo: move the following to FHIR Module.php
 use GenericTools\Model\RelatedPerson;
 use GenericTools\Model\RelatedPersonTable;
@@ -324,6 +327,14 @@ class Module
                     $resultSetPrototype->setArrayObjectPrototype(new Prescriptions());
                     $tableGateway = new TableGateway('prescriptions', $dbAdapter, null, $resultSetPrototype);
                     $table = new PrescriptionsTable($tableGateway);
+                    return $table;
+                },
+                IssueEncounterTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new IssueEncounter());
+                    $tableGateway = new TableGateway('issue_encounter', $dbAdapter, null, $resultSetPrototype);
+                    $table = new IssueEncounterTable($tableGateway);
                     return $table;
                 },
 

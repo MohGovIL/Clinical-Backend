@@ -11,6 +11,7 @@ use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\Service\FhirBaseMapping;
+use GenericTools\Model\IssueEncounterTable;
 use GenericTools\Model\ValueSetsTable;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionEvidence;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRCondition\FHIRConditionStage;
@@ -30,6 +31,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
     const OUTCOME_LIST ='outcome';
     const OCCURRENCE_LIST ='occurrence';
+    const RESOLVED =array('inactive','remission','resolve');
 
     private $adapter = null;
     private $container = null;
@@ -161,9 +163,11 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         }
         $dbCondition['diagnosis']=$codForDb;
 
-        $dbCondition['comments']=$FHIRCondition->getNote()[0]->getText();
-
-
+        $comments = $FHIRCondition->getNote()[0]->getText();
+        if(gettype($comments) === "object"){
+            $comments = $comments->getValue();
+        }
+        $dbCondition['comments']=$comments;
 
         $pidRef=$FHIRCondition->getSubject()->getReference()->getValue() ;
         if(!empty($pidRef)){
@@ -181,7 +185,22 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
         $dbCondition['reaction']= $evidenceCode->getCode()->getValue();
 
-        return $dbCondition;
+        $encounterRef=$FHIRCondition->getEncounter()->getReference()->getValue() ;
+        if(!empty($encounterRef)){
+            $encounterRef=substr($encounterRef, strrpos($encounterRef, '/') + 1);
+        }
+
+
+        $issueEncounter=array(
+                                'list_id'=>null,
+                                'pid'=>$dbCondition['pid'],
+                                'encounter'=>$encounterRef,
+                                'resolved'=>( in_array( $dbCondition['outcome'],self::RESOLVED) ) ? 1 : 0,
+                              );
+
+        $dbConditionAll=array('lists'=>$dbCondition,'issue_encounter'=>$issueEncounter);
+
+        return $dbConditionAll;
     }
 
     /**
@@ -253,11 +272,11 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         $FHIRCondition->getNote()[0]->setText($conditionDataFromDb['comments']);
 
         if(!empty($conditionDataFromDb['pid'])){
-            $FHIRCondition->getSubject()->getReference()->setValue("Patient/".$conditionDataFromDb['pid']) ;
+            $FHIRCondition->getSubject()->getReference()->setValue(self::PATIENT_URI.$conditionDataFromDb['pid']) ;
         }
 
         if(!empty($conditionDataFromDb['user'])){
-            $FHIRCondition->getRecorder()->getReference()->setValue("Practitioner/".$conditionDataFromDb['user']);
+            $FHIRCondition->getRecorder()->getReference()->setValue(self::PRACTITIONER_URI.$conditionDataFromDb['user']);
         }
 
         $evidenceCode=$FHIRCondition->getEvidence()[0]->getCode()[0]->getCoding()[0];
@@ -267,6 +286,11 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
             $evidenceCode->getCode()->setValue($conditionDataFromDb['reaction']);
             $evidenceCode->getSystem()->setValue(self::LIST_SYSTEM_LINK.'reaction');
         }
+
+        if(!empty($conditionDataFromDb['encounter'])){
+            $FHIRCondition->getEncounter()->getReference()->setValue(self::ENCOUNTER_URI.$conditionDataFromDb['encounter']);
+        }
+
 
         $this->FHIRCondition=$FHIRCondition;
 
@@ -381,6 +405,8 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         $FHIRConditionEvidence =$this->createFHIRConditionEvidence(array());
         $FHIRCondition->addEvidence($FHIRConditionEvidence);
 
+        $FHIRCondition->setEncounter(deep_copy($FHIRReference));
+
         $this->FHIRCondition=$FHIRCondition;
 
         return $FHIRCondition;
@@ -413,19 +439,48 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         /*********************************** validate *******************************/
         $conditionDataFromDb = $listsOpenEmrTable->buildGenericSelect(["id"=>$id]);
         $allData=array('new'=>$data,'old'=>$conditionDataFromDb);
-        //$mainTable=$listsOpenEmrTable->getTableName();
+        $mainTable=$listsOpenEmrTable->getTableName();
         $isValid=$this->validateDb($allData,$mainTable);
         /***************************************************************************/
 
         if($isValid){
             $primaryKey='id';
             $primaryKeyValue=$id;
-            unset($data[$primaryKey]);
-            $rez=$listsOpenEmrTable->safeUpdate($data,array($primaryKey=>$primaryKeyValue));
+            unset($data['lists'][$primaryKey]);
+            $rez=$listsOpenEmrTable->safeUpdate($data['lists'],array($primaryKey=>$primaryKeyValue));
             if(is_array($rez)){
+
+                /**********************************************/
+                $issueEncounterTable = $this->container->get(IssueEncounterTable::class);
+                $data['issue_encounter']['list_id']= $rez['id'];
+                $idArr= array(
+                    "list_id"=>$data['issue_encounter']['list_id']
+                );
+                /***********************************************/
+
+                if(!empty($data['issue_encounter']['encounter'])){
+
+                    $exist =$issueEncounterTable->getDataByParams($idArr);
+                    if(empty($exist)){
+                        $rez2=$issueEncounterTable->insert($data['issue_encounter']);
+                    }else{
+                        unset($data['issue_encounter']['list_id']);
+                        $rez2=$issueEncounterTable->updateData($idArr,$data['issue_encounter']);
+                    }
+
+                    if(!$rez2){
+                        //todo : call delete by $dbData['lists']['id']
+                        ErrorCodes::http_response_code('500','insert encounter info failed :'.$rez);
+                    }else{
+                        $rez['encounter'] =  $data['issue_encounter']['encounter'];
+                    }
+                }else{  // if no encounter delete issue encounter records
+                    $rez2=$issueEncounterTable->deleteDataByParams($idArr);
+                }
+
                 $this->initFhirObject();
-                $patient=$this->DBToFhir($rez);
-                return $patient;
+                return $this->DBToFhir($rez);
+                
             }else{ //insert failed
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
@@ -435,7 +490,6 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         //this never happens since ErrorCodes call to exit()
         return false;
     }
-
 
     /**
      * create FHIRConditionStage
@@ -473,7 +527,6 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
         return $FHIRConditionStage;
     }
-
 
     /**
      * create FHIRConditionEvidence

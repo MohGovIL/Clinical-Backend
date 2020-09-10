@@ -776,3 +776,6 @@ UPDATE `fhir_validation_settings` SET `validation` = 'blockedEncounter' WHERE
 DELETE FROM `fhir_validation_settings` WHERE
 `fhir_element` = 'RelatedPerson' and `filed_name` = 'full_name'AND `validation` = 'required';
 #EndIf
+
+
+ALTER TABLE `related_person` CHANGE `active` `active` TINYINT(1) NOT NULL DEFAULT '1';

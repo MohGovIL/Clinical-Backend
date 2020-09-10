@@ -4,7 +4,7 @@ namespace GenericTools\Model;
 
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Db\Adapter\Adapter;
-
+use GenericTools\Model\UtilsTraits\JoinBuilder;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
 use Laminas\Db\Sql\Expression;
@@ -12,11 +12,25 @@ use Laminas\Db\Sql\Expression;
 class ListsOpenEmrTable
 {
     use baseTable;
+    use JoinBuilder;
     protected $tableGateway;
 
     public function __construct(TableGateway $tableGateway)
     {
         $this->tableGateway = $tableGateway;
+        $this->join = $this->joinTables();
+    }
+
+    private function joinTables()
+    {
+        $this->appendJoin(
+            ["ie"=>"issue_encounter"],
+            new Expression("ie.pid=lists.pid AND ie.list_id=id"),
+            ['encounter'=>'encounter','resolved'=>'resolved'],
+            Select::JOIN_LEFT
+        );
+
+        return $this->getJoins();
     }
 
 
