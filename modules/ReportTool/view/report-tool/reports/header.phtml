@@ -1,0 +1,247 @@
+<?php
+require_once $GLOBALS['fileroot'].'/clinikal/ui-components/Header/ClinikalHeaders.php';
+$headers = new ClinikalHeaders();
+echo $headers->titleWithButtons($title);
+?>
+
+<style>
+ .SumoSelect > .CaptionCont > label {
+        top: -10px;
+        right: 10px;
+        width: 30px;
+        float: left;
+        position: inherit;
+
+ .simple-select {
+     height: 30px !important;
+     margin-top: 0px;
+     border-radius: 0px;
+     border: 1px solid #A2A2A2 !important;
+ }
+
+</style>
+
+<div id="filters-container" class="sumoselectrtlfix">
+    <div class="row">
+        <div class="col-md-11 col-sm-10">
+            <?php foreach( $filters as $filter ):
+                if($new_lines[$filter]){?>
+        </div>
+        <div class="col-md-11 col-sm-10">
+            <?php }?>
+                <div class="filter-box filter-box-<?php echo $elements->get($filter)->getAttribute('type'); ?>">
+                    <?php echo $this->formRow($elements->get($filter)); ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div id="filter_action" class="col-md-1 col-sm-2">
+            <button id="clear" class="pull-left"><?php echo xlt('Clear Filters'); ?></button>
+            <button id="startFilter" class="pull-left" style="margin-left: 6px;"><?php echo xlt('Filter'); ?></button>
+        </div>
+    </div>
+</div>
+<script>
+    /* filters javascript */
+
+    let getPatientAjaxObject={
+        url: '<?php echo $this->basePath();?>' + '/reports/rabies-patients-tracking/patient-name-ajax',
+        method: "post",
+        dataType: "json",
+        data:  function (params) {
+            return {
+                search: params.term || "",
+                page: params.page || 1
+            };
+        },
+        processResults: function (data, params) {
+            let dataArr=JSON.parse(data.output);
+            return {
+                results: dataArr.results,
+                pagination: {
+                    more: false
+                }
+
+            };
+        },
+        cache: true
+    };
+
+    function collectFilters() {
+        var data = {
+            <?php foreach( $filters as $filter ): ?>
+            <?php if ($elements->get($filter)->getAttribute('type') !== 'radio'):?>
+            "<?php echo $elements->get($filter)->getName();?>": $("#filters-container #<?php echo $elements->get($filter)->getName();?>").val(),
+            <?php else: ?>
+            "<?php echo $elements->get($filter)->getName();?>": $("#filters-container [name=<?php echo $elements->get($filter)->getName();?>]:checked").val(),
+            <?php endif; ?>
+            <?php endforeach; ?>
+        };
+        //console.log(data)
+        return data;
+    }
+
+    function topatient(newpid,loadSign) {
+            top.restoreSession();
+            let url="<?php echo $GLOBALS['webroot']; ?>/interface/patient_file/summary/demographics.php?set_pid=" + encodeURIComponent(newpid);
+
+            if(loadSign){
+                url+="&loader=true"
+            }
+
+            top.RTop.location = url;
+    }
+
+    function appentTooltipsterById(targetId,text,alignTipster) {
+
+        let target= $("#"+targetId);
+        target.attr('title', text);
+        target.css("margin", "0px 10px");
+        target.tooltipster({
+            arrow:false,
+            functionPosition: function (instance, helper, position) {
+                position.coord.left -= alignTipster;
+                return position;
+            },
+            contentAsHTML: true,
+        });
+    }
+
+    function createTooltipster(targetClass,text,alignTipster) {
+        let info = $('<label id="'+targetClass+'_info" class="glyphicon glyphicon-info-sign"></label>');
+        info.attr('title', text);
+        info.css("margin", "0px 5px 0px 5px");
+        $("."+targetClass).append(info);
+        $("#"+targetClass+"_info").tooltipster({
+            arrow:false,
+            functionPosition: function (instance, helper, position) {
+                position.coord.left -= alignTipster;
+                return position;
+            },
+            contentAsHTML: true,
+        });
+    }
+
+
+    function getAlerts(event){
+        let element=event.target;
+        let incident_id=element.getAttribute("data");
+        $.ajax({
+            url: '<?php echo $this->basePath();?>' + '/rabies-incident/get-alerts-ajax',
+            data:{incident_id:incident_id}
+
+        }).done(function (data) {
+            returned_data = JSON.parse(data,true);
+
+            element=$(element);
+            if(element.length){
+                let elmId=element.attr("id");
+                let info='';
+                element.off();
+                element.removeClass('fa-refresh fa-spin fa-fw');
+
+                if(Array.isArray(returned_data) && returned_data.length){
+                    returned_data.forEach(function (item, index) {
+                        info+=item;
+                        if(index<returned_data.length-1){
+                            info+='<br>';
+                        }
+                    });
+
+
+                    element.addClass('fa-exclamation-triangle alert-warning-extended');
+                    appentTooltipsterById(elmId,info,0);
+                }
+
+
+
+            }
+
+        });
+        return 1;
+    }
+
+    function cleanFilters(initialInfo){
+
+        $('#date-message').hide();
+        Object.keys(initialInfo).map(function(key) {
+
+            let element=$("[name='"+key+"']");
+            if(element.length===0){
+                element=$("#"+key);
+            }
+
+            let elementType=element[0]['type'];
+            if (elementType==="select-one"  && !element.parent().hasClass("SumoSelect") ){
+                elementType="select";
+            }
+
+            switch(elementType) {
+                case "select":
+                    element.val(initialInfo[key]);
+                    element.trigger('change');
+                    break;
+                case "select-one":
+                    element[0].sumo.selectItem(initialInfo[key]);
+                    break;
+                case "select-multiple":
+                    var num = element.find('option').length;
+                    for(var i=0; i<num; i++){
+                        element[0].sumo.unSelectItem(i);
+                    }
+                    element[0].sumo.selectItem(initialInfo[key]);
+                    break;
+                case "radio":
+                    element.filter(":checked").prop('checked', false);
+                    element.filter("[value="+initialInfo[key]+"]").prop('checked', true);
+                    break;
+                case "text":
+                    element.val(initialInfo[key]);
+                    element.trigger('change');
+                    break;
+                default:
+                    element.val(initialInfo[key]);
+                    element.trigger('change');
+            }
+
+            return [Number(key), initialInfo[key]];
+        });
+
+    }
+
+
+    $('#filters-container select').not('.simple-select').SumoSelect({search: true, floatWidth:250});
+
+    $('.datepicker').datetimepicker({
+        <?php $datetimepicker_timepicker = false; ?>
+        <?php $datetimepicker_showseconds = false; ?>
+        <?php $datetimepicker_formatInput = true; ?>
+        <?php require($GLOBALS['srcdir'] . '/js/xl/jquery-datetimepicker-2-5-4.js.php'); ?>
+        <?php // can add any additional javascript settings to datetimepicker here; need to prepend first setting with a comma ?>
+    });
+
+    function clearFilters() {
+        <?php foreach( $filters as $filter ): ?>
+        $("#filters-container #<?php echo $elements->get($filter)->getName();?>").val('<?php echo $elements->get($filter)->getValue();?>').trigger("change");
+        <?php endforeach; ?>
+    }
+
+
+
+
+    $('#startFilter').on('click',function() {
+        var from_date = $('#from_date').val();
+        var to_date = $('#until_date').val();
+        if (to_date.length > 0 && from_date.length > 0) {
+            if (moment(DateToYYYYMMDD_js(from_date)).unix() > moment(DateToYYYYMMDD_js(to_date)).unix()) {
+                $('#date-message').show();
+                return 0;
+            }else{
+                $(".dataTable").DataTable().ajax.reload();
+            }
+        }
+        }
+    );
+
+
+</script>
+

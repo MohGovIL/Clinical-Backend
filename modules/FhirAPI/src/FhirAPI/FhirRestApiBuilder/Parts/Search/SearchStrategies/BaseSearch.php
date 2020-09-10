@@ -549,7 +549,7 @@ abstract class BaseSearch implements SearchInt
     }
 
 
-    public function addSortDate($fieldPath)
+    public function addShortDate($fieldPath)
     {
         if(isset($this->searchParams[$fieldPath])) {
             //value is only date not datetime

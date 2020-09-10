@@ -91,7 +91,7 @@ class PdfBaseController extends GenericBaseController
         return $rez;
     }
 
-    public function saveDocInfoToDb($storageSave, $configData,$pdfEncoded)
+    public function saveDocInfoToDb($storageSave, $configData, $pdfEncoded, $fileName = null)
     {
 
         if ($storageSave['id']) {
@@ -110,7 +110,9 @@ class PdfBaseController extends GenericBaseController
                 if($save){
                     return array(
                         "id" => $save,
-                        "base64_data" => $pdfEncoded
+                        "base64_data" => $pdfEncoded,
+                        "mimetype" => $configData['mimetype'],
+                        "file_name" => !is_null($fileName) ? $fileName : ''
                     );
                 }else{
                     ErrorCodes::http_response_code('500', 'failed to build data to db');
@@ -180,7 +182,7 @@ class PdfBaseController extends GenericBaseController
         $dbData=$FormMedicalAdmissionQTable->getLastQuestionnaireAnswer($this->postData['encounter'],$qid);
         return $dbData['answer'];
     }
-    
+
     public function getServiceTypeAndReasonCode(){
         //get encounter
         $FormMedicalAdmissionQTable= $this->container->get(FormEncounterTable::class);

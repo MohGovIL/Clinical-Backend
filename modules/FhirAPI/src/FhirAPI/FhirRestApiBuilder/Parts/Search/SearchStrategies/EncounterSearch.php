@@ -35,6 +35,7 @@ class EncounterSearch extends BaseSearch
                 $statVal=$tempStatus['value'];
 
                  if(key_exists($statVal,$listStatus)){
+                     $this->searchParams['form_encounter.status']['nestGroup'] = 'status_group';
                      $this->searchParams['form_encounter.status'][] = [
                          'value' => $statVal,
                          'operator' => 'NULL',
@@ -42,19 +43,20 @@ class EncounterSearch extends BaseSearch
                          'sqlOp'=>'OR'
                      ];
                  }elseif(key_exists($statVal,$listSecondaryStatus)){
+                     $this->searchParams['form_encounter.secondary_status']['nestGroup'] = 'status_group';
                      $this->searchParams['form_encounter.secondary_status'][] = [
                          'value' =>$statVal,
                          'operator' => 'NULL',
                          'modifier' => 'exact',
-                         'sqlOp'=>'OR'
+                         'sqlOp'=>'OR',
                      ];
                  }
              }
              unset(($this->searchParams)['all_statuses']);
          }
 
-        $this->addSortDate('form_encounter.date');
-        $this->addSortDate('form_encounter.status_update_date');
+        $this->addShortDate('form_encounter.date');
+        $this->addShortDate('status_update_date');
 
         $dataFromDb = $this->searchThisTable->buildGenericSelect($this->searchParams,implode(",",$this->orderParams),$this->specialParams);
         foreach ($dataFromDb  as $key => $data) {
@@ -66,9 +68,5 @@ class EncounterSearch extends BaseSearch
             // $this->FHIRBundle->deletePatient();
         }
     }
-
-
-
-
 
 }
