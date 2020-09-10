@@ -13,9 +13,6 @@ class DataTableExtended
     private $orderingArrows = false;
     private $ordering = true;
 
-
-
-
     function __construct($table_id,$columns_names,$columns_size =array()) {
 
         $this->tableId=$table_id;
@@ -23,7 +20,6 @@ class DataTableExtended
         $this->columnsSize=$columns_size;
 
     }
-
 
     public function echoBaseHTML()
     {
