@@ -118,7 +118,7 @@ class MedicationStatement Extends Restful implements  Strategy
         /*********************************** validate *******************************/
         $allData=array('new'=>$dbData,'old'=>array());
         //$mainTable=$listsOpenEmrTable->getTableName();
-        $isValid=$this->mapping->validateDb($allData,null);
+        $isValid=$this->mapping->validateDb($allData,'lists');
         /***************************************************************************/
 
         if($isValid){
