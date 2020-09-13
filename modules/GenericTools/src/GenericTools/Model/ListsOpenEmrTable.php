@@ -5,7 +5,6 @@ namespace GenericTools\Model;
 use GenericTools\Model\UtilsTraits\JoinBuilder;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Db\Adapter\Adapter;
-
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
 use Laminas\Db\Sql\Expression;
@@ -14,12 +13,24 @@ class ListsOpenEmrTable
 {
     use baseTable;
     use JoinBuilder;
-
     protected $tableGateway;
 
     public function __construct(TableGateway $tableGateway)
     {
         $this->tableGateway = $tableGateway;
+        $this->join = $this->joinTables();
+    }
+
+    private function joinTables()
+    {
+        $this->appendJoin(
+            ["ie"=>"issue_encounter"],
+            new Expression("ie.pid=lists.pid AND ie.list_id=id"),
+            ['encounter'=>'encounter','resolved'=>'resolved'],
+            Select::JOIN_LEFT
+        );
+
+        return $this->getJoins();
     }
 
 
@@ -69,6 +80,7 @@ class ListsOpenEmrTable
 
         */
         $this->clearAllJoin();
+
         $rsArray = array();
         $this->join = $this->appendJoin(
             ["c"=>"codes"],
@@ -82,10 +94,10 @@ class ListsOpenEmrTable
             ["ct_id","ct_key"],
             Select::JOIN_RIGHT
         );
-
+        //WAIT FOR SOSH $this->joinTables(); // add new join code
         $this->join = $this->getJoins();
 
-        $rs = $this->buildGenericSelect(['type'=>$type,'outcome'=>$outcome,"pid"=>$pid]);
+        $rs = $this->buildGenericSelect(['lists.type'=>$type,'lists.outcome'=>$outcome,"lists.pid"=>$pid]);
 
         foreach ($rs as $r) {
             $rsArray[] = xl($r['code_text']);

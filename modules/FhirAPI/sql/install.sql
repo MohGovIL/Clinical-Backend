@@ -111,7 +111,7 @@ CREATE TABLE `related_person` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `identifier` varchar(255) DEFAULT NULL,
   `identifier_type` varchar(255) DEFAULT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT 0,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
   `pid` bigint(20) NOT NULL,
   `relationship` varchar(255) DEFAULT NULL,
   `phone_home` varchar(255) DEFAULT NULL,
@@ -436,7 +436,7 @@ CREATE TABLE `fhir_validation_settings` (
 
 
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
-('Encounter', 'status', 'UPDATE', 'blockedIfValue', 'finished', 'DB', 1),
+('Encounter', 'status', 'UPDATE', 'blockedEncounter', 'finished', 'DB', 1),
 ('Encounter', 'status', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'pid', 'WRITE', 'required', '', 'DB', 1),
 ('Encounter', 'date', 'WRITE', 'required', '', 'DB', 1),
@@ -453,7 +453,6 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Patient', 'sex', 'WRITE', 'required', '', 'DB', 1),
 ('Patient', 'DOB', 'WRITE', 'required', '', 'DB', 1),
 ('RelatedPerson', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
-('RelatedPerson', 'full_name', 'WRITE', 'required', '', 'DB', 1),
 ('Condition', 'type', 'WRITE', 'required', '', 'DB', 1),
 ('Condition', 'date', 'WRITE', 'required', '', 'DB', 1),
 ('Condition', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),

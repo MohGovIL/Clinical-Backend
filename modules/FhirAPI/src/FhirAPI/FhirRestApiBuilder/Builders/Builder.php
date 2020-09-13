@@ -268,7 +268,7 @@ Abstract class Builder
     public static function logRequest($functionType, $FHIRResource, $container)
     {
 
-        $sseNeedUpdateFlag=true;
+        $saveToLogFlag=true;
         $event=$FHIRResource."-";
 
         switch ($functionType) {
@@ -285,11 +285,11 @@ Abstract class Builder
                 $event.="delete";
                 break;
             default:
-                $sseNeedUpdateFlag=false;
+                $saveToLogFlag=false;
 
         }
 
-        if($sseNeedUpdateFlag){
+        if($saveToLogFlag){
 
             $LogService= $container->get(LogServiceTable::class);
             $AclCheckExtendedService= $container->get(AclCheckExtendedService::class);

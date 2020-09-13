@@ -317,6 +317,9 @@ class PdfBaseController extends GenericBaseController
                         unset($vitals[$key][$k]);
                         break;
                     case 'date':
+                        $time = explode(":",$vitals[$key][$k][1]);
+                        unset($time[2]);
+                        $vitals[$key][$k][1] = implode(":",$time);
                         break;
                     default:
                         $vitals[$key][$k][2] = $vitals[$key][$k] && (is_null($v[2]) || $v[2] == "" || $v[2] == 0 && $v[2] == "0.00") ?"-":$v[2];
