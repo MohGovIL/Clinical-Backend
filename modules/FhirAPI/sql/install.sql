@@ -458,7 +458,6 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Condition', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
 ('Condition', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
 ('Condition', 'user', 'WRITE', 'ifExist', 'users', 'DB', 1),
-('MedicationStatement', 'outcome', 'WRITE', 'valueset', 'medication_statement_statuses', 'DB', 1),
 ('MedicationStatement', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
 ('MedicationStatement', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
 ('Observation', 'activity', 'WRITE', 'valueset', 'observation_statuses', 'DB', 1),
