@@ -779,3 +779,7 @@ DELETE FROM `fhir_validation_settings` WHERE
 
 
 ALTER TABLE `related_person` CHANGE `active` `active` TINYINT(1) NOT NULL DEFAULT '1';
+
+#IfRow3D fhir_validation_settings fhir_element MedicationStatement filed_name outcome validation valueset
+DELETE FROM fhir_validation_settings WHERE fhir_element = 'MedicationStatement' AND filed_name = 'outcome' AND validation = 'valueset';
+#EndIf
