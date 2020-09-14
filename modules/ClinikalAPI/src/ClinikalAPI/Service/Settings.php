@@ -48,6 +48,7 @@ class Settings
             "format_date" => DateFormatRead('validateJS'),
             "user_role" => $aclTables->whatIsUserAroGroups($uid),
             "user_aco" =>$aclTables->getAcoForThisGroup($uid),
+            "time_zone" => date_default_timezone_get(),
             "clinikal_vertical" => isset($GLOBALS['clinikal_react_vertical']) ? $GLOBALS['clinikal_react_vertical'] : 'generic',
             "clinikal"=> array(
                 "clinikal_hide_appoitments"=>$GLOBALS['clinikal_hide_appoitments'],
