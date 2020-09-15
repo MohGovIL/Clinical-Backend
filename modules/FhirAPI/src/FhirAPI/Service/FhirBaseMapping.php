@@ -1073,10 +1073,13 @@ class FhirBaseMapping
 
     public function convertToDateTime($timestamp)
     {
-        $timestamp=str_replace("T", " ", $timestamp);
-        $timestamp=str_replace(".000Z", "", $timestamp);
-
-        return $timestamp;
+        $dateObj = new DateTime($timestamp);
+        if ($dateObj) {
+            return $dateObj->format('Y-m-d H:i:s');
+        } else {
+            error_log('format date is not valid');
+            return null;
+        }
     }
 
     public function createFHIRAddressType($type)
