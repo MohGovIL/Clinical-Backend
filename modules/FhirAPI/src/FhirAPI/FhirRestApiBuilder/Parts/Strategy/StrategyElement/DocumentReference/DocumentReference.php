@@ -2,6 +2,9 @@
 
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\DocumentReference;
 
+require_once $GLOBALS['srcdir'] . '/sanitize.inc.php';
+
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Restful;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Strategy;
 use GenericTools\Model\DocumentsTable;
@@ -281,6 +284,8 @@ class DocumentReference extends Restful implements  Strategy
     // Note that an S3 update is actually a delete + insert.
     private function uploadToStorage($arr, $updateArr = array())
     {
+        $binaryFile = $arr['storage']['data'];
+        $this->secureFile($binaryFile);
         if ($GLOBALS['clinikal_storage_method'] == S3Service::STORAGE_METHOD_CODE) {
             // save to S3
             $creationDateUnixTs = strtotime($arr['documents']['date']);
@@ -293,7 +298,7 @@ class DocumentReference extends Restful implements  Strategy
             );
             $s3Service = new S3Service($this->getContainer());
             $s3Service->connect();
-            $decoData = base64_decode($arr['storage']['data']);
+            $decoData = base64_decode($binaryFile);
             $result['success'] = $s3Service->saveObject($url, $decoData);
             if ($result != false) {
                 $result['url'] = $url;
@@ -304,10 +309,10 @@ class DocumentReference extends Restful implements  Strategy
             $couchdbService = new CouchdbService($this->getContainer());
             $couchdbService->connect();
             if(empty($updateArr)) {
-                $result = $couchdbService->putDocument($arr['storage']['data'], $updateArr['id'], $updateArr['rev'], false);
+                $result = $couchdbService->putDocument($binaryFile, $updateArr['id'], $updateArr['rev'], false);
             }
             else {
-                $result = $couchdbService->saveDoc($arr['storage']['data'], false);
+                $result = $couchdbService->saveDoc($binaryFile, false);
             }
         }
 
@@ -327,6 +332,18 @@ class DocumentReference extends Restful implements  Strategy
         $url = ltrim($url, "s3://");
         $arr = explode("/", $url);
         return $arr;
+    }
+
+    private function secureFile($contentFile)
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'file_');
+        $fileStatus = file_put_contents($tmpFile, base64_decode($contentFile));
+        if ($GLOBALS['secure_upload'] && !isWhiteFile($tmpFile)) {
+            unlink($tmpFile);
+            ErrorCodes::http_response_code('406','File type do not allowed');
+        }
+        unlink($tmpFile);
+        return true;
     }
 
 }
