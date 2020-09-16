@@ -50,10 +50,10 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
         $ListsTable = $this->container->get(ListsTable::class);
 
-        $listOutcome = $ListsTable->getListNormalized(self::OUTCOME_LIST);
+        $listOutcome = $ListsTable->getListNormalized(self::OUTCOME_LIST,null, null, null, false); // not translated
         $this->setOutcomeTypes($listOutcome);
 
-        $listOccurrence = $ListsTable->getListNormalized(self::OCCURRENCE_LIST);
+        $listOccurrence = $ListsTable->getListNormalized(self::OCCURRENCE_LIST,null, null, null, false); // not translated
         $this->setOccurrenceTypes($listOccurrence);
     }
 
@@ -480,7 +480,7 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
 
                 $this->initFhirObject();
                 return $this->DBToFhir($rez);
-                
+
             }else{ //insert failed
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }

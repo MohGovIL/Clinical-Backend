@@ -30,7 +30,7 @@ class MedicationStatementSearch extends BaseSearch
             // to support search by status string
             if (!ctype_digit($code)) {
                 $ListsTable = $this->container->get(ListsTable::class);
-                $listOutcome = array_flip($ListsTable->getListNormalized(self::OUTCOME_LIST));
+                $listOutcome = array_flip($ListsTable->getListNormalized(self::OUTCOME_LIST,null, null, null, false));; // not translated
                 $code = $listOutcome[$code];
                 if (!is_null($code)) {
                     $this->searchParams['status'][0]['value'] = $code;

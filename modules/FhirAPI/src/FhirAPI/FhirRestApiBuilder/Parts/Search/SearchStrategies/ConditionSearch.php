@@ -4,6 +4,7 @@ namespace FhirAPI\FhirRestApiBuilder\Parts\Search\SearchStrategies;
 
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\Service\FhirBaseMapping;
+use GenericTools\Model\ListsTable;
 use GenericTools\Model\UtilsTraits\JoinBuilder;
 use OpenEMR\FHIR\R4\FHIRResourceContainer;
 use laminas\Db\Sql\Expression;
@@ -14,12 +15,30 @@ class ConditionSearch extends BaseSearch
     use JoinBuilder;
     public $paramsToDB = array();
     public $MAIN_TABLE = 'lists';
+    const OUTCOME_LIST ='outcome';
     public function search()
     {
         $this->paramHandler('_id','id');
         $this->paramHandler('active','active');
-        $this->paramHandler('clinical-status','outcome');
         $this->paramHandler('encounter','encounter','ie');
+
+        if (isset($this->searchParams['clinical-status'])) {
+            $code = $this->searchParams['clinical-status'][0]['value'];
+
+            // to support search by status string
+            if (!ctype_digit($code)) {
+                $ListsTable = $this->container->get(ListsTable::class);
+                $listOutcome = array_flip($ListsTable->getListNormalized(self::OUTCOME_LIST,null, null, null, false)); // not translated
+                $code = $listOutcome[$code];
+                if (!is_null($code)) {
+                    $this->searchParams['clinical-status'][0]['value'] = $code;
+                } else {
+                    unset($this->searchParams['clinical-status']);
+                }
+            }
+        }
+        $this->paramHandler('clinical-status','outcome');
+
 
         if(isset($this->searchParams['code:of-type'])){
             $codeSearch=$this->searchParams['code:of-type'][0]['value'];     // format |system|code|identifier
