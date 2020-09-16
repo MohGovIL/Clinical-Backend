@@ -15,4 +15,8 @@ class FormVitalsTable
         $this->tableGateway = $tableGateway;
     }
 
+    public function getVitals($pid,$category,$activity,$order){
+        return $this->buildGenericSelect(['pid'=>$pid,'category'=>$category,'activity'=>$activity],$order);
+    }
+
 }

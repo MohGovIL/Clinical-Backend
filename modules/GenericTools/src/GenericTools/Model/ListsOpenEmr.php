@@ -28,6 +28,7 @@ class ListsOpenEmr
     public $encounter;
     public $resolved;
 
+    public $code_text;
 
     public function exchangeArray($data)
     {
@@ -54,5 +55,6 @@ class ListsOpenEmr
         $this->reaction = (!empty($data['reaction'])) ? $data['reaction'] : "";
         $this->encounter = (!empty($data['encounter'])) ? $data['encounter'] : null;
         $this->resolved = (!empty($data['resolved']) || $data['resolved']==0) ? $data['resolved'] : null;
+        $this->code_text = (!empty($data['code_text'])) ? $data['code_text'] : "";
     }
 }

@@ -10,6 +10,7 @@ namespace GenericTools\Controller;
 
 use Formhandler\Validator\ServerValidationHandler;
 use GenericTools\Model\AclTables;
+use GenericTools\Model\ValueSetsTable;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Application\Listener\Listener;
 use Laminas\View\Model\ViewModel;
@@ -1060,5 +1061,11 @@ class BaseController extends AbstractActionController
         $datediff = $now - $your_date;
 
         return round($datediff / (60 * 60 * 24));
+    }
+
+    public function getTitleOfValueSet($value,$valueSet){
+        $valueSetsTable = $this->container->get(ValueSetsTable::class);
+        $where=array ('filter' => array (0 => array ('value' => $value, 'operator' => '=',),),);
+        return $valueSetsTable->getValueSetById($valueSet,$where);
     }
 }

@@ -38,4 +38,7 @@ trait JoinBuilder
     {
         return $this->allJoins;
     }
+    public function clearAllJoin(){
+        $this->allJoins = array();
+    }
 }

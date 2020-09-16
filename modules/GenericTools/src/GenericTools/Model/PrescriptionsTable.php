@@ -15,4 +15,8 @@ class PrescriptionsTable
         $this->tableGateway = $tableGateway;
     }
 
+    public function getPatientPrescription($eid,$pid){
+        return $this->buildGenericSelect(['encounter'=>$eid,'patient_id'=>$pid]);
+    }
+
 }
