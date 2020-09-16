@@ -240,7 +240,7 @@ class FhirMedicationStatementMapping extends FhirBaseMapping  implements Mapping
         }
 
         if (!is_null($medicationStatementDataFromDb['date'])) {
-            $date = $this->createFHIRDateTime($medicationStatementDataFromDb['date']);
+            $date = $this->createFHIRDateTime(null, null,$medicationStatementDataFromDb['date']);
             $FHIRMedicationStatement->setDateAsserted($date);
         }
 
