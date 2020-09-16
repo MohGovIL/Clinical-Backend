@@ -85,6 +85,8 @@ class FhirBaseMapping
     CONST   PRACTITIONER_URI="Practitioner/";
     CONST   ENCOUNTER_URI="Encounter/";
     CONST   DOCUMENT_REFERENCE_URI="DocumentReference/";
+    //YYYY-MM-DDThh:mm:ss.sss+zz:zz
+    const FHIR_DATE_FORMAT = 'Y-m-d\TH:i:s.vP';
 
     use ConversionsTrait;
 
@@ -187,20 +189,21 @@ class FhirBaseMapping
         }
 
         if (!is_null($dateTime)) {
-            $validDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateTime);
-            if ($validDate) {
-                $dateTime = str_replace(" ", "T", $dateTime) . ".000Z";
-                $FHIRDateTime->setValue($dateTime);
+            $dateObj = new DateTime($dateTime);
+            if ($dateObj) {
+                $FHIRDateTime->setValue($dateObj->format(self::FHIR_DATE_FORMAT));
             } else {
                 return null;
             }
         } else {
             if($completeTime){
                 if (is_null($time)) {
-                    $FHIRDateTime->setValue($date . "T" . date('H:i:s') . ".000Z");
+                    $dateTime = $date . ' ' . date('H:i:s');
                 } else {
-                    $FHIRDateTime->setValue($date . "T" . $time . ".000Z");
+                    $dateTime = $date . ' ' . $time;
                 }
+                $dateObj = new DateTime($dateTime);
+                $FHIRDateTime->setValue($dateObj->format(self::FHIR_DATE_FORMAT));
             }else{
                 $FHIRDateTime->setValue($date);
             }
@@ -235,19 +238,20 @@ class FhirBaseMapping
         }
 
         if (!is_null($dateTime)) {
-            $validDate = DateTime::createFromFormat('Y-m-d H:i:s', $dateTime);
-            if ($validDate) {
-                $dateTime = str_replace(" ", "T", $dateTime) . ".000Z";
-                $FHIRInstant->setValue($dateTime);
+            $date = new DateTime($dateTime);
+            if ($date) {
+                $FHIRInstant->setValue($date->format(self::FHIR_DATE_FORMAT));
             } else {
                 return null;
             }
         } else {
             if (is_null($time)) {
-                $FHIRInstant->setValue($date . "T" . date('H:i:s') . ".000Z");
+                $dateTime = $date . ' ' . date('H:i:s');
             } else {
-                $FHIRInstant->setValue($date . "T" . $time . ".000Z");
+                $dateTime = $date . ' ' . $time;
             }
+            $date = new DateTime($dateTime);
+            $FHIRInstant->setValue($date->format(self::FHIR_DATE_FORMAT));
         }
 
         // this must be done at the end since params are converted to fhir
@@ -1069,10 +1073,13 @@ class FhirBaseMapping
 
     public function convertToDateTime($timestamp)
     {
-        $timestamp=str_replace("T", " ", $timestamp);
-        $timestamp=str_replace(".000Z", "", $timestamp);
-
-        return $timestamp;
+        $dateObj = new DateTime($timestamp);
+        if ($dateObj) {
+            return $dateObj->format('Y-m-d H:i:s');
+        } else {
+            error_log('format date is not valid');
+            return null;
+        }
     }
 
     public function createFHIRAddressType($type)
