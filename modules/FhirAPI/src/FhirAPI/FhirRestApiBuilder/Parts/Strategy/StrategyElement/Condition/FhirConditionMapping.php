@@ -120,7 +120,20 @@ class FhirConditionMapping extends FhirBaseMapping  implements MappingData
         $dbCondition['id']=$FHIRCondition->getId()->getValue();
 
 
-        $dbCondition['outcome']=$FHIRCondition->getClinicalStatus()->getCoding()[0]->getCode()->getValue();
+
+        $outcomeList = array_flip($this->getOutcomeTypes());
+        $outcomeCoding = $FHIRCondition->getClinicalStatus()->getCoding()[0]->getCode();
+        $outcome = $outcomeCoding->getValue();
+        $outcomeId = $outcomeList[$outcome];
+
+        if (!is_null($outcome) && is_null($outcomeId)) {
+            ErrorCodes::http_response_code('400', 'outcome error');
+            return;
+        } else {
+            $dbCondition['outcome'] = $outcomeId;
+        }
+
+       // $dbCondition['outcome']=$FHIRCondition->getClinicalStatus()->getCoding()[0]->getCode()->getValue();
 
 
         $categoryCoding= $FHIRCondition->getCategory()[0]->getCoding()[0];
