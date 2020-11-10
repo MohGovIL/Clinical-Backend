@@ -14,7 +14,7 @@ trait FHIRElementValidation
 {
     private $valueSet = null;
     private $safeTables = array(   // white list for pdo
-                                'patient_data'=>'id',
+                                'patient_data'=>'pid',
                                 'users'=>'id',
                                 );
 

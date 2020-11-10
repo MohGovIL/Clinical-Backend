@@ -782,3 +782,15 @@ ALTER TABLE `related_person` CHANGE `active` `active` TINYINT(1) NOT NULL DEFAUL
 #IfRow3D fhir_validation_settings fhir_element MedicationStatement filed_name outcome validation valueset
 DELETE FROM fhir_validation_settings WHERE fhir_element = 'MedicationStatement' AND filed_name = 'outcome' AND validation = 'valueset';
 #EndIf
+
+#IfMissingColumn form_vitals observation_status
+ALTER TABLE `form_vitals` ADD `observation_status` VARCHAR(20) NULL AFTER `category`;
+#EndIf
+
+#IfRow3D fhir_validation_settings fhir_element Observation filed_name activity validation valueset
+UPDATE fhir_validation_settings SET filed_name = 'observation_status' WHERE fhir_element = 'Observation' AND filed_name = 'activity' AND validation = 'valueset';
+#EndIf
+
+#IfRow3D fhir_validation_settings fhir_element Observation filed_name activity validation blockedIfValue
+UPDATE fhir_validation_settings SET filed_name = 'observation_status' WHERE fhir_element = 'Observation' AND filed_name = 'activity' AND validation = 'blockedIfValue';
+#EndIf
