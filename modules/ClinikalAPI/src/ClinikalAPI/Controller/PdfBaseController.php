@@ -382,4 +382,28 @@ class PdfBaseController extends GenericBaseController
         return $serviceRequests;
 
     }
+
+    public function getDrugRoute(){
+        $listsTable= $this->container->get(ListsTable::class);
+        $list = $listsTable->getListNormalized("drug_route");
+        return $list;
+    }
+    public function getDrugInterval(){
+        $listsTable= $this->container->get(ListsTable::class);
+        $list = $listsTable->getListNormalized("drug_interval");
+        return $list;
+    }
+    public function getDrugForms($list){
+        foreach($list as $k=>$v){
+            if($v!="ml" && $v!="Drops")
+                 $list[$k] = $v."s";
+        }
+        return $list;
+    }
+    public function getDrugForm(){
+        $listsTable= $this->container->get(ListsTable::class);
+        $list = $listsTable->getListForViewFormNoTranslation("drug_form");
+        return $list;
+    }
+
 }
