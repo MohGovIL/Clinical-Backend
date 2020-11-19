@@ -44,7 +44,7 @@ class QuestionnaireMapTable
 
 
         $select->where($where);
-        $select->order('id DESC');
+        //$select->order('id DESC');
         $debug = $select->getSqlString();
         $rs = $this->tableGateway->selectWith($select);
         foreach ($rs as $r) {
