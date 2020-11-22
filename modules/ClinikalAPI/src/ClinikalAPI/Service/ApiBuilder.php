@@ -2,7 +2,7 @@
 /**
  * Date: 05/01/20
  * @author  Eyal Wolanowski <eyal.wolanowski@gmail.com>
- * This class creates acl filtered api calls array
+ * This class creates acl filtered default/api calls array
  */
 
 namespace ClinikalAPI\Service;
@@ -43,7 +43,7 @@ class ApiBuilder
 
 
     /**
-     * return array with all api calls
+     * return array with all default/api calls
      * the array is filtered by acl
      *
      * @return array
@@ -60,11 +60,10 @@ class ApiBuilder
                 $transTable = new TranslationTables($this->adapter);
                 return $transTable->getAllTranslationByLangId($lid);
             },
-            "GET /api/settings/globals/:uid" => function ($uid) {
+            "GET /api/settings/globals/:uname" => function ($uname) {
                 //exit php or return 401 if not authorized
                 $this->checkAcl("clinikal_api", "general_settings");
-                return (new Settings($this->container))->getGlobalsSettings($uid);
-
+                return (new Settings($this->container))->getGlobalsSettings($uname);
             },
             "GET /api/settings/menu/:menu_name" => function ($menu_name) {
                 $this->checkAcl("clinikal_api", "general_settings");
