@@ -18,12 +18,21 @@ class LangConstantsTable
     public function __construct(TableGateway $tableGateway)
     {
         $this->tableGateway = $tableGateway;
+        require ($GLOBALS['OE_SITE_DIR'] . "/sqlconf.php");
+        $this->db_encoding = $sqlconf["db_encoding"];
     }
 
 
     public function getConstantId($constant){
+
+        if (!empty($this->db_encoding) && ( $this->db_encoding == "utf8mb4")) {
+            $case_sensitive_collation = "COLLATE utf8mb4_bin";
+        } else {
+            $case_sensitive_collation = "COLLATE utf8_bin";
+        }
+
         //binary for case sensitive
-        $sql = "SELECT cons_id FROM " . $this->tableGateway->table . " WHERE constant_name = ? COLLATE utf8_bin";
+        $sql = "SELECT cons_id FROM " . $this->tableGateway->table . " WHERE constant_name = ? $case_sensitive_collation";
 
         $statement = $this->tableGateway->adapter->createStatement($sql, array($constant));
         $return = $statement->execute();
