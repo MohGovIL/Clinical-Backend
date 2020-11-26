@@ -78,15 +78,15 @@ class Patient Extends Restful implements  Strategy
     {
         $fhirPatientMapping = $this->mapping;
         $patientTable = $this->container->get(PatientsTable::class);
-        $patientDataFromDb = $patientTable->getPatientDataById($this->paramsFromUrl[0]);
+        $patientDataFromDb = $patientTable->buildGenericSelect(["pid"=>$this->paramsFromUrl[0]]);;
 
-        if (!$patientDataFromDb) {
+        if (!$patientDataFromDb[0]) {
             //not found
             return self::$errorCodes::http_response_code(204);
         }
 
         $this->mapping->initFhirObject();
-        $patient=$fhirPatientMapping->DBToFhir($patientDataFromDb, []);
+        $patient=$fhirPatientMapping->DBToFhir($patientDataFromDb[0], []);
         $this->mapping->initFhirObject();
         return $patient;
 

@@ -87,7 +87,7 @@ trait FHIRAddressTrait
                 $FHIRAddress->addLine($street);
                 $flag = true;
 
-                if(!is_null($addressArr['streetNumber'])){
+                if(!is_null($addressArr['street'])){
                     $addressType = 1;
                 }
             }
@@ -173,6 +173,5 @@ trait FHIRAddressTrait
             return null;
         }
     }
-
 
 }
