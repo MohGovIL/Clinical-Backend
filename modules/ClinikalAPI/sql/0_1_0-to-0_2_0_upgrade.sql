@@ -249,3 +249,6 @@ CREATE TABLE manage_templates_letters(
 );
 #EndIf
 
+#IfNotRow2D globals gl_name oauth_password_grant gl_value 1
+REPLACE INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES ('oauth_password_grant', '0', '1');
+#EndIf
