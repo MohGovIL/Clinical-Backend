@@ -111,7 +111,7 @@ CREATE TABLE `related_person` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `identifier` varchar(255) DEFAULT NULL,
   `identifier_type` varchar(255) DEFAULT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT 0,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
   `pid` bigint(20) NOT NULL,
   `relationship` varchar(255) DEFAULT NULL,
   `phone_home` varchar(255) DEFAULT NULL,
@@ -267,7 +267,8 @@ ALTER TABLE `form_vitals`
 ADD `glucose` INT NULL AFTER `external_id`,
 ADD `pain_severity` INT NULL AFTER `glucose`,
 ADD `eid` INT NULL AFTER `pain_severity`,
-ADD `category` VARCHAR(255) NULL AFTER `eid`;
+ADD `category` VARCHAR(255) NULL AFTER `eid`,
+ADD `observation_status` VARCHAR(20) NULL AFTER `category`;
 
 
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`)
@@ -458,11 +459,10 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('Condition', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
 ('Condition', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
 ('Condition', 'user', 'WRITE', 'ifExist', 'users', 'DB', 1),
-('MedicationStatement', 'outcome', 'WRITE', 'valueset', 'medication_statement_statuses', 'DB', 1),
 ('MedicationStatement', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
 ('MedicationStatement', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
-('Observation', 'activity', 'WRITE', 'valueset', 'observation_statuses', 'DB', 1),
-('Observation', 'activity', 'UPDATE', 'blockedIfValue', 'final', 'DB', 1),
+('Observation', 'observation_status', 'WRITE', 'valueset', 'observation_statuses', 'DB', 1),
+('Observation', 'observation_status', 'UPDATE', 'blockedIfValue', 'final', 'DB', 1),
 ('Observation', 'date', 'WRITE', 'required', '', 'DB', 1),
 ('Observation', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
 ('MedicationRequest', 'drug', 'WRITE', 'required', '', 'DB', 1),
@@ -475,10 +475,7 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 ('MedicationRequest', 'patient_id', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
 ('MedicationRequest', 'user', 'WRITE', 'ifExist', 'users', 'DB', 1),
 ('MedicationRequest', 'encounter', 'WRITE', 'required', '', 'DB', 1),
-('MedicationRequest', 'instruction_code', 'WRITE', 'valueset', 'tests_and_treatments', 'DB', 1),
-('MedicationRequest', 'status', 'WRITE', 'valueset', 'servicerequest_statuses', 'DB', 1),
-('MedicationRequest', 'intent', 'WRITE', 'valuesetNotRequired', 'servicerequest_intent', 'DB', 1),
-('MedicationRequest', 'patient', 'WRITE', 'ifExist', 'patient_data', 'DB', 1),
+('MedicationRequest', 'status', 'WRITE', 'valueset', 'medicationrequest_status', 'DB', 1),
 ('ServiceRequest', 'encounter', 'WRITE', 'required', '', 'DB', 1),
 ('ServiceRequest', 'instruction_code', 'WRITE', 'valueset', 'tests_and_treatments', 'DB', 1),
 ('ServiceRequest', 'status', 'WRITE', 'valueset', 'servicerequest_statuses', 'DB', 1),

@@ -24,4 +24,9 @@ class FhirServiceRequestTable
         $this->tableGateway = $tableGateway;
         $this->join = array();
     }
+
+    public function getTeastAndTreatmentsPreformed($encoutner,$pid,$status)
+    {
+       return $this->buildGenericSelect(['encounter'=>$encoutner,"patient"=>$pid,'status'=>$status]);
+    }
 }

@@ -258,7 +258,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $ids=$this->getIdTypes();
         $FHIRPatient->getIdentifier()[0]->getType()->setText($ids[$patientDataFromDb['mh_type_id']]);
 
-        if (!is_null($patientDataFromDb['deceased_date']) && $patientDataFromDb['deceased_date']!=="0000-00-00" ) {
+        if (!is_null($patientDataFromDb['deceased_date']) && $patientDataFromDb['deceased_date']!=="0000-00-00 00:00:00" ) {
             $FHIRBoolean = $this->createFHIRBoolean(1);
             $FHIRPatient->setDeceasedBoolean($FHIRBoolean);
             $FHIRDateTime = $this->createFHIRDateTime($patientDataFromDb['deceased_date']);

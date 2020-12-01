@@ -679,7 +679,6 @@ INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_a
 
 #IfNotRow fhir_validation_settings fhir_element MedicationStatement
 INSERT INTO `fhir_validation_settings` (`fhir_element`, `filed_name`, `request_action`, `validation`, `validation_param`, `type`, `active`) VALUES
-('MedicationStatement', 'outcome', 'WRITE', 'valueset', 'medication_statement_statuses', 'DB', 1),
 ('MedicationStatement', 'diagnosis', 'WRITE', 'required', '', 'DB', 1),
 ('MedicationStatement', 'pid', 'WRITE', 'ifExist', 'patient_data', 'DB', 1);
 #EndIf
@@ -775,4 +774,23 @@ UPDATE `fhir_validation_settings` SET `validation` = 'blockedEncounter' WHERE
 #IfRow3D fhir_validation_settings fhir_element RelatedPerson filed_name full_name validation required
 DELETE FROM `fhir_validation_settings` WHERE
 `fhir_element` = 'RelatedPerson' and `filed_name` = 'full_name'AND `validation` = 'required';
+#EndIf
+
+
+ALTER TABLE `related_person` CHANGE `active` `active` TINYINT(1) NOT NULL DEFAULT '1';
+
+#IfRow3D fhir_validation_settings fhir_element MedicationStatement filed_name outcome validation valueset
+DELETE FROM fhir_validation_settings WHERE fhir_element = 'MedicationStatement' AND filed_name = 'outcome' AND validation = 'valueset';
+#EndIf
+
+#IfMissingColumn form_vitals observation_status
+ALTER TABLE `form_vitals` ADD `observation_status` VARCHAR(20) NULL AFTER `category`;
+#EndIf
+
+#IfRow3D fhir_validation_settings fhir_element Observation filed_name activity validation valueset
+UPDATE fhir_validation_settings SET filed_name = 'observation_status' WHERE fhir_element = 'Observation' AND filed_name = 'activity' AND validation = 'valueset';
+#EndIf
+
+#IfRow3D fhir_validation_settings fhir_element Observation filed_name activity validation blockedIfValue
+UPDATE fhir_validation_settings SET filed_name = 'observation_status' WHERE fhir_element = 'Observation' AND filed_name = 'activity' AND validation = 'blockedIfValue';
 #EndIf

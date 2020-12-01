@@ -171,7 +171,8 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
             $dbObservation['eid'] = null;
         }
 
-        $dbObservation['activity'] =  $FHIRObservation->getStatus()->getValue();
+        $dbObservation['activity'] =  ($FHIRObservation->getStatus()->getValue() !== 'cancelled') ? 1 : 0;
+        $dbObservation['observation_status'] =  $FHIRObservation->getStatus()->getValue();
         $dbObservation['note'] = $FHIRObservation->getNote()[0]->getText()->getValue();
         $dbObservation['category'] = $FHIRObservation->getCategory()[0]->getCoding()[0]->getCode()->getValue();
 
@@ -277,8 +278,8 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
                 $FHIRObservation->getEncounter()->setReference($FHIREncounterString);
             }
 
-            if(!is_null($observationDataFromDb['activity'])){
-                $FHIRObservation->getStatus()->setValue($observationDataFromDb['activity']);
+            if(!is_null($observationDataFromDb['observation_status'])){
+                $FHIRObservation->getStatus()->setValue($observationDataFromDb['observation_status']);
             }
 
             if(!is_null($observationDataFromDb['note'])){

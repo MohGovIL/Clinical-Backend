@@ -55,14 +55,8 @@ class EncounterSearch extends BaseSearch
              unset(($this->searchParams)['all_statuses']);
          }
 
-        if(isset($this->searchParams['form_encounter.date'])) {
-
-            $this->searchByDate('form_encounter.date');
-        }
-        if(isset($this->searchParams['status_update_date'])) {
-
-            $this->searchByDate('status_update_date');
-        }
+        $this->addShortDate('form_encounter.date');
+        $this->addShortDate('status_update_date');
 
         $dataFromDb = $this->searchThisTable->buildGenericSelect($this->searchParams,implode(",",$this->orderParams),$this->specialParams);
         foreach ($dataFromDb  as $key => $data) {

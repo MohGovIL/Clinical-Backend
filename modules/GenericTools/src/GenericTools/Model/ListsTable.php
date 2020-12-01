@@ -220,4 +220,56 @@ class ListsTable
         }
         return $rsArray;
     }
+
+    public function getListForViewFormNoTranslation($listId,  $params = array(), $onlyActive = true, $orderBySeq = false)
+    {
+        if(!$sortAlphaBeta) {
+            $sql="SELECT option_id, title FROM " . $this->tableGateway->table . " WHERE list_id = ?";
+            if($onlyActive)
+                $sql .= " AND activity = 1 ";
+            $sqlBindArray = array($listId);
+            foreach ($params as $column => $value){
+                $sql .= "AND $column = ? ";
+                $sqlBindArray[] = $value;
+            }
+            if ($orderBySeq) {
+                $sql .= " ORDER BY seq";
+            }
+
+        } else {
+            $lang_id = empty($_SESSION['language_choice']) ? '1' : $_SESSION['language_choice'];
+            $sql = "SELECT lo.option_id,
+                IF(LENGTH(ld.definition),ld.definition,lo.title) AS title
+                FROM " . $this->tableGateway->table . " AS lo
+                LEFT JOIN lang_constants AS lc ON lc.constant_name = lo.title
+                LEFT JOIN lang_definitions AS ld ON ld.cons_id = lc.cons_id AND
+                ld.lang_id = ?
+                WHERE lo.list_id = ?";
+            if($onlyActive)
+                $sql .= " AND lo.activity = 1 ";
+            $sqlBindArray = array($lang_id, $listId);
+            foreach ($params as $column => $value){
+                $sql .= "AND lo.${column} = ? ";
+                $sqlBindArray[] = $value;
+            }
+
+            $order_sql = Array("IF(LENGTH(ld.definition),ld.definition,lo.title)", "lo.seq");
+            if($orderBySeq){
+                $order_sql = array_reverse($order_sql);
+            }
+
+            $sql .= "ORDER BY ".implode(", ", $order_sql);
+
+        }
+
+        $statement = $this->tableGateway->adapter->createStatement($sql, $sqlBindArray);
+        $return = $statement->execute();
+
+        $results = array();
+        foreach ($return as $row) {
+            $results[$row['option_id']] =  $row['title'] ;
+        }
+
+        return $results;
+    }
 }

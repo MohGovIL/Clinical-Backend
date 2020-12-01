@@ -11,12 +11,23 @@ font-stretch: normal;
 font-style: normal;
 line-height: 1.5;
 letter-spacing: normal;
-text-align: right;
 color: #000b40;
+float:<?php echo $langDir === "rtl"?'left':'right'?>;
+text-align:<?php echo $langDir === "rtl"?'left':'right'?>;
 }
-</style>
+.RectangleDoc {
+    width: 98%;
+    margin-left:<?php echo $langDir === "rtl"?'5%':'70%'?>;
 
-<table dir="<?php echo text($langDir); ?>"  lang="<?php echo text($langCode); ?>">
+}
+
+
+</style>
+<div class="RectangleDoc">
+
+
+
+<table  dir="<?php echo $langDir;?>" style="page-break-inside:avoid;">
     <tbody>
     <tr>
         <td>
@@ -36,3 +47,5 @@ color: #000b40;
     </tr>
     </tbody>
 </table>
+</div>
+

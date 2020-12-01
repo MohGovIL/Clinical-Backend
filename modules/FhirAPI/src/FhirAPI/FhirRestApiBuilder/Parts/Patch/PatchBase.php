@@ -101,7 +101,7 @@ class PatchBase
 
                     }else{
 
-                        if(gettype($objectToChange->$index)==="string" ){
+                        if(!is_object($objectToChange->$index)){
                             $objectToChange->$index=$val;
                         }else{
                             $objectToChange->$index->setValue($val);
