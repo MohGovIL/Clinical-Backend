@@ -31,16 +31,17 @@ class Settings
      *
      * @return array
      */
-    public function getGlobalsSettings($uid)
+    public function getGlobalsSettings($uname)
     {
 
         $aclTables = new AclTables($this->adapter);
         $userTable = $this->container->get(UserTable::class);
         $langLanguagesTable= $this->container->get(LangLanguagesTable::class);
-        $user=$userTable->getUser($uid);
-
+        $user=$userTable->getByUserName($uname);
+        $uid = $user->id;
         $langId=(!is_null($_SESSION['language_choice'])) ? $_SESSION['language_choice'] : $langLanguagesTable->getLangIdByGlobals();
         $settings = array(
+            "user_id" => $uid,
             "facility" => $user->facility_id,
             "lang_id" => $langId,
             "lang_code" => $langLanguagesTable->getLangCode($langId),

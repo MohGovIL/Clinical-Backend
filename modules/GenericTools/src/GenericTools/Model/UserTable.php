@@ -34,6 +34,20 @@ class UserTable
     }
 
     /**
+     * @param $id
+     * @return array|\ArrayObject|null|false
+     */
+    public function getByUserName($userName)
+    {
+        $rowset = $this->tableGateway->select(array('username' => $userName));
+        $row = $rowset->current();
+        if (!$row) {
+            return false;
+        }
+        return $row;
+    }
+
+    /**
      * @return array -   all of the active users from user table
      */
     public function fetchAll()
