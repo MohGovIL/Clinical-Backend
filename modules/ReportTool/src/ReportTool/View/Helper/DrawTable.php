@@ -66,8 +66,8 @@ class DrawTable extends AbstractHelper
 
             //array_push($columnsView,array("name"=>$value,"data"=>$value,"title"=> xl(ucfirst(str_replace("_"," ",$value))) . "<icon class= ' header_icon glyphicon glyphicon-info-sign ' title='hey hey' ></icon>"));
         }
-        $columnDefsArr= xls(json_encode($columnDefsArr));
-        $columsReturn = xls(json_encode($columnsView));
+        $columnDefsArr= json_encode($columnDefsArr);
+        $columsReturn = json_encode($columnsView);
 
         $title = "<div id='title'><h3>".xlt($title)."</h3><span id='report_info'><span></div>";
 
@@ -82,114 +82,114 @@ class DrawTable extends AbstractHelper
         $script =  '<script>
 
 
-       
+
         function getAccessMessageWithStatus(){
             var filters = $("#filters-container").find("input,select,textarea").not(".search-txt").not(":hidden");
             var title = "";
             $.each(filters,function(){
-            
+
                 var typ =$(this)[0].type;
                 var space ="\u00A0";  //"\u00A0"
-                
+
             if (typ==="select-one"  && !$(this).parent().hasClass("SumoSelect") ){
                 typ="select";
             }
                 switch(typ)
                 {
-                  
-                   
+
+
                     case   "text":
                     case   "input":
-                        
+
                             var titleInnerContainer =$(this).parent().find("label")[0];
                             var titleInner = "";
-                            
+
                             if(titleInnerContainer!==undefined){
                                 titleInner=titleInnerContainer.innerText;
                                 var value = $(this).val();
                                 title += titleInner+space+value+space+space+space;
                             }
-                                
+
                     break;
-                 
+
                     case   "select-multiple":
-                        
+
                                  var value = $(this).find("option:selected");
                                  var allselected="";
                                  var titleInner="";
-                                 
+
                                 value.each(function(e){
                                 titleInner = $(this).closest(".form-group-TWB").find("label")[0].innerText;
                                 value = $($(this)[0]).text();
                                 allselected += value+", ";
                                 });
                                 allselected= allselected.slice(0, -2);
-                                title += titleInner+space+ allselected+space+space+space; 
+                                title += titleInner+space+ allselected+space+space+space;
                            break;
-                                
+
                     case   "select-one":
                                 var value = $(this).find("option:selected").each(function(e){
                                 var titleInner = $(this).closest(".form-group-TWB").find("label")[0].innerText;
                                 value = $($(this)[0]).text()
-                                title += titleInner+space+ value+space+space+space; 
+                                title += titleInner+space+ value+space+space+space;
                             });
-                            
+
                     break;
                     case   "select":
                             var value = $(this).find(":selected").text();
-                            
+
                             var titleInnerContainer =$(this).parent().find("label")[0];
                             var titleInner = "";
-                           
+
                             if(titleInnerContainer!==undefined){
                                 titleInner=titleInnerContainer.innerText;
                             }
 
-                            title += titleInner+space+ value+space+space+space; 
-                           
-                            
+                            title += titleInner+space+ value+space+space+space;
+
+
                     break;
-                    
-                    
+
+
                     case   "radio":
                     case   "checkbox":
-                        
+
                                 var value ="";
                                 if($(this)[0].checked){
                                  var titleInner = $(this).closest(".form-group-TWB").find("label")[0].innerText;
                                 value = $(this).parent().text();
                                 title += titleInner+space+ value+space+space+space;
                                 }
-                           
+
                     break;
                 }
-                
-                    
-                    
-                
-                
+
+
+
+
+
             });
-            
+
             var titleDiv= $("span[id=\'report_info\']");
             titleDiv.text(title);
             titleDiv.css( "font-weight", "bold");
             titleDiv.css("font-size","16px");
-            
-            
-            
-        }    
-        
+
+
+
+        }
+
         pageLength=10;
         let tableInstance=null;
-        
+
         $(document).ready(function() {
-               
+
         columnsFields=JSON.parse(\''.$columsReturn.'\');
         columnDefs=JSON.parse(\''.$columnDefsArr.'\');
-        
+
         tableID = "'.$id.'_table";
         tableElm= $("#' .$id .'_table");
-       
+
         tableElm.on("xhr.dt", function ( e, settings, json, xhr ) {
             let table =  settings.oInstance.api();
             table.columns().visible(1);
@@ -198,7 +198,7 @@ class DrawTable extends AbstractHelper
             }
             //console.log(json.additionalParams);
             //console.log(table);
-            
+
         });
         tableInstance=tableElm.DataTable( {
             "pageLength": pageLength,
@@ -218,8 +218,8 @@ class DrawTable extends AbstractHelper
                 },
                 error:function(err){
                   console.log(err);
-                } 
-               
+                }
+
             },
             "columns" :JSON.parse(\''. $columsReturn.'\'),
             "columnDefs": columnDefs,
@@ -228,10 +228,10 @@ class DrawTable extends AbstractHelper
             paging: true,
             "orderMulti": false,
             "ordering": false,
-            "language": 
-            {    
+            "language":
+            {
                 "processing":   "מעבד...",
-               
+
                 "lengthMenu":   "הצג _MENU_ פריטים",
                 "zeroRecords":  "לא נמצאו רשומות מתאימות",
                 "emptyTable":   "לא נמצאו רשומות מתאימות",
@@ -250,11 +250,11 @@ class DrawTable extends AbstractHelper
             }
 
         } ).draw(false);
-        
+
         $(".header_icon").tooltipster();
     } );
-            
-            
+
+
 function MergeGridCells() {
     var dimension_cells = new Array();
     var dimension_col = null;
@@ -287,7 +287,7 @@ function MergeGridCells() {
         });
     }
 }
-    
+
 function adjustWidth(settings) {
     let dt = settings.oInstance.api();
     dt.columns.adjust();

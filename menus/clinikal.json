@@ -1318,6 +1318,7 @@
                 "label": "Clients",
                 "icon": "fa-caret-right",
                 "children": [
+
                     {
                         "label": "List",
                         "menu_id": "rep0",
