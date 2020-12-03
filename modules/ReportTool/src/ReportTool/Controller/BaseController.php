@@ -77,8 +77,8 @@ class BaseController extends GenericBaseController
 
     protected function normalizedGenericFilters($filters)
     {
-        $filters['from_date'] = "'" . DateToYYYYMMDD($filters['from_date']) . "'";
-        $filters['until_date'] = "'" . DateToYYYYMMDD($filters['until_date']) . "'";
+        $filters['from_date'] = "'" . DateToYYYYMMDD($filters['from_date']) . " 00:00:00'";
+        $filters['until_date'] = "'" . DateToYYYYMMDD($filters['until_date']) . " 23:59:59'";
         $filters['facility'] = "'" . $filters['facility'] . "'";
 
         return $filters;
@@ -297,7 +297,7 @@ class BaseController extends GenericBaseController
 
         $result = $this->getData($dataToProcedure, $columns);
         //CV-2891
-        //die(var_dump($result)); -- check for array
+       // die(var_dump($result));
         // no need foer this it is already array
         //$data = json_decode($result, true)['data'];
         $data =  $result['data'] ;
@@ -476,7 +476,5 @@ class BaseController extends GenericBaseController
         //$draw = $this->params()->fromQuery('draw');
         //$data = $this->GetCustomDB()->CreateReportSql($dataToProcedure, $this->procedureName);
     }
-
-
 
 }

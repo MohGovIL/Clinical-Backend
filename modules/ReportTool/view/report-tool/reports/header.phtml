@@ -19,6 +19,7 @@ echo $headers->titleWithButtons($title);
      border: 1px solid #A2A2A2 !important;
  }
 
+
 </style>
 
 <div id="filters-container" class="sumoselectrtlfix">
@@ -29,7 +30,7 @@ echo $headers->titleWithButtons($title);
         </div>
         <div class="col-md-11 col-sm-10">
             <?php }?>
-                <div class="filter-box filter-box-<?php echo $elements->get($filter)->getAttribute('type'); ?>">
+                <div  class="filter-box filter-box-<?php echo $elements->get($filter)->getAttribute('type'); ?>">
                     <?php echo $this->formRow($elements->get($filter)); ?>
                 </div>
             <?php endforeach; ?>
