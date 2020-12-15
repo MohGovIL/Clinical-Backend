@@ -15,7 +15,7 @@ class FormLogService
 
     public function __construct(ContainerInterface $container)
     {
-        $this->dbAdapter = $container->get('Zend\Db\Adapter\Adapter');;
+        $this->dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');;
     }
 
     // Function saves changes made in form to the log tables

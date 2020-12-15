@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 29/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class strategy Fhir  ORGANIZATION
  *
  *
@@ -24,6 +24,7 @@ use GenericTools\Model\UserTable;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRPatient;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
 use OpenEMR\FHIR\R4\FHIRResourceContainer;
+use OpenEMR\Common\Uuid\UuidRegistry;
 
 
 class Patient Extends Restful implements  Strategy
@@ -45,7 +46,7 @@ class Patient Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
 
     }
 
@@ -58,9 +59,10 @@ class Patient Extends Restful implements  Strategy
         return $this->$function();
     }
 
-    public function setMapping($container)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirPatientMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
 /********************end of base internal functions********************************************************************/
@@ -76,15 +78,15 @@ class Patient Extends Restful implements  Strategy
     {
         $fhirPatientMapping = $this->mapping;
         $patientTable = $this->container->get(PatientsTable::class);
-        $patientDataFromDb = $patientTable->getPatientDataById($this->paramsFromUrl[0]);
+        $patientDataFromDb = $patientTable->buildGenericSelect(["pid"=>$this->paramsFromUrl[0]]);;
 
-        if (!$patientDataFromDb) {
+        if (!$patientDataFromDb[0]) {
             //not found
             return self::$errorCodes::http_response_code(204);
         }
 
         $this->mapping->initFhirObject();
-        $patient=$fhirPatientMapping->DBToFhir($patientDataFromDb, []);
+        $patient=$fhirPatientMapping->DBToFhir($patientDataFromDb[0], []);
         $this->mapping->initFhirObject();
         return $patient;
 
@@ -116,8 +118,17 @@ class Patient Extends Restful implements  Strategy
         $dbData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
 
         $patientTable = $this->container->get(PatientsTable::class);
-        $flag=$this->mapping->validateDb($dbData);
-        if($flag){
+
+        if (class_exists('OpenEMR\Common\Uuid\UuidRegistry')) {
+            $dbData['uuid'] = (new UuidRegistry(['table_name' => 'patient_data']))->createUuid();
+        }
+
+        /*********************************** validate *******************************/
+        $allData=array('new'=>$dbData,'old'=>array());
+        //$mainTable=$patientTable->getTableName();
+        $isValid=$this->mapping->validateDb($allData,null);
+        /***************************************************************************/
+        if($isValid){
             $rez=$patientTable->safeInsert($dbData,'id','pid');
             if(is_array($rez)){
                 $patient=$this->mapping->DBToFhir($rez);
@@ -126,7 +137,7 @@ class Patient Extends Restful implements  Strategy
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
         }else{ // object is not valid
-            ErrorCodes::http_response_code('406','object is not valid');
+            ErrorCodes::http_response_code('406','failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return false;

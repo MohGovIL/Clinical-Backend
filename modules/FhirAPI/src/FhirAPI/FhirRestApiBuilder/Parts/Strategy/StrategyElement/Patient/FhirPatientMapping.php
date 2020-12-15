@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 21/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class MAPPING FOR ORGANIZATION
  */
 
@@ -16,8 +16,10 @@ use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\ListsTable;
 use GenericTools\Model\PatientsTable;
 use Interop\Container\ContainerInterface;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 
 /*include FHIR*/
+
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRPatient;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRContactPoint;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRDateTime;
@@ -36,12 +38,13 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
 
     use FHIRAddressTrait;
     use FHIROrganizationTelecomTrait;
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRPatient = new FHIRPatient;
 
         $ListsTable = $this->container->get(ListsTable::class);
@@ -155,8 +158,19 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $line=$mainAddress->getLine();
 
         if(!empty($line)) {
-            $addressType=$mainAddress->getType()->getValue();
-            if ($addressType === "postal" || $addressType === "both") {
+
+            $addressTypeElm=$mainAddress->getType();
+            if(!is_null($addressTypeElm)){
+                if (is_string($addressTypeElm)) {
+                    $addressType=$addressTypeElm;
+                } else {
+                    $addressType=$addressTypeElm->getValue();
+                }
+            }else{
+                $addressType=null;
+            }
+
+            if ($addressType === "physical" || $addressType === "both") {
 
                 $street=$line[0]->getValue();
                 $dbPatient['street'] =(is_null($street)) ? "" : $street;
@@ -167,10 +181,15 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
                 if($addressType === "both"){
                     $mh_pobox=$line[2]->getValue();
                     $dbPatient['mh_pobox'] =(is_null($mh_pobox)) ? "" : $mh_pobox;
+                }else{
+                    $dbPatient['mh_pobox'] = null;
                 }
-            } elseif ($addressType === "physical") {
+
+            } elseif ($addressType === "postal") {
                 $mh_pobox=$line[0]->getValue();
                 $dbPatient['mh_pobox'] =(is_null($mh_pobox)) ? "" : $mh_pobox;
+                $dbPatient['mh_house_no'] = null;
+                $dbPatient['street'] = null;
             }
         }
 
@@ -243,7 +262,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $ids=$this->getIdTypes();
         $FHIRPatient->getIdentifier()[0]->getType()->setText($ids[$patientDataFromDb['mh_type_id']]);
 
-        if (!is_null($patientDataFromDb['deceased_date']) && $patientDataFromDb['deceased_date']!=="0000-00-00" ) {
+        if (!is_null($patientDataFromDb['deceased_date']) && $patientDataFromDb['deceased_date']!=="0000-00-00 00:00:00" ) {
             $FHIRBoolean = $this->createFHIRBoolean(1);
             $FHIRPatient->setDeceasedBoolean($FHIRBoolean);
             $FHIRDateTime = $this->createFHIRDateTime($patientDataFromDb['deceased_date']);
@@ -283,14 +302,21 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         $address->setCountry($FHIRAddress[0]->getCountry());
         $address->setType($FHIRAddress[0]->getType());
 
-
         $lines=$FHIRAddress[0]->getLine();
+        $counter=0;
+
         foreach($lines as $index => $line){
-                $address->getLine()[$index]->setValue($line->getValue());
+                $tempLineVal=$line->getValue();
+                if(!is_null($tempLineVal)){
+                    $address->getLine()[$counter]->setValue($tempLineVal);
+                    $counter++;
+                }
+        }
+        if($counter===0){
+            $address->getLine()[0]->setValue("  ");
         }
 
         $FHIRPatient=$this->setFHIRTelecom($patientDataFromDb,$FHIRPatient);
-
 
          $this->FHIRPatient=$FHIRPatient;
 
@@ -344,7 +370,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
      * @param array
      * @param array
      *
-     * @return bool;
+     * @return FHIRPatient;
      */
     public function setFHIRTelecom($patient,$FHIRPatient)
     {
@@ -448,10 +474,6 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
         return $dbPatient;
     }
 
-    public function validateDb($data){
-        $flag =true;
-        return $flag;
-    }
 
     public function initFhirObject(){
 
@@ -555,14 +577,14 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
 
         $telecom=$data['telecom'];
 
-        foreach($telecom as $j =>$telData){
+        if (is_array($telecom)){
+            foreach($telecom as $j =>$telData){
 
-            $FHIRPatient->getTelecom()[$j]->getSystem()->setValue($telData['system']);
-            $FHIRPatient->getTelecom()[$j]->getValue()->setValue($telData['value']);
-            $FHIRPatient->getTelecom()[$j]->getUse()->setValue($telData['use']);
-
+                $FHIRPatient->getTelecom()[$j]->getSystem()->setValue($telData['system']);
+                $FHIRPatient->getTelecom()[$j]->getValue()->setValue($telData['value']);
+                $FHIRPatient->getTelecom()[$j]->getUse()->setValue($telData['use']);
+            }
         }
-
 
         $this->FHIRPatient=$FHIRPatient;
 
@@ -582,8 +604,15 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
     public function updateDbData($data,$id)
     {
         $patientTable = $this->container->get(PatientsTable::class);
-        $flag=$this->validateDb($data);
-        if($flag){
+
+
+        /*********************************** validate *******************************/
+        $patientDataFromDb = $patientTable->buildGenericSelect(["id"=>$id]);
+        $alldata=array('new'=>$data,'old'=>$patientDataFromDb);
+        //$mainTable=$patientTable->getTableName();
+        $isValid=$this->validateDb($alldata,null);
+        /***************************************************************************/
+        if($isValid){
             $primaryKey='pid';
             $primaryKeyValue=$id;
             unset($data[$primaryKey]);
@@ -596,7 +625,7 @@ class FhirPatientMapping extends FhirBaseMapping  implements MappingData
                 ErrorCodes::http_response_code('500','insert object failed :'.$rez);
             }
         }else{ // object is not valid
-            ErrorCodes::http_response_code('406','object is not valid');
+            ErrorCodes::http_response_code('406','failed validation');
         }
         //this never happens since ErrorCodes call to exit()
         return false;

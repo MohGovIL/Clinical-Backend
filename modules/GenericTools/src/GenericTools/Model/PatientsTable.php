@@ -2,7 +2,7 @@
 
 namespace GenericTools\Model;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class PatientsTable
 {
@@ -56,7 +56,8 @@ class PatientsTable
 
     public function getPatientDataById($pid)
     {
-        $sql="SELECT * FROM " . $this->tableGateway->table . " WHERE pid = ?";
+        $sql="SELECT p.* , ROUND(DATEDIFF(NOW(),DOB)/365.25) AS age ,DATE_FORMAT(DOB,'%d/%m/%Y') as DOB_DMY, f.name AS insurance_organiz_name FROM " . $this->tableGateway->table . " AS p  LEFT JOIN facility f ON (f.id=mh_insurance_organiz)
+        WHERE pid = ?";
 
         $statement = $this->tableGateway->adapter->createStatement($sql, array($pid));
         $return = $statement->execute();

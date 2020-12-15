@@ -2,7 +2,7 @@
 
 namespace ClinikalAPI\Model;
 
-use Zend\Db\Sql\Sql;
+use Laminas\Db\Sql\Sql;
 
 class TranslationTables
 {
@@ -30,7 +30,7 @@ class TranslationTables
         $return = $statement->execute();
         $results = array();
         foreach ($return as $row) {
-            $results[$row['constant_name']] = $row['definition'];
+            $results[trim($row['constant_name'])] = $row['definition'];
         }
         return (isset($results)) ? $results : array();
 

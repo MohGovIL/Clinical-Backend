@@ -2,20 +2,35 @@
 
 namespace GenericTools\Model;
 
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Adapter\Adapter;
-
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Where;
-use Zend\Db\Sql\Expression;
+use GenericTools\Model\UtilsTraits\JoinBuilder;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\Sql\Expression;
 
 class ListsOpenEmrTable
 {
+    use baseTable;
+    use JoinBuilder;
     protected $tableGateway;
 
     public function __construct(TableGateway $tableGateway)
     {
         $this->tableGateway = $tableGateway;
+        $this->join = $this->joinTables();
+    }
+
+    private function joinTables()
+    {
+        $this->appendJoin(
+            ["ie"=>"issue_encounter"],
+            new Expression("ie.pid=lists.pid AND ie.list_id=id"),
+            ['encounter'=>'encounter','resolved'=>'resolved'],
+            Select::JOIN_LEFT
+        );
+
+        return $this->getJoins();
     }
 
 
@@ -54,5 +69,40 @@ class ListsOpenEmrTable
         }
         return $rsArray;
     }
+    public function getListWithTheType($type,$pid,$outcome)
+    {
+        /*
 
+         SELECT l.diagnosis,c.code,c.code_text,ct.ct_id,ct.ct_key
+						FROM lists l LEFT JOIN codes c ON (l.diagnosis = concat(SUBSTRING_INDEX(l.diagnosis,':',1),c.code))
+					   				 RIGHT JOIN code_types ct ON (ct.ct_id=c.code_type AND  ct.ct_key ="Sensitivities")
+         WHERE  c.id IS NOT  NULL
+
+        */
+        $this->clearAllJoin();
+
+        $rsArray = array();
+        $this->join = $this->appendJoin(
+            ["c"=>"codes"],
+            new Expression("lists.diagnosis = concat(SUBSTRING_INDEX(lists.diagnosis,':',1),':',c.code)"),
+            ['code','code_text'],
+            Select::JOIN_LEFT
+        );
+        $this->join =  $this->appendJoin(
+            ["ct"=>"code_types"],
+            new Expression("ct.ct_id=c.code_type AND  ct.ct_key = SUBSTRING_INDEX(lists.diagnosis,':',1)"),
+            ["ct_id","ct_key"],
+            Select::JOIN_RIGHT
+        );
+        //WAIT FOR SOSH $this->joinTables(); // add new join code
+        $this->join = $this->getJoins();
+
+        $rs = $this->buildGenericSelect(['lists.type'=>$type,'lists.outcome'=>$outcome,"lists.pid"=>$pid]);
+
+        foreach ($rs as $r) {
+            $rsArray[] = xl($r['code_text']);
+        }
+
+        return $rsArray;
+    }
 }

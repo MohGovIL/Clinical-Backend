@@ -1,18 +1,17 @@
 <?php
 /**
  * Date: 21/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class MAPPING FOR Encounter
  */
 
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Encounter;
 
 
-
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 use function DeepCopy\deep_copy;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
-
-
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\EncounterReasonCodeMapTable;
 use GenericTools\Model\FormEncounterTable;
@@ -20,9 +19,6 @@ use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIREncounter;
 use OpenEMR\FHIR\R4\FHIRElement\FHIREncounterStatus;
 use OpenEMR\FHIR\R4\FHIRResource\FHIREncounter\FHIREncounterParticipant;
-
-use  FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\ConversionsTrait;
-
 
 class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 {
@@ -36,12 +32,20 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     CONST RP_REF= 'RelatedPerson';
     CONST PATIENT_REF= 'Patient';
     CONST ORG_REF= 'Organization';
+    CONST RCD_URL = 'reasonCodesDetail';
+    CONST AW_URL='arrivalWay';
+    CONST SECONDARY_STATUS_URL='secondaryStatus';
+    CONST STATUS_UPDATE_DATE_URL='statusUpdateDate';
+
+    CONST EXTENSIONS_ENCOUNTER_URL='http://clinikal/extensions/encounter/';
+
+    use FHIRElementValidation;
 
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->setFHIREncounter(new FHIREncounter());
     }
 
@@ -55,11 +59,8 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     public function fhirToDb($FHIREncounter)
     {
         $encounter=array();
-
         $encounter["status"]= $FHIREncounter->getStatus()->getValue();
-
         $encounter['id']= $FHIREncounter->getId()->getValue();
-
 
         $date=$FHIREncounter->getPeriod()->getStart()->getValue();
         $encounter['date']= $this->convertToDateTime($date);
@@ -68,12 +69,19 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         if (strpos($reference, self::APT_REF.'/') !== false ) {
             $encounter["eid"]= (!empty($reference)) ? substr($reference,strlen(self::APT_REF)+1,20) : null;
 
+        }else{
+            $encounter["eid"]=null;
         }
 
         $reference=$FHIREncounter->getServiceProvider()->getReference()->getValue();
         if (strpos($reference, self::ORG_REF.'/') !== false ) {
             $encounter["facility_id"]= (!empty($reference)) ? substr($reference,strlen(self::ORG_REF)+1,20) : null;
+        }else{
+            $encounter["facility_id"]=null;
         }
+
+        $encounter["provider_id"]=null;
+        $encounter["escort_id"]=null;
 
         $participants=$FHIREncounter->getParticipant();
         foreach($participants as $index =>$participant){
@@ -90,6 +98,8 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         $reference= $FHIREncounter->getSubject()->getReference()->getValue();
         if (strpos($reference, self::PATIENT_REF.'/') !== false ) {
             $encounter["pid"]= (!empty($reference)) ? substr($reference,strlen(self::PATIENT_REF)+1,20) : null;
+        }else{
+            $encounter["pid"]=null;
         }
 
         $encounter["priority"]=$FHIREncounter->getPriority()->getCoding()[0]->getCode()->getValue();
@@ -103,6 +113,30 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
             $eid=$encounter["eid"];
             $reasonsCode=$reason->getCoding()[0]->getCode()->getValue();
             $reasonsCodes[]=array("eid"=>$eid,"reason_code"=>$reasonsCode);
+        }
+
+        $Extensions= $FHIREncounter->getExtension();
+
+        $date="";
+        foreach($Extensions as $exIndex => $Extension){
+            $url =   $Extension->getUrl();
+            $extensionName=substr($url, strrpos($url, '/') + 1);
+            switch ($extensionName) {
+                case self::AW_URL:
+                        $encounter["arrival_way"]=trim($Extensions[$exIndex]->getValueString());
+                    break;
+                case self::RCD_URL:
+                        $encounter["reason_codes_details"]=trim($Extensions[$exIndex]->getValueString());
+                    break;
+                case self::SECONDARY_STATUS_URL:
+                    $encounter["secondary_status"]=trim($Extensions[$exIndex]->getValueString());
+                    break;
+                case self::STATUS_UPDATE_DATE_URL:
+                    $date=trim($Extensions[$exIndex]->getValueDateTime());
+                    $date=$this->convertToDateTime($date);
+                    $encounter["status_update_date"]=$date;
+                    break;
+            }
         }
 
         $encounterData=array('form_encounter'=>$encounter,'encounter_reasoncode_map'=>$reasonsCodes);
@@ -126,7 +160,6 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 
         $FHIREncounter->getStatus()->setValue($encounter["status"]);
         $FHIREncounter->getId()->setValue($encounter['id']);
-
         $date=$this->createFHIRDateTime(null,null,$encounter['date']);
         $FHIREncounter->getPeriod()->getStart()->setValue($date);
 
@@ -166,7 +199,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         }
 
 
-       if(isset($encounter["reason_code"]) && intval($encounter["reason_code"]) > 0){
+       if(isset($encounter["reason_code"])){
 
            $reasons_codes =explode(",",$encounter["reason_code"]);
            $reasons_codes_titles =explode(",",$encounter["reason_code_title"]);
@@ -185,9 +218,49 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
                $FHIRCodeableConcept=$this->createFHIRCodeableConcept($reason);
                $FHIREncounter->addReasonCode($FHIRCodeableConcept);
            }
-
        }
 
+        $Extensions= $FHIREncounter->getExtension();
+
+        foreach($Extensions as $exIndex => $Extension){
+            $url =   $Extension->getUrl();
+            $extensionName=substr($url, strrpos($url, '/') + 1);
+            switch ($extensionName) {
+                case self::AW_URL:
+                    if(isset($encounter["arrival_way"]) && !is_null($encounter["arrival_way"])){
+                        $Extensions[$exIndex]->setValueString($encounter["arrival_way"]);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
+                case self::RCD_URL:
+                    if(isset($encounter["reason_codes_details"]) && !is_null($encounter["reason_codes_details"])){
+                        $Extensions[$exIndex]->setValueString($encounter["reason_codes_details"]);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
+
+                case self::SECONDARY_STATUS_URL:
+                    if(isset($encounter["secondary_status"]) && !is_null($encounter["secondary_status"])){
+                        $Extensions[$exIndex]->setValueString($encounter["secondary_status"]);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
+
+                case self::STATUS_UPDATE_DATE_URL:
+                    if(isset($encounter["status_update_date"]) && !is_null($encounter["status_update_date"])){
+                        $FHIRDateTime=$this->createFHIRDateTime(null,null,$encounter["status_update_date"]);
+                        $Extensions[$exIndex]->setValueDateTime($FHIRDateTime);
+                    }else{
+                        unset($FHIREncounter->extension[$exIndex]);
+                    }
+                    break;
+            }
+        }
+
+        $FHIREncounter->extension=array_values($FHIREncounter->getExtension());
 
         $this->FHIREncounter=$FHIREncounter;
 
@@ -216,17 +289,14 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         // TODO: Implement parsedJsonToDb() method.
     }
 
-    public function validateDb($data)
-    {
-        // TODO: Implement validateDb() method.
-        return true;
-    }
+
 
 
     public function getDbDataFromRequest($data)
     {
         $this->initFhirObject();
         //$FHIRRelatedPerson = $this->parsedJsonToFHIR($data);
+        $data=$this->manageExtensions($data,$this->FHIREncounter);
         $this->arrayToFhirObject($this->FHIREncounter,$data);
         $dBdata = $this->fhirToDb($this->FHIREncounter);
         return $dBdata;
@@ -234,9 +304,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
 
     public function initFhirObject()
     {
-
         $FHIREncounter = new FHIREncounter;
-
         $FHIREncounterStatus = new FHIREncounterStatus(['value' => null]);
         $FHIREncounter->setStatus($FHIREncounterStatus);
 
@@ -256,7 +324,7 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         $FHIRReferenceParticipantIndividual = $this->createFHIRReference(["reference" => null]);
         $FHIRParticipant = new FHIREncounterParticipant(["individual" => $FHIRReferenceParticipantIndividual]);
         $FHIREncounter->addParticipant($FHIRParticipant);
-        
+
         $FHIREncounter->addParticipant(deep_copy($FHIRParticipant));
         /*****************/
 
@@ -275,6 +343,18 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
         $FHIRCodeableConcept=$this->createFHIRCodeableConcept($reason);
         $FHIREncounter->addReasonCode($FHIRCodeableConcept);
 
+        $FHIRExtensionRSD= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::RCD_URL,'string',null);
+        $FHIREncounter->addExtension($FHIRExtensionRSD);
+
+        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::AW_URL,'string',null);
+        $FHIREncounter->addExtension($FHIRExtensionAW);
+
+        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::SECONDARY_STATUS_URL,'string',null);
+        $FHIREncounter->addExtension($FHIRExtensionAW);
+
+        $FHIRExtensionAW= $this->createFHIRExtension(self::EXTENSIONS_ENCOUNTER_URL.self::STATUS_UPDATE_DATE_URL,'dateTime',null);
+        $FHIREncounter->addExtension($FHIRExtensionAW);
+
         $this->FHIREncounter=$FHIREncounter;
         return $FHIREncounter;
 
@@ -284,9 +364,30 @@ class FhirEncounterMapping extends FhirBaseMapping implements MappingData
     public function updateDbData($data,$id)
     {
         $formEncounterTable = $this->container->get(FormEncounterTable::class);
+        $lastStatusState=$formEncounterTable->getStatusStateByEid($id);
+        if(
+            $data['form_encounter']['secondary_status']!= $lastStatusState['secondary_status'] ||
+            $data['form_encounter']['status']!= $lastStatusState['status']
+        ){
+            $data['form_encounter']['status_update_date']=date("Y-m-d H:i:s");
+        }else{
+            unset($data['form_encounter']['status_update_date']);
+        }
+
         $data['form_encounter']['id']=$id;
         $encounterReasonCodeMapTable = $this->container->get(EncounterReasonCodeMapTable::class);
         $encounterReasonCodeMapTable->deleteValueSetsById($id);
+
+        /*********************************** validate *******************************/
+        $encounterDataFromDb = $formEncounterTable->buildGenericSelect(["id"=>$id]);
+        $alldata=array('new'=>$data,'old'=>$encounterDataFromDb);
+        $mainTable=$formEncounterTable->getTableName();
+        $isValid=$this->validateDb($alldata,$mainTable);
+        if(!$isValid){
+            ErrorCodes::http_response_code("406","failed validation");
+        }
+        /***************************************************************************/
+
         $updated=$formEncounterTable->safeUpdateEncounter($data);
         $this->initFhirObject();
         return $this->DBToFhir($updated[0], true);

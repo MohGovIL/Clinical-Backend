@@ -8,12 +8,12 @@
 
 namespace Formhandler\Model;
 
-use Zend\Exception;
-use Zend\Db\Sql\Sql;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterAwareInterface;
-use Zend\InputFilter\InputFilterInterface;
-use Zend\Validator\ValidatorChain;
+use Laminas\Exception;
+use Laminas\Db\Sql\Sql;
+use Laminas\InputFilter\InputFilter;
+use Laminas\InputFilter\InputFilterAwareInterface;
+use Laminas\InputFilter\InputFilterInterface;
+use Laminas\Validator\ValidatorChain;
 
 class customDB implements InputFilterAwareInterface
 {

@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 29/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class strategy Fhir  Encounter
  *
  *
@@ -10,11 +10,13 @@
 
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Encounter;
 
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Patch\GenericPatch;
 use FhirAPI\FhirRestApiBuilder\Parts\Registry;
 use FhirAPI\FhirRestApiBuilder\Parts\Restful;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Strategy;
+use FhirAPI\Model\QuestionnaireResponseTable;
 
 use GenericTools\Model\FormEncounterTable;
 use Interop\Container\ContainerInterface;
@@ -24,8 +26,8 @@ use Interop\Container\ContainerInterface;
 use OpenEMR\FHIR\R4\FHIRDomainResource\FHIREncounter;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
 use OpenEMR\FHIR\R4\FHIRResourceContainer;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 
 
 class Encounter Extends Restful implements  Strategy
@@ -48,7 +50,7 @@ class Encounter Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
     }
 
     public function doAlgorithm($arrParams)
@@ -61,9 +63,10 @@ class Encounter Extends Restful implements  Strategy
     }
 
 
-    private function setMapping($container)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirEncounterMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
     public function getJoinArray(){
@@ -119,12 +122,22 @@ class Encounter Extends Restful implements  Strategy
     {
         $dBdata = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
         unset($dBdata['form_encounter']['id']);
+        $dBdata["status_update_date"]= date("Y-m-d H:i:s");
         $formEncounterTable = $this->container->get(FormEncounterTable::class);
+
+
+        /*********************************** validate *******************************/
+        $alldata=array('new'=>$dBdata,'old'=>array());
+        $mainTable=$formEncounterTable->getTableName();
+        $isValid=$this->mapping->validateDb($alldata,$mainTable);
+        if(!$isValid){
+            ErrorCodes::http_response_code("406","failed validation");
+        }
+        /***************************************************************************/
+
         $inserted=$formEncounterTable->safeInsertEncounter($dBdata);
         $this->paramsFromUrl[0]=$inserted[0]['id'];
         return $this-> read();
-
-
     }
 
 
@@ -140,9 +153,7 @@ class Encounter Extends Restful implements  Strategy
         $dBdata = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
         $id =$this->paramsFromUrl[0];
         return $this->mapping->updateDbData($dBdata,$id);
-
     }
-
 
     /**
      * update Encounter data
@@ -161,6 +172,69 @@ class Encounter Extends Restful implements  Strategy
 
         $patch = new GenericPatch($initPatch);
         return $patch->patch();
+    }
+
+
+    /**
+     * delete Encounter data
+     *
+     * @param string
+     * @return FHIRBundle | FHIREncounter
+     * @throws
+     */
+    public function delete()
+    {
+        //check if can delete data
+        $documentsTable = $this->container->get(DocumentsTable::class);
+        $encounterId = $this->paramsFromUrl[0];
+
+        // can not delete encounter that has a document
+        $params = array('encounter_id' => $encounterId);
+        $documentsDataFromDb = $documentsTable->buildGenericSelect($params);
+        if (!empty($documentsDataFromDb))
+        {
+            $moreInfo = "failed to delete from db";
+            $explanation = "document linked to this encounter was found-delete it first";
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation, $moreInfo);
+        }
+
+        // can not delete encounter that has forms
+        $questionnaireResponseTable = $this->container->get(QuestionnaireResponseTable::class);
+        $questionnaireResponseFromDb=$questionnaireResponseTable->buildGenericSelect(["questionnaire_response.encounter"=>$encounterId]);
+        if (!empty($questionnaireResponseFromDb))
+        {
+            $moreInfo = "failed to delete from db";
+            $explanation = "At least one form linked to this encounter was found-delete it first";
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation, $moreInfo);
+        }
+
+        $encounterTable = $this->container->get(FormEncounterTable::class);
+
+        // can not delete encounter that does not exist
+        $encounterDataFromDb = $encounterTable->buildGenericSelect(["id" => $this->paramsFromUrl[0]]);
+        if (empty($encounterDataFromDb))
+        {
+            $moreInfo = "failed to delete from db";
+            $explanation = "encounter was not found";
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation, $moreInfo);
+        }
+
+        // can not delete encounter that is not in status planned
+        $encStatus = $encounterDataFromDb[0]["status"];
+        if ($encStatus !== "planned")
+        {
+            $moreInfo = "failed to delete from db";
+            $explanation = "encounter status is " . $encStatus;
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation, $moreInfo);
+        }
+
+        $delete = $encounterDataFromDb = $encounterTable->deleteDataByParams(array("id" => $encounterId));
+        if ($delete === 1) {
+            return $this->mapping->createDeleteSuccessRespond();
+        } else {
+            $explanation = "failed to delete from db ";
+            return $this->mapping->createDeleteFailRespond($encounterId, $explanation);
+        }
     }
 
 

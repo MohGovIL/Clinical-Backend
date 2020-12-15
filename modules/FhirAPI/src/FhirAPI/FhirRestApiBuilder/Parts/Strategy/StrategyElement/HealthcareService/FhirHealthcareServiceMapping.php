@@ -20,7 +20,7 @@ class FhirHealthcareServiceMapping extends FhirBaseMapping implements MappingDat
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRHealthcareService = new FHIRHealthcareService;
 
         $this->setUrlParamToDbColumnMapping(
@@ -60,6 +60,7 @@ class FhirHealthcareServiceMapping extends FhirBaseMapping implements MappingDat
         $this->setNewFHIRHealthcareService(); //reset
 
         $healthcareServiceDataFromDb = $params[0];
+
         $FHIRId = $this->createFHIRId($healthcareServiceDataFromDb['id']);
         $this->FHIRHealthcareService->setId($FHIRId);
 

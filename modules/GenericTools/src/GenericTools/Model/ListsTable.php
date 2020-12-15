@@ -2,7 +2,8 @@
 
 namespace GenericTools\Model;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\TableGateway\TableGateway;
 
 
 class ListsTable
@@ -34,7 +35,7 @@ class ListsTable
      * @param null $optional_value => Additional value to check for in said column.
      * @return array
      */
-    public function getList($listId, $optinal_cloumn_name = null, $optional_value = null)
+    public function getList($listId, $optinal_cloumn_name = null, $optional_value = null, $translated=null)
     {
         $sql="SELECT * FROM " . $this->tableGateway->table . " WHERE list_id = ? AND activity = 1 ";
         $sqlBindArray = array($listId);
@@ -52,7 +53,9 @@ class ListsTable
 
         $results = array();
         foreach ($return as $row) {
-            $row['title']=xlt($row['title']);
+            if($translated!==false) {
+                $row['title'] = xlt($row['title']);
+            }
             $results[$row['option_id']] = $row;
         }
 
@@ -122,12 +125,12 @@ class ListsTable
 
         } else {
             $lang_id = empty($_SESSION['language_choice']) ? '1' : $_SESSION['language_choice'];
-            $sql = "SELECT lo.option_id, 
-                IF(LENGTH(ld.definition),ld.definition,lo.title) AS title 
-                FROM " . $this->tableGateway->table . " AS lo 
-                LEFT JOIN lang_constants AS lc ON lc.constant_name = lo.title 
-                LEFT JOIN lang_definitions AS ld ON ld.cons_id = lc.cons_id AND 
-                ld.lang_id = ? 
+            $sql = "SELECT lo.option_id,
+                IF(LENGTH(ld.definition),ld.definition,lo.title) AS title
+                FROM " . $this->tableGateway->table . " AS lo
+                LEFT JOIN lang_constants AS lc ON lc.constant_name = lo.title
+                LEFT JOIN lang_definitions AS ld ON ld.cons_id = lc.cons_id AND
+                ld.lang_id = ?
                 WHERE lo.list_id = ?";
             if($onlyActive)
                 $sql .= " AND lo.activity = 1 ";
@@ -179,14 +182,94 @@ class ListsTable
         return (array) $row;
     }
 
-    public function getAllList($listId)
+    public function getAllList($listId,$orderBy = null,$typeOfOrder = null)
     {
         $rsArray=array();
-        $rs= $this->tableGateway->select(array('list_id' => $listId));
+
+        if($orderBy!==null) {
+            $select = $this->tableGateway->getSql()->select();
+
+            $where = new Where();
+            $where->equalTo('list_id', $listId);
+
+            $order=$orderBy . " " . (!$typeOfOrder ? "ASC" : $typeOfOrder);
+            $select->order($order);
+
+            $select->columns(array('*'));
+
+            $rs = $this->tableGateway->selectWith($select);
+
+        }
+        else{
+            $rs = $this->tableGateway->select(array('list_id' => $listId));
+        }
         foreach($rs as $r) {
             $record=(array)$r;
             $rsArray[$record['option_id']]=$record;
         }
         return $rsArray;
+    }
+
+    public function getTitles($listId, $optionIds)
+    {
+        $sql= "SELECT * FROM " . $this->tableGateway->table . " WHERE list_id = ? AND option_id in ({$optionIds})";
+        $statement = $this->tableGateway->adapter->createStatement($sql, array($listId));
+        $rs = $statement->execute();
+        foreach($rs as $r) {
+            $rsArray[$r['option_id']]=$r['title'];
+        }
+        return $rsArray;
+    }
+
+    public function getListForViewFormNoTranslation($listId,  $params = array(), $onlyActive = true, $orderBySeq = false)
+    {
+        if(!$sortAlphaBeta) {
+            $sql="SELECT option_id, title FROM " . $this->tableGateway->table . " WHERE list_id = ?";
+            if($onlyActive)
+                $sql .= " AND activity = 1 ";
+            $sqlBindArray = array($listId);
+            foreach ($params as $column => $value){
+                $sql .= "AND $column = ? ";
+                $sqlBindArray[] = $value;
+            }
+            if ($orderBySeq) {
+                $sql .= " ORDER BY seq";
+            }
+
+        } else {
+            $lang_id = empty($_SESSION['language_choice']) ? '1' : $_SESSION['language_choice'];
+            $sql = "SELECT lo.option_id,
+                IF(LENGTH(ld.definition),ld.definition,lo.title) AS title
+                FROM " . $this->tableGateway->table . " AS lo
+                LEFT JOIN lang_constants AS lc ON lc.constant_name = lo.title
+                LEFT JOIN lang_definitions AS ld ON ld.cons_id = lc.cons_id AND
+                ld.lang_id = ?
+                WHERE lo.list_id = ?";
+            if($onlyActive)
+                $sql .= " AND lo.activity = 1 ";
+            $sqlBindArray = array($lang_id, $listId);
+            foreach ($params as $column => $value){
+                $sql .= "AND lo.${column} = ? ";
+                $sqlBindArray[] = $value;
+            }
+
+            $order_sql = Array("IF(LENGTH(ld.definition),ld.definition,lo.title)", "lo.seq");
+            if($orderBySeq){
+                $order_sql = array_reverse($order_sql);
+            }
+
+            $sql .= "ORDER BY ".implode(", ", $order_sql);
+
+        }
+
+        $statement = $this->tableGateway->adapter->createStatement($sql, $sqlBindArray);
+        $return = $statement->execute();
+
+        $results = array();
+        foreach ($return as $row) {
+            $results[$row['option_id']] =  $row['title'] ;
+        }
+
+        return $results;
     }
 }

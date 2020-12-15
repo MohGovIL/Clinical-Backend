@@ -22,9 +22,14 @@ use Formhandler\View\Helper\Form\TwbBundleFormUrl;
 use Formhandler\View\Helper\HelperFactory;
 
 
+use Laminas\Mvc\MvcEvent;
+use OpenEMR\Events\Globals\GlobalsInitializedEvent;
+use OpenEMR\Events\RestApiExtend\RestApiCreateEvent;
+use OpenEMR\Services\Globals\GlobalSetting;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use function GuzzleHttp\Psr7\parse_request;
 use Interop\Container\ContainerInterface;
-use Zend\ModuleManager\ModuleManager;
+use Laminas\ModuleManager\ModuleManager;
 
 
 class Module {
@@ -33,10 +38,10 @@ class Module {
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
+            'Laminas\Loader\ClassMapAutoloader' => array(
                 __DIR__ . '/autoload_classmap.php',
             ),
-            'Zend\Loader\StandardAutoloader' => array(
+            'Laminas\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
 
@@ -67,7 +72,7 @@ class Module {
                     return $table;
                 },
                 'ExampleTableGateway' => function (ContainerInterface $container) {
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Examle());
                     return new TableGateway('sql_table_name', $dbAdapter, null, $resultSetPrototype);
@@ -105,14 +110,39 @@ class Module {
         }, 100);
     }
 
-    public function getViewHelperConfig()
+
+    /**
+     * @param MvcEvent $e
+     *
+     * Register our event listeners here
+     */
+    public function onBootstrap(MvcEvent $e)
+    {
+        // Get application service manager and get instance of event dispatcher
+        $serviceManager = $e->getApplication()->getServiceManager();
+        $oemrDispatcher = $serviceManager->get(EventDispatcherInterface::class);
+        $this->container = $serviceManager;
+        // listen for view events for routes in zend_modules
+        $oemrDispatcher->addListener(GlobalsInitializedEvent::EVENT_HANDLE, [$this, 'addCustomGlobals']);
+    }
+
+    public function addCustomGlobals(GlobalsInitializedEvent $event)
+    {
+        /*******************************************************************/
+        $event->getGlobalsService()->createSection("Formhandler settings", "Connectors");
+        $setting = new GlobalSetting("Formhandler -load forms settings from CouchDB", 'bool', 0, "Formhandler -load forms settings from CouchDB");
+        $event->getGlobalsService()->appendToSection("Formhandler settings", "formhandler_couchdb", $setting);
+        /*******************************************************************/
+    }
+
+        public function getViewHelperConfig()
     {
         return array(
             'factories' => array(
                 'drug_and_alchol_table' => function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $table= new DrugAndAlcoholUsageTable();
                     $table->setDbAdapter( $dbAdapter);
@@ -123,7 +153,7 @@ class Module {
                 'generate_custom_input_with_data' => function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $CustomInput= new GenerateCustomInputWithData();
                     $CustomInput->setDbAdapter( $dbAdapter);
@@ -133,7 +163,7 @@ class Module {
                 'create_custom_control_from_list'=> function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $CustomInput= new CreateCustomControlFromList();
                     $CustomInput->setDbAdapter( $dbAdapter);
@@ -150,7 +180,7 @@ class Module {
                 'current_family_table'=> function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $CustomInput= new CurrentFamilyTable();
                     $CustomInput->setDbAdapter( $dbAdapter);
@@ -160,7 +190,7 @@ class Module {
                 'get_last_psychosocial_treatment'=>function(ContainerInterface $container){
 
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $CustomInput= new GetLastPsychosocialTreatment();
                     $CustomInput->setDbAdapter( $dbAdapter);
@@ -170,7 +200,7 @@ class Module {
                 'generic_table' => function(ContainerInterface $container) {
                         // Get the shared service manager instance
                          //$sm =  $container->getServiceLocator();
-                        $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                        $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                         // Now inject it into the view helper constructor
                         $table= new GenericTable($container);
                         $table->setDbAdapter( $dbAdapter);
@@ -185,7 +215,7 @@ class Module {
                 'helper_factory' => function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $table= new HelperFactory($container);
                     $table->setDbAdapter( $dbAdapter);
@@ -200,7 +230,7 @@ class Module {
                 'side_effect_generic_table' => function(ContainerInterface $container) {
                     // Get the shared service manager instance
                      //$sm =  $container->getServiceLocator();
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     // Now inject it into the view helper constructor
                     $table= new SideEffectGenericTable($container);
                     $table->setDbAdapter( $dbAdapter);

@@ -18,15 +18,28 @@
  */
 namespace ClinikalAPI;
 
+use ClinikalAPI\Model\ListOptions;
+use ClinikalAPI\Model\ListOptionsTable;
 use ClinikalAPI\Service\ApiBuilder;
 
 use Interop\Container\ContainerInterface;
+use Laminas\Db\TableGateway\TableGateway as ZendTableGateway;
 use OpenEMR\Events\RestApiExtend\RestApiCreateEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Zend\Db\TableGateway\TableGateway;
-use Zend\ModuleManager\ModuleManager;
-use Zend\Mvc\MvcEvent;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\ModuleManager\ModuleManager;
+use Laminas\Mvc\MvcEvent;
+use Laminas\Db\ResultSet\ResultSet;
 
+use ClinikalAPI\Model\ClinikalPatientTrackingChanges;
+use ClinikalAPI\Model\ClinikalPatientTrackingChangesTable;
+use ClinikalAPI\Model\FormContextMap;
+use ClinikalAPI\Model\FormContextMapTable;
+use ClinikalAPI\Model\GetTemplatesService;
+use ClinikalAPI\Model\GetTemplatesServiceTable;
+
+use ClinikalAPI\Model\ManageTemplatesLetters;
+use ClinikalAPI\Model\ManageTemplatesLettersTable;
 
 
 class Module {
@@ -35,10 +48,10 @@ class Module {
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
+            'Laminas\Loader\ClassMapAutoloader' => array(
                 __DIR__ . '/autoload_classmap.php',
             ),
-            'Zend\Loader\StandardAutoloader' => array(
+            'Laminas\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
 
@@ -64,11 +77,52 @@ class Module {
                     $model = new ApiBuilder($container);
                     return $model;
                 },
+                ClinikalPatientTrackingChangesTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new ClinikalPatientTrackingChanges());
+                    $tableGateway = new ZendTableGateway('clinikal_patient_tracking_changes', $dbAdapter, null, $resultSetPrototype);
+                    $table = new ClinikalPatientTrackingChangesTable($tableGateway);
+                    return $table;
+                },
+                FormContextMapTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FormContextMap());
+                    $tableGateway = new ZendTableGateway('form_context_map', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FormContextMapTable($tableGateway);
+                    return $table;
+                },
+                GetTemplatesServiceTable::class =>  function(ContainerInterface $container) {
+
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new GetTemplatesService());
+                    $tableGateway = new ZendTableGateway('clinikal_templates_map', $dbAdapter, null, $resultSetPrototype);
+                    $table = new GetTemplatesServiceTable($tableGateway);
+                    return $table;
+                },
+                /* incomment since 21/07/2020 if there is no bugs delete this
+                GetLionicCodesTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new ListOptions());
+                    $tableGateway = new ZendTableGateway('list_options', $dbAdapter, null, $resultSetPrototype);
+                    $table = new ListOptionsTable($tableGateway);
+                    return $table;
+                },
+                */
+                ManageTemplatesLettersTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new ManageTemplatesLetters());
+                    $tableGateway = new ZendTableGateway('manage_templates_letters', $dbAdapter, null, $resultSetPrototype);
+                    $table = new ManageTemplatesLettersTable($tableGateway);
+                    return $table;
+                },
             ),
         );
     }
-
-
     /**
      * @param MvcEvent $e
      *
@@ -94,7 +148,6 @@ class Module {
     {
         $apiBuilder= $this->sm->get(ApiBuilder::class);
         $extend_route_map=$apiBuilder->getApi();
-
         if (count($extend_route_map) > 0) {
             foreach ($extend_route_map as $route => $action) {
                 $m->addToRouteMap($route, $action);

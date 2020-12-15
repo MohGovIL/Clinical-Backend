@@ -2,9 +2,9 @@
 
 namespace ImportData\Model;
 
-use Zend\InputFilter\InputFilter;;
-use Zend\InputFilter\InputFilterAwareInterface;
-use Zend\InputFilter\InputFilterInterface;
+use Laminas\InputFilter\InputFilter;;
+use Laminas\InputFilter\InputFilterAwareInterface;
+use Laminas\InputFilter\InputFilterInterface;
 
 class ImportData
 {

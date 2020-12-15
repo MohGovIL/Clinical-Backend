@@ -1,0 +1,63 @@
+<?php
+use OpenEMR\Core\Header;
+/*require_once $GLOBALS['fileroot'].'/clinikal/ui-components/ValidateJS/ValidateJsFunctions.php';*/
+require_once $GLOBALS['fileroot'].'/vendor/clinikal/clinikal-backend/modules/GenericTools/src/GenericTools/Library/UiComponents/DataTableExtended/DataTableExtended.php';
+?>
+<!-- Layout -->
+<html>
+<head>
+
+   <?php Header::setupHeader(['jquery','bootstrap','datetime-picker','main-theme', 'fontawesome', 'select2', 'sumoselect','moment','tooltipster']); ?>
+    <script><?php require($GLOBALS['srcdir'] . '/formatting_DateToYYYYMMDD_js.js.php'); ?></script>
+    <?php  $table_handler= new DataTableExtended\DataTableExtended($table_id,$table_col_names);?>
+    <?php  $table_handler->LoadEssentialCssJs();?>
+    <title><?php echo xlt($this->title) ?></title>
+
+
+</head>
+<style>
+    #report_tool_container table.dataTable{
+        max-width: 98vw !important;
+    }
+    table#rabies-patients-tracking_table {
+        padding-left: 26px;
+    }
+    #filters-container .filter-box {
+        display: inline-flex;
+        padding-left: 7px;
+    }
+    #filters-container input[type=text].form-control {
+        height: 31px !important;
+        border: 1px solid #949eaa !important;
+    }
+    #filters-container label {
+        display: inline-block;
+        max-width: 100%;
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+    #filters-container .SumoSelect {
+        display: block;
+        width: auto;
+    }
+    #filters-container {
+/*
+        border: 2px solid #0064db;
+*/
+        padding: 20px;
+        width: 100%;
+        height: auto;
+    }
+</style>
+<body  class="body_top">
+<div class="container-fluid">
+    <div id="report_tool_container" class='row'>
+        <div class="col-md-12">
+            <?php echo $this->content; ?>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

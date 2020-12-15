@@ -2,8 +2,8 @@
 
 namespace Formhandler\View\Helper\Form;
 
-use Zend\Form\View\Helper\FormMultiCheckbox;
-use Zend\Form\ElementInterface;
+use Laminas\Form\View\Helper\FormMultiCheckbox;
+use Laminas\Form\ElementInterface;
 
 class TwbBundleFormMultiCheckbox extends FormMultiCheckbox
 {

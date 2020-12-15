@@ -1,0 +1,78 @@
+<style>
+    .Rectangle {
+        width: 98%;
+        opacity: 0.2;
+        border: solid 1px #000b40;
+        background-color: #f5f5f5;
+        margin-left:1%;
+        margin-right:1%;
+    }
+    .Label-Text {
+        width: 48px;
+        height: 18px;
+        opacity: 0.6;
+        font-family: OpenSansHebrew;
+        font-size: 10px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.8;
+        letter-spacing: normal;
+        text-align: right;
+        color: #1e2132;
+    }
+    .Input-text {
+        width: 104px;
+        height: 18px;
+        font-family: OpenSansHebrew;
+        font-size: 12px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        text-align: right;
+        color: #000b40;
+    }
+</style>
+    <table class="Rectangle" dir="<?php echo text($langDir); ?>"  lang="<?php echo text($langCode); ?>">
+        <tbody>
+        <tr>
+            <td>
+                <p class="Label-Text"><?php echo(xl("Patient name"));?></p>
+                <p class="Input-text"><?php echo($name);?></p>
+            </td>
+            <td>
+                <p class="Label-Text"><?php echo(xl($id_type));?></p>
+                <p class="Input-text"><?php echo($id_number);?></p>
+            </td>
+            <td>
+                <p class="Label-Text"><?php echo(xl("Birthdate"));?></p>
+                <p class="Input-text"><?php echo($birthdate);?></p>
+            </td>
+            <td>
+                <p class="Label-Text"><?php echo(xl("Age"));?></p>
+                <p class="Input-text"><?php echo($age);?></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p class="Label-Text"><?php echo(xl("Gender"));?></p>
+                <p class="Input-text"><?php echo(xl($Gender));?></p>
+            </td>
+            <td>
+                <p class="Label-Text"><?php echo(xl("Phone"));?></p>
+                <p class="Input-text"><?php echo(xl($phone));?></p>
+            </td>
+            <td>
+                <p class="Label-Text"><?php echo(xl("HMO"));?></p>
+                <p class="Input-text"><?php echo($HMO);?></p>
+            </td>
+            <td>
+                <p class="Label-Text"></p>
+                <p class="Input-text"></p>
+            </td>
+        </tr>
+        </tbody>
+     </table>
+

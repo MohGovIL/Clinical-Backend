@@ -2,8 +2,8 @@
 
 namespace GenericTools\Model;
 
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Sql\Where;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Where;
 
 /**
  * Class PumpsTable
@@ -26,6 +26,20 @@ class UserTable
     public function getUser($id)
     {
         $rowset = $this->tableGateway->select(array('id' => $id));
+        $row = $rowset->current();
+        if (!$row) {
+            return false;
+        }
+        return $row;
+    }
+
+    /**
+     * @param $id
+     * @return array|\ArrayObject|null|false
+     */
+    public function getByUserName($userName)
+    {
+        $rowset = $this->tableGateway->select(array('username' => $userName));
         $row = $rowset->current();
         if (!$row) {
             return false;

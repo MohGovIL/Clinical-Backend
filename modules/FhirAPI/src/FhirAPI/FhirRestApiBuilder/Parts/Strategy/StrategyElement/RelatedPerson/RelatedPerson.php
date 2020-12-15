@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 29/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class strategy Fhir  ORGANIZATION
  *
  *
@@ -10,6 +10,7 @@
 
 namespace FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\RelatedPerson;
 
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Patch\GenericPatch;
 use FhirAPI\FhirRestApiBuilder\Parts\Restful;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchContext;
@@ -41,7 +42,7 @@ class RelatedPerson Extends Restful implements  Strategy
         $this->setParamsFromUrl($initials['paramsFromUrl']);
         $this->setParamsFromBody($initials['paramsFromBody']);
         $this->setContainer($initials['container']);
-        $this->setMapping($initials['container']);
+        $this->setMapping($initials['container'],$initials['strategyName']);
     }
 
     public function doAlgorithm($arrParams)
@@ -53,9 +54,10 @@ class RelatedPerson Extends Restful implements  Strategy
     }
 
 
-    public function setMapping($container)
+    public function setMapping($container,$strategyName)
     {
         $this->mapping = new FhirRelatedPersonMapping($container);
+        $this->mapping->setSelfFHIRType($strategyName);
     }
 
 /********************end of base internal functions********************************************************************/
@@ -142,10 +144,20 @@ class RelatedPerson Extends Restful implements  Strategy
      */
     public function create()
     {
-        $dBdata = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
-        unset($dBdata['related_person']['id']);
+        $dBData = $this->mapping->getDbDataFromRequest($this->paramsFromBody['POST_PARSED_JSON']);
+        unset($dBData['related_person']['id']);
         $relatedPersonTable = $this->container->get(RelatedPersonTable::class);
-        $inserted=$relatedPersonTable->safeInsert($dBdata['related_person'],'id');
+
+        /*********************************** validate *******************************/
+        $allData=array('new'=>$dBData,'old'=>array());
+        $mainTable=$relatedPersonTable->getTableName();
+        $isValid=$this->mapping->validateDb($allData,$mainTable);
+        if(!$isValid){
+            ErrorCodes::http_response_code("406","failed validation");
+        }
+        /***************************************************************************/
+
+        $inserted=$relatedPersonTable->safeInsert($dBData['related_person'],'id');
         return $this->mapping->DBToFhir($inserted, true);
     }
 

@@ -1,0 +1,27 @@
+
+.dataTables_wrapper .dataTables_length{
+    float: right;
+}
+
+.dataTables_wrapper .dataTables_filter{
+    float: left;
+}
+
+.dataTables_wrapper .dataTables_filter input{
+    color: black !important;
+}
+
+.dataTables_wrapper .dataTables_info{
+    float: right;
+}
+
+.dataTables_wrapper .dataTables_length::after {
+    content: ' ';
+    background-color: white;
+}
+
+table.dataTable.hide-ordering thead .sorting,
+table.dataTable.hide-ordering thead .sorting_asc,
+table.dataTable.hide-ordering thead .sorting_desc {
+    background : none;
+}

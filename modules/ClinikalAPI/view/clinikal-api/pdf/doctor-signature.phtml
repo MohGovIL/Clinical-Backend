@@ -1,0 +1,51 @@
+<style>
+
+.Input-text-Copy-34 {
+width: 52px;
+height: 18px;
+opacity: 0.6;
+font-family: OpenSansHebrew;
+font-size: 12px;
+font-weight: normal;
+font-stretch: normal;
+font-style: normal;
+line-height: 1.5;
+letter-spacing: normal;
+color: #000b40;
+float:<?php echo $langDir === "rtl"?'left':'right'?>;
+text-align:<?php echo $langDir === "rtl"?'left':'right'?>;
+}
+.RectangleDoc {
+    width: 98%;
+    margin-left:<?php echo $langDir === "rtl"?'5%':'70%'?>;
+
+}
+
+
+</style>
+<div class="RectangleDoc">
+
+
+
+<table  dir="<?php echo $langDir;?>" style="page-break-inside:avoid;">
+    <tbody>
+    <tr>
+        <td>
+            <span class="Input-text-Copy-34"><?php echo(xl("Doctor's name"));?> : </span>
+        </td>
+        <td>
+            <span class="Input-text-Copy-34"><?php echo($name);?></span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="Input-text-Copy-34"><?php echo(xl("License number"));?> : </span>
+        </td>
+        <td>
+            <span class="Input-text-Copy-34"><?php echo($state_license_number);?></span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</div>
+

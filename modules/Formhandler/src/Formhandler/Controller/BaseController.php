@@ -4,12 +4,12 @@ namespace Formhandler\Controller;
 
 use Formhandler\Model;
 use Formhandler\Model\customDB;
-use Zend\InputFilter\InputFilter;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\InputFilter\InputFilter;
+use Laminas\Mvc\Controller\AbstractActionController;
 use Application\Listener\Listener;
 use Interop\Container\ContainerInterface;
-use Zend\Mvc\Controller\ActionController;
-use Zend\View\Model\ViewModel;
+use Laminas\Mvc\Controller\ActionController;
+use Laminas\View\Model\ViewModel;
 
 class BaseController extends AbstractActionController
 {
@@ -48,9 +48,9 @@ class BaseController extends AbstractActionController
     {
 
 
-                     $this->jsFiles[] = '/datatables.net/js/jquery.dataTables.js';
+                    // $this->jsFiles[] = '/datatables.net/js/jquery.dataTables.js';
                  //   $this->jsFiles[] = '/jquery-ui-1-10-4/ui/i18n/jquery.ui.datepicker-he.js';
-                    $this->jsFiles[] = '/../../interface/modules/zend_modules/public/js/Formhandler/jquery_ui/ui/i18n/datepicker-he.js';
+                    $this->jsFiles[] = '/../../interface/modules/zend_modules/public/js/formhandler/jquery_ui/ui/i18n/datepicker-he.js';
 
 
         return $this->jsFiles;
@@ -65,7 +65,7 @@ class BaseController extends AbstractActionController
     {
 
 
-        $this->cssFiles[] = '/datatables.net-jqui/css/dataTables.jqueryui.css';
+       // $this->cssFiles[] = '/datatables.net-jqui/css/dataTables.jqueryui.css';
 
         return $this->cssFiles;
     }
@@ -78,7 +78,7 @@ class BaseController extends AbstractActionController
     protected function getLanguage(){
 
 
-        $dbAdapter = $this->container->get('Zend\Db\Adapter\Adapter');
+        $dbAdapter = $this->container->get('Laminas\Db\Adapter\Adapter');
         $sql = new CustomSql($dbAdapter);
 
         $lang = $sql->getCurrentLang();
@@ -270,17 +270,17 @@ class BaseController extends AbstractActionController
     {
         $this->layout()->setVariable('validateJs', json_encode($this->validate));
         $this->layout()->setVariable('constraintsJs', json_encode($this->getJsValidateConstraints()));
-        $this->jsFiles[] =  '/../../../openemr/interface/modules/zend_modules/public/js/validateMatrix/validate.js';
+        $this->FormhandleJSFiles[] =  $this->getRequest()->getbaseUrl() . '/js/formhandler/validateMatrix/validate.js';
 
 
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/Formhandler/custom_validate.js";
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/Formhandler/moment.js";
-        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/Formhandler/styles.css";
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/Formhandler/ui_addons.js"; //prevent js cache
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/lib/select2/select2.full.min.js";
-        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/select2/select2.min.css";
-        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/lib/tooltipster.bundle.min.js";
-        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/tooltipster.bundle.min.css";
+        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/formhandler/custom_validate.js";
+        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/formhandler/moment.js";
+        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/formhandler/styles.css";
+        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/formhandler/ui_addons.js"; //prevent js cache
+       // $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/lib/select2/select2.full.min.js";
+      //  $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/select2/select2.min.css";
+        $this->FormhandleJSFiles[] =   $this->getRequest()->getbaseUrl() . "/js/clinikalmohil/lib/tooltipster.bundle.min.js";
+        $this->FormhandleCSSFiles[] =   $this->getRequest()->getbaseUrl() . "/css/clinikalmohil/tooltipster.bundle.min.css";
 
     }
 
@@ -289,7 +289,7 @@ class BaseController extends AbstractActionController
      * @param $data
      * @param bool $convertToJson
      * @param int $responsecode
-     * @return \Zend\Stdlib\ResponseInterface
+     * @return \Laminas\Stdlib\ResponseInterface
      * @comment to use this function return this $response in your controller
      */
     protected function responseWithNoLayout($data, $convertToJson=true, $responsecode=200){
@@ -331,7 +331,7 @@ class BaseController extends AbstractActionController
        // $container = $this->getServiceLocator();
 
 
-        $dbAdapter = $this->container->get('Zend\Db\Adapter\Adapter');
+        $dbAdapter = $this->container->get('Laminas\Db\Adapter\Adapter');
         $CustomDb = new CustomDb($dbAdapter);
         return $CustomDb;
     }

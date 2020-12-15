@@ -2,7 +2,7 @@
 
 namespace Inheritance\Model;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 use Inheritance\Model\ErrorException;
 use Interop\Container\ContainerInterface;
 
@@ -341,7 +341,7 @@ class NetworkingTable
 
     private function zend_connection_adapter($row){
 
-        $adapter = new \Zend\Db\Adapter\Adapter($row['networking_config']);
+        $adapter = new \Laminas\Db\Adapter\Adapter($row['networking_config']);
         try {
             $adapter->getDriver()->getConnection()->connect();
         } catch (\Exception $ex) {

@@ -7,14 +7,14 @@
 
 namespace FhirAPI\FhirRestApiBuilder\Builders;
 
-
+use Exception;
 use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Registry;
 use FhirAPI\FhirRestApiBuilder\Parts\Restful;
 use FhirAPI\FhirRestApiBuilder\Parts\Search\SearchStrategies;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Context;
-//use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Organization\Encounter;
 use FhirAPI\Service\FhirRequestParamsHandler;
+use ClinikalAPI\Model\ClinikalPatientTrackingChangesTable;
 use GenericTools\Model\LogServiceTable;
 use GenericTools\Service\AclCheckExtendedService;
 use Interop\Container\ContainerInterface;
@@ -161,6 +161,110 @@ Abstract class Builder
         return $pid;
     }
 
+    /**
+     *  This function checks if a FHIR request update/create data that is relevant to a facility real time data
+     *  If so it updates a dedicated table that logs the facility Id and the date the relevant data was changed
+     *  The table is used by the SSE service to send live updates to the client
+     */
+    public static function RegisterRequest($functionType,$FHIRType ,$FHIRResource, $container)
+    {
+        if($FHIRResource!==null) {
+            /**
+             * Flag that indicates if a FHIR request changed data that is relevant to the SSE service
+             */
+            $sseNeedUpdateFlag = true;
+
+            /**
+             * Check the action the request will do in the server
+             * for example get() data is not relevant
+             */
+            switch ($functionType) {
+                case "create":
+                case "update":
+                case "patch":
+                case "delete":
+                    break;
+                default:
+                    $sseNeedUpdateFlag = false;
+            }
+
+            /**
+             *  If the type of the action is relevant
+             *  For each FHIR element that is relevant
+             *  Check if the log table of the SSE service need to be updated
+             *  If an update is needed, extract facility id from FHIR element
+             *  OR use the "ALL" key to update all records
+             */
+            if ($sseNeedUpdateFlag) {
+                $facilityId = null;
+                switch ($FHIRType) {
+                    case "Encounter":
+                        if (method_exists($FHIRResource, 'getServiceProvider') && method_exists($FHIRResource->getServiceProvider(), 'getReference')) {
+                            $ref = $FHIRResource->getServiceProvider()->getReference()->getValue();
+
+                            if ($ref !== "" && !is_null($ref)) {
+                                $linkArr = explode('/', $ref);
+                                $facilityId = $linkArr[1];
+                            }
+                        }
+                        break;
+                    case "Appointment":
+                        $participants = $FHIRResource->getParticipant();
+                        foreach ($participants as $index => $participant) {
+                            if (method_exists($participant, 'getActor') && method_exists($participant->getActor(), 'getReference')) {
+                                $ref = $participant->getActor()->getReference()->getValue();
+                                if ($ref !== "" && !is_null($ref)) {
+                                    $linkArr = explode('/', $ref);
+                                    if ($linkArr[0] === "HealthcareService") {
+                                        $healthcare = $linkArr[1];
+                                        $oPart = self::$part;
+                                        self::$part = null;
+                                        $HealthcareService = self::doRoutingFunction([
+                                            'paramsFromUrl' => array("0" => $healthcare),
+                                            'paramsFromBody' => array(),
+                                            'FHIRResource' => 'HealthcareService',
+                                            'functionType' => 'read',
+                                            'container' => $container
+                                        ]);
+
+                                        if (method_exists($HealthcareService, 'getProvidedBy') && method_exists($HealthcareService->getProvidedBy(), 'getReference')) {
+                                            $ref = $HealthcareService->getProvidedBy()->getReference()->getValue();
+                                            if ($ref !== "" && !is_null($ref)) {
+                                                $linkArr = explode('/', $ref);
+                                                $facilityId = $linkArr[1];
+                                            }
+                                        }
+                                        self::$part = $oPart;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "Patient":
+                        if (in_array($functionType, array("update", "patch", "delete"))) {
+                            $facilityId = "ALL";
+                        } else {
+                            $sseNeedUpdateFlag = false;
+                        }
+                        break;
+                    default:
+                        $sseNeedUpdateFlag = false;
+
+                }
+                if ($sseNeedUpdateFlag && !is_null($facilityId)) {
+
+                    $LogService = $container->get(ClinikalPatientTrackingChangesTable::class);
+                    $date = date('Y-m-d H:i:s');
+                    $params = array(
+                        "facility_id" => $facilityId,
+                        "update_date" => $date,
+                    );
+                    $LogService->replaceInto($params);
+                }
+            }
+        }
+    }
+
     public static function logRequest($functionType, $FHIRResource, $container)
     {
 
@@ -229,14 +333,10 @@ Abstract class Builder
 
         $FHIRResource = self::$type;
         $container = self::getContainer();
-     //   Registry::setNewRouting($key , function($params) use ($key, $functionType) {
 
-          //(self::$type)::setPart($functionType,self::ROUTES, $key ,function($params,$functionType){ return self::doRoutingFunction($params,self::$type,$functionType);});
          Restful::setPart(
             self::$type,$functionType,
             self::ROUTES, $key , function (...$paramsFromUrl) use ($functionType, $FHIRResource, $container) {
-
-
              $FhirRequestParamsHandler = $container->get(FhirRequestParamsHandler::class);
              $paramsFromBody = $FhirRequestParamsHandler->getRequestParams();
 
@@ -249,6 +349,13 @@ Abstract class Builder
                      'functionType' => $functionType,
                      'container' => $container
                  ]);
+
+             if($response===null){
+                 ErrorCodes::http_response_code(500,"failed to create object");
+                 return;
+             }
+
+             self::RegisterRequest($functionType, $FHIRResource,$response, $container);
 
              //convert fhir to array
              $arr = json_decode(json_encode($response), true);
@@ -266,6 +373,8 @@ Abstract class Builder
                              }
                          } else {
                              if ($subArr === null || $subArr === "") {
+                                 unset ($mainArr[$index]);
+                             }elseif($index==="resourceType" && in_array($subArr,array("Dosage","Timing"))){
                                  unset ($mainArr[$index]);
                              }
                          }

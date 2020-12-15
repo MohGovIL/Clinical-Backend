@@ -18,11 +18,11 @@ use Formhandler\View\Helper\TwbBundleGlyphicon;
 use Formhandler\View\Helper\TwbBundleFontAwesome;
 use Formhandler\View\Helper\TwbBundleLabel;
 
-use Zend\Form\View\Helper\FormCheckbox;
-use Zend\Form\View\Helper\FormRadio;
+use Laminas\Form\View\Helper\FormCheckbox;
+use Laminas\Form\View\Helper\FormRadio;
 use Formhandler\Controller\FormhandlerController;
 use Interop\Container\ContainerInterface;
-use Zend\Form\View\Helper\FormUrl;
+use Laminas\Form\View\Helper\FormUrl;
 
 return array(
 
@@ -174,7 +174,7 @@ return array(
     'service_manager' => array(
         //other services can be registrated here...
         'abstract_factories' => array(
-            'Zend\Form\FormAbstractServiceFactory',
+            'Laminas\Form\FormAbstractServiceFactory',
         ),
         //other services can be registrated here...
     ),

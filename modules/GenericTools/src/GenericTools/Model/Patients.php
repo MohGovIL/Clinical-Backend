@@ -9,6 +9,7 @@ class Patients
     public $lname;
     public $mname;
     public $ss;
+    public $sex;
     public $DOB;
     public $pid;
     public $updated_by;
@@ -35,6 +36,7 @@ class Patients
         $this->lname = (!empty($data['lname'])) ? $data['lname'] : null;
         $this->mname = (!empty($data['mname'])) ? $data['mname'] : null;
         $this->ss = (!empty($data['ss'])) ? $data['ss'] : null;
+        $this->sex = (!empty($data['sex'])) ? $data['sex'] : null;
         $this->DOB = (!empty($data['DOB'])) ? $data['DOB'] : null;
         $this->pid = (!empty($data['pid'])) ? $data['pid'] : null;
         $this->updated_by = (!empty($data['updated_by'])) ? $data['updated_by'] : null;
@@ -49,8 +51,6 @@ class Patients
         $this->postal_code = (!empty($data['postal_code'])) ? $data['postal_code'] : null;
         $this->mh_pobox = (!empty($data['mh_pobox'])) ? $data['mh_pobox'] : null;
         $this->mh_type_id = (!empty($data['mh_type_id'])) ? $data['mh_type_id'] : null;
-        $this->sex = (!empty($data['sex'])) ? $data['sex'] : null;
-        $this->mh_english_name = (!empty($data['mh_english_name'])) ? $data['mh_english_name'] : null;
         $this->mh_english_name = (!empty($data['mh_english_name'])) ? $data['mh_english_name'] : null;
         $this->deceased_date = (!empty($data['deceased_date'])) ? $data['deceased_date'] : null;
         $this->mh_insurance_organiz = (!empty($data['mh_insurance_organiz'])) ? $data['mh_insurance_organiz'] : null;

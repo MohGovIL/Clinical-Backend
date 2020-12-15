@@ -26,7 +26,7 @@ class GenericToolsController extends BaseController{
     }
 
     /**
-     * @return \Zend\Stdlib\ResponseInterface
+     * @return \Laminas\Stdlib\ResponseInterface
      */
     public function getListAjaxAction()
     {
@@ -44,7 +44,7 @@ class GenericToolsController extends BaseController{
     }
 
     /**
-     * @return \Zend\Stdlib\ResponseInterface
+     * @return \Laminas\Stdlib\ResponseInterface
      */
     public function getListFacilityAjaxAction()
     {

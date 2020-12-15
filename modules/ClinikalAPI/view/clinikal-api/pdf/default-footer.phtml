@@ -1,0 +1,21 @@
+<?php
+/*******
+Required params -
+$langDir - (rtl/ltr)
+$langCode  - (he/en)
+$facility - facility object (GenericTools/Model/Facility)
+ ******/
+?>
+<footer dir="<?php echo text($langDir); ?>"  lang="<?php echo text($langCode); ?>">
+    <table width="100%" style="/*border-top: 1px solid #000000;*/ vertical-align: bottom; font-family: arial,serif; color: black;">
+        <tr>
+            <td width="42%">
+            </td>
+            <td width="16%" align="center">
+                <?php echo xlt("Page"); ?>  {PAGENO} <?php echo xlt("of"); ?> {nb}
+            </td>
+            <td width="42%" dir="ltr" lang="en">
+            </td>
+        </tr>
+    </table>
+</footer>

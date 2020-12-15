@@ -21,6 +21,14 @@ class ListsOpenEmr
     public $comments;
     public $pid;
     public $list_option_id;
+    public $outcome;
+    public $user;
+    public $reaction;
+    public $diagnosis_valueset;
+    public $encounter;
+    public $resolved;
+
+    public $code_text;
 
     public function exchangeArray($data)
     {
@@ -37,9 +45,16 @@ class ListsOpenEmr
         $this->referredby = (!empty($data['referredby'])) ? $data['referredby'] : null;
         $this->extrainfo = (!empty($data['extrainfo'])) ? $data['extrainfo'] : null;
         $this->diagnosis = (!empty($data['diagnosis'])) ? $data['diagnosis'] : null;
+        $this->diagnosis_valueset = (!empty($data['diagnosis_valueset'])) ? $data['diagnosis_valueset'] : null;
         $this->activity = (!empty($data['activity'])) ? $data['activity'] : null;
         $this->comments = (!empty($data['comments'])) ? $data['comments'] : null;
         $this->pid = (!empty($data['pid'])) ? $data['pid'] : null;
         $this->list_option_id = (!empty($data['list_option_id'])) ? $data['list_option_id'] : null;
+        $this->outcome = (!empty($data['outcome']) || $data['outcome']==="0") ? $data['outcome'] : null;
+        $this->user = (!empty($data['user'])) ? $data['user'] : null;
+        $this->reaction = (!empty($data['reaction'])) ? $data['reaction'] : "";
+        $this->encounter = (!empty($data['encounter'])) ? $data['encounter'] : null;
+        $this->resolved = (!empty($data['resolved']) || $data['resolved']==0) ? $data['resolved'] : null;
+        $this->code_text = (!empty($data['code_text'])) ? $data['code_text'] : "";
     }
 }

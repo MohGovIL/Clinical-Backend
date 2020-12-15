@@ -2,7 +2,9 @@
 
 namespace ImportData\Model;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\TableGateway\TableGateway;
 
 
 class CodesTable
@@ -47,5 +49,29 @@ class CodesTable
 
         $this->tableGateway->delete(array('code_type' => $icdType));
     }
+
+    public function getCodeTitle($code,$code_type){
+
+        $select = $this->tableGateway->getSql()->select();
+        $joinExp= new Expression("codes.code_type = ct.ct_id");
+        $select->join(array ("ct"=>"code_types") , $joinExp, array("ct_id"=>"ct_id","ct_key"=>"ct_key"), "LEFT");
+        $where = new Where();
+        $where->nest()->equalTo('code', $code)->AND->equalTo("ct.ct_key",$code_type);
+
+        $select->where($where);
+        $rs = $this->tableGateway->selectWith($select);
+        $exist = $rs->current();
+
+        if(!empty($exist)){
+            return  $exist->code_text;
+        } else {
+            return null;
+        }
+
+    }
+
+
+
+
 
 }

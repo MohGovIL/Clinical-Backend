@@ -2,7 +2,7 @@
 
 namespace Inheritance\Form;
 
-use Zend\Form\Form;
+use Laminas\Form\Form;
 use Application\Listener\Listener;
 
 /**

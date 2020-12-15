@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 21/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class MAPPING FOR ORGANIZATION
  */
 
@@ -26,7 +26,7 @@ class FhirPractitionerMapping extends FhirBaseMapping implements MappingData
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->setFHIRPractitioner(new FHIRPractitioner());
    //     $FhirRequestParamsHandler=$this->container->get(FhirRequestParamsHandler::class);
     //    $this->requestParams=$FhirRequestParamsHandler->getRequestParams();

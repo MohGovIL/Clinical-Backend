@@ -1,0 +1,11 @@
+@page {
+    size: A4;
+}
+
+@page :left {
+    margin-left: 3cm;
+}
+
+@page :right {
+    margin-left: 3cm;
+}

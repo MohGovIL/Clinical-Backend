@@ -9,7 +9,7 @@
 namespace GenericTools\Controller;
 
 use GenericTools\Controller\BaseController;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class GenericToolsExtended extends BaseController
 {

@@ -6,8 +6,8 @@ use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\UtilsTraits\JoinBuilder;
 use OpenEMR\FHIR\R4\FHIRResourceContainer;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
 
 class QuestionnaireResponseSearch extends BaseSearch
 {

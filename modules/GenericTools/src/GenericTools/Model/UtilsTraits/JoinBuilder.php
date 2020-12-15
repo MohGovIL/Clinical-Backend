@@ -2,9 +2,9 @@
 
 namespace GenericTools\Model\UtilsTraits;
 
-use Zend\Db\Sql\Join;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\TableIdentifier;
+use Laminas\Db\Sql\Join;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\TableIdentifier;
 
 trait JoinBuilder
 {
@@ -37,5 +37,8 @@ trait JoinBuilder
     public function getJoins()
     {
         return $this->allJoins;
+    }
+    public function clearAllJoin(){
+        $this->allJoins = array();
     }
 }

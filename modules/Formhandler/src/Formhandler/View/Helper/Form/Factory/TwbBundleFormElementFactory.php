@@ -2,8 +2,8 @@
 
 namespace Formhandler\View\Helper\Factory\Form;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use Formhandler\Form\View\Helper\TwbBundleFormElement;
 
 /**

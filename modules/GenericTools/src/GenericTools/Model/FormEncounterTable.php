@@ -4,10 +4,10 @@ namespace GenericTools\Model;
 
 use GenericTools\Model\UtilsTraits\JoinBuilder;
 use GenericTools\Traits\magicMethods;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Where;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\TableGateway\TableGateway;
 
 class FormEncounterTable
 {
@@ -157,4 +157,38 @@ class FormEncounterTable
         }
     }
 
+    /**
+     *  Return status,secondary status, last status update date
+     * @param integer
+     * @return array
+    */
+    public function getStatusStateByEid($eid)
+    {
+        $sql="SELECT status,secondary_status,status_update_date FROM " . $this->tableGateway->table . " WHERE id = ?";
+
+        $statement = $this->tableGateway->adapter->createStatement($sql, array($eid));
+        $return = $statement->execute();
+
+        $results = array();
+        foreach ($return as $row) {
+            $results[] = $row;
+        }
+
+        return $results[0];
+    }
+    public function fetchById($id)
+    {
+        $sql="SELECT * FROM " . $this->tableGateway->table . " WHERE id = ?";
+
+        $statement = $this->tableGateway->adapter->createStatement($sql, array($id));
+        $return = $statement->execute();
+
+        $results = array();
+        foreach ($return as $row) {
+            $results[] = $row;
+        }
+
+        return $results[0];
+
+    }
 }

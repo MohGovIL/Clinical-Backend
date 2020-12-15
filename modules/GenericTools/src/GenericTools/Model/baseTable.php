@@ -8,12 +8,12 @@
 
 namespace GenericTools\Model;
 use Exception;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Predicate\Predicate;
-use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Where;
-use Zend\Db\Sql\Update;
-use Zend\Db\Sql\Insert;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Predicate\Predicate;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\Sql\Update;
+use Laminas\Db\Sql\Insert;
 trait baseTable
 {
     private static  $AND = "AND";
@@ -36,6 +36,11 @@ trait baseTable
      * @return array| /ArrayObject|null
      *
      */
+
+    public function getTableName(){
+        return $this->tableGateway->getTable();
+    }
+
 
     public function getDataByParams(array $FilterData)
     {
@@ -61,14 +66,12 @@ trait baseTable
         return $rsArray;
     }
 
-
     /**
      * @param array
      * @param array
      * @return  bool
      *
      */
-
     public function updateData(array $id, array $data)
     {
 
@@ -86,7 +89,6 @@ trait baseTable
 
     }
 
-
     /**
      *
      * This function insert data (can be parietal) to db
@@ -102,7 +104,6 @@ trait baseTable
      * field name that gets tha max +1 value of its column
      * @return  string | array
      */
-
     public function safeInsert(array $data,$primaryKey,$maxField=null)
     {
         $db=$this->tableGateway;
@@ -156,7 +157,6 @@ trait baseTable
      * field name that gets tha max +1 value of its column
      * @return  string | array
      */
-
     public function safeUpdate(array $data,array $primaryKey)
     {
         $db=$this->tableGateway;
@@ -191,50 +191,79 @@ trait baseTable
         }
     }
 
-
-
     public function buildGenericSelect(array $FilterData = null,$order = null,$specialParams = array() )
     {
         $rsArray = array();
         $select = $this->tableGateway->getSql()->select();
 
-        if (isset($this->join)){
+        if (isset($this->join)) {
             $join = $this->join;
-        }else{
-            $join=null;
+        } else {
+            $join = null;
         }
 
-       // if( count($FilterData) <= 0 )return $rsArray;
-        if(!empty($join) && is_array($join['join_with'])) {
+        // if( count($FilterData) <= 0 )return $rsArray;
+        if (!empty($join) && is_array($join['join_with'])) {
 
-            for($key = 0; $key < count($join['join_with']); $key++) {
+            for ($key = 0; $key < count($join['join_with']); $key++) {
 
-                $joinType =  !empty($join['join_type'][$key]) ?  $join['join_type'][$key] : null;
-                $joinSelectColumns =  !empty($join[self::$SELECT][$key]) ?  $join[self::$SELECT][$key] : null;
-                $joinWith = !empty($join['join_with'][$key]) ? $join['join_with'][$key] : null;
-                $joinOrder= !empty($join['join_order'][$key]) ? $join['join_order'][$key] : null;
-                $joinON = !empty($join[self::$ON][$key]) ? $join[self::$ON][$key] : null;
+                $joinType = !empty($join['join_type'][$key])
+                    ? $join['join_type'][$key] : null;
+                $joinSelectColumns = !empty($join[self::$SELECT][$key])
+                    ? $join[self::$SELECT][$key] : null;
+                $joinWith = !empty($join['join_with'][$key])
+                    ? $join['join_with'][$key] : null;
+                $joinOrder = !empty($join['join_order'][$key])
+                    ? $join['join_order'][$key] : null;
+                $joinON = !empty($join[self::$ON][$key])
+                    ? $join[self::$ON][$key] : null;
 
 
-                $select->join($joinWith, $joinON, /*Select::SQL_STAR*/ $joinSelectColumns, $joinType);
-                if($joinOrder!="")
-                {
+                $select->join($joinWith, $joinON,
+                    /*Select::SQL_STAR*/ $joinSelectColumns, $joinType);
+                if ($joinOrder != "") {
                     $select->order($joinOrder);
                 }
             }
         }
 
-        if(!is_null($order) && $order!="") {
+        if (!is_null($order) && $order != "") {
             $select->order(new Expression($order));
         }
 
         $where = new Where();
-        foreach($FilterData as $field=>$value){
-            $last = self::$AND;
-            $this->createQuery($value,$where,$field,$last,$FilterData);
-        }
-        $select->where($where);
 
+        //nesting where conditions
+        $standardWhere = [];
+        $groups = [];
+        foreach ($FilterData as $field => $value) {
+            if (is_array($value) && !is_null($value['nestGroup'])) {
+                $groups[$value['nestGroup']][][$field] = $FilterData[$field];
+            } else {
+                $standardWhere[$field] = $value;
+            }
+        }
+
+        foreach ($standardWhere as $field => $value) {
+            $last = self::$AND;
+            $this->createQuery($value, $where, $field, $last, $FilterData);
+        }
+
+        foreach ($groups as $index => $group) {
+            $nest = $where->and->nest();
+            foreach ($group as $i => $fieldArr) {
+                foreach ($fieldArr as $field => $value ) {
+                    unset($fieldArr[$field]['nestGroup']);
+                    unset($value['nestGroup']);
+                    $last = (is_null($value[0]['sqlOp'])) ? self::$AND
+                        : $value[0]['sqlOp'];
+                    $this->createQuery($value, $nest, $field, $last,
+                        $FilterData);
+                }
+            }
+        }
+
+        $select->where($where);
 
         if(!is_null($join[self::$GROUP]) && $join[self::$GROUP] != "" ) {
             $select->group($join[self::$GROUP]);
@@ -246,7 +275,7 @@ trait baseTable
             }
 
         }
-
+        //print $select->getSqlString();die;
         $rs = $this->tableGateway->selectWith($select);
         $rsArray = array();
         foreach ($rs as $r) {
@@ -269,6 +298,7 @@ trait baseTable
 
     public function buildOrAndPredicateWhereToWhere($val,&$where,$field,$predicate)
     {
+        $op =null;
         //check modifiers
         if (isset($val[self::$MODIFIER]) && !is_null($val[self::$MODIFIER]) && $val[self::$MODIFIER] != self::$EXACT) {
             if ($val[self::$MODIFIER] == "not") {
@@ -320,16 +350,18 @@ trait baseTable
 
     }
 
-
     public function parsePredicateAnd($value,&$where,$field){
-        if(is_array($value[self::$VALUE])) {
-            foreach ($value[self::$VALUE] as $key => $val) {
-                $this->buildOrAndPredicateWhereToWhere($val,$where,$field,self::$AND);
+
+       // if(is_array($value)){
+            if(is_array($value[self::$VALUE])) {
+                foreach ($value[self::$VALUE] as $key => $val) {
+                    $this->buildOrAndPredicateWhereToWhere($val,$where,$field,self::$AND);
+                }
+                return;
             }
-        }
-        else{
-            $this->buildOrAndPredicateWhereToWhere($value,$where,$field,self::$AND);
-        }
+     //   }
+        $this->buildOrAndPredicateWhereToWhere($value,$where,$field,self::$AND);
+
     }
 
     public function checkIfIn($value){
@@ -352,7 +384,6 @@ trait baseTable
         return true;
     }
 
-
     public function createQuery($value,&$where,$field,&$last,$FilterData)
     {
         if (is_array($value)) { //needs or
@@ -362,15 +393,17 @@ trait baseTable
                     //unset ($value[$key][self::$OPERATOR]);
                     //unset ($value[$key][self::$MODIFIER]);
                 }
+                $where->$last;
                 $where->in($field,$inThisValues);
             }
             else {
                 //foreach ($value as $key => $value) {
+                $valueData = isset($value['value']) ? $value : $value[0];
                 if ($last == self::$AND) {
-                    $this->parsePredicateAnd($value[0], $where, $field);
-                    $last = self::$OR;
+                    $this->parsePredicateAnd($valueData, $where, $field);
+                    $last = self::$AND;
                 } else {
-                    $this->parsePredicateOr($value[0], $where, $field);
+                    $this->parsePredicateOr($valueData, $where, $field);
                     $last = self::$OR;
 
                 }
@@ -383,14 +416,11 @@ trait baseTable
 
     }
 
-
     public function insert($data)
     {
         $result = $this->tableGateway->insert($data);
         return $result;
     }
-
-
 
     public function deleteDataByParams(array $FilterData)
     {

@@ -4,9 +4,9 @@
 namespace GenericTools\Model;
 
 use GenericTools\Model\UtilsTraits\JoinBuilder;
-use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Select;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\TableGateway\TableGateway;
 
 class HealthcareServicesTable
 {
@@ -17,29 +17,31 @@ class HealthcareServicesTable
     public function __construct(TableGateway $tableGateway)
     {
         $this->tableGateway = $tableGateway;
-        $this->joinTables();
+        $this->join = $this->joinTables();
     }
 
     private function joinTables()
     {
         $this->join =  $this->appendJoin(
             ["f"=>"facility"],
-            new Expression(" hcs.providedBy = f.id"),
-            ['title'=>'category_display'],
+            new Expression("fhir_healthcare_services.providedBy = f.id"),
+            ['providedBy_display'=>'name'],
             Select::JOIN_LEFT
         );
         $this->join =  $this->appendJoin(
             ["lo_1"=>"list_options"],
             new Expression("lo_1.list_id = 'clinikal_service_categories' AND fhir_healthcare_services.category = lo_1.option_id"),
-            ['name'=>'providedBy_display'],
+            ['category_display'=>'title'],
             Select::JOIN_LEFT
         );
         $this->join =  $this->appendJoin(
             ["lo_2"=>"list_options"],
-            new Expression("lo_2.list_id = 'clinikal_service_types' AND fhir_healthcare_services.category = lo_1.option_id"),
-            ['name'=>'type_display'],
+            new Expression("lo_2.list_id = 'clinikal_service_types' AND fhir_healthcare_services.type = lo_2.option_id"),
+            ['type_display'=>'title'],
             Select::JOIN_LEFT
         );
+
+        return $this->getJoins();
     }
 
 }

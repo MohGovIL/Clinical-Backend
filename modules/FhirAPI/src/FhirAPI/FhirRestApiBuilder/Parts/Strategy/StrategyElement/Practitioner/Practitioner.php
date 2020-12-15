@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 29/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class strategy Fhir  ORGANIZATION
  *
  *
@@ -48,7 +48,7 @@ class Practitioner Extends Restful implements Strategy
     }
 
 
-    private function setMapping($container)
+    public function setMapping($container)
     {
         $this->mapping = new FhirPractitionerMapping($container);
     }

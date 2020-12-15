@@ -23,7 +23,7 @@ class Settings
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
     }
 
     /**
@@ -31,16 +31,17 @@ class Settings
      *
      * @return array
      */
-    public function getGlobalsSettings($uid)
+    public function getGlobalsSettings($uname)
     {
 
         $aclTables = new AclTables($this->adapter);
         $userTable = $this->container->get(UserTable::class);
         $langLanguagesTable= $this->container->get(LangLanguagesTable::class);
-        $user=$userTable->getUser($uid);
-
+        $user=$userTable->getByUserName($uname);
+        $uid = $user->id;
         $langId=(!is_null($_SESSION['language_choice'])) ? $_SESSION['language_choice'] : $langLanguagesTable->getLangIdByGlobals();
         $settings = array(
+            "user_id" => $uid,
             "facility" => $user->facility_id,
             "lang_id" => $langId,
             "lang_code" => $langLanguagesTable->getLangCode($langId),
@@ -48,7 +49,16 @@ class Settings
             "format_date" => DateFormatRead('validateJS'),
             "user_role" => $aclTables->whatIsUserAroGroups($uid),
             "user_aco" =>$aclTables->getAcoForThisGroup($uid),
-            "clinikal_vertical" => 'imaging'
+            "time_zone" => date_default_timezone_get(),
+            "clinikal_vertical" => isset($GLOBALS['clinikal_react_vertical']) ? $GLOBALS['clinikal_react_vertical'] : 'generic',
+            "clinikal"=> array(
+                "clinikal_hide_appoitments"=>$GLOBALS['clinikal_hide_appoitments'],
+                "patient admission" =>array(
+                    "clinikal_pa_commitment_form"=>$GLOBALS['clinikal_pa_commitment_form'],
+                    "clinikal_pa_arrival_way" =>$GLOBALS['clinikal_pa_arrival_way'],
+                    "clinikal_pa_next_enc_status" =>$GLOBALS['clinikal_pa_next_enc_status'],
+                ),
+                )
         );
 
         return RestControllerHelper::responseHandler($settings, null, 200);
@@ -62,7 +72,7 @@ class Settings
      */
     public function getMenuSettings($menuName)
     {
-        $file = file_get_contents($GLOBALS['fileroot'] . "/sites/default/documents/custom_menus/" . $menuName . ".json");
+        $file = file_get_contents($GLOBALS['fileroot'] . "/interface/main/tabs/menu/menus/" . $menuName . ".json");
 
         if($file!==false){
             $menu_parsed = json_decode($file, true);

@@ -6,7 +6,7 @@
 
 namespace Formhandler\View\Helper;
 
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Laminas\ServiceManager\ServiceLocatorAwareInterface;
 
 
 class HelperFactory  extends HelperBase

@@ -37,8 +37,19 @@ use OpenEMR\Events\Globals\GlobalsInitializedEvent;
 use OpenEMR\Events\RestApiExtend\RestApiCreateEvent;
 use OpenEMR\Services\Globals\GlobalSetting;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Zend\Mvc\MvcEvent;
+use Laminas\Mvc\MvcEvent;
 use FhirAPI\Service\FhirRequestParamsHandler;
+
+use GenericTools\ZendExtended\TableGateway;
+use Laminas\Db\ResultSet\ResultSet;
+use FhirAPI\Model\QuestionnaireResponseTable;
+use FhirAPI\Model\QuestionnaireResponse;
+use FhirAPI\Model\FhirQuestionnaireTable;
+use FhirAPI\Model\FhirQuestionnaire;
+use FhirAPI\Model\FhirServiceRequestTable;
+use FhirAPI\Model\FhirServiceRequest;
+use FhirAPI\Model\FhirValidationSettingsTable;
+use FhirAPI\Model\FhirValidationSettings;
 
 
 
@@ -50,10 +61,10 @@ class Module {
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
+            'Laminas\Loader\ClassMapAutoloader' => array(
                 __DIR__ . '/autoload_classmap.php',
             ),
-            'Zend\Loader\StandardAutoloader' => array(
+            'Laminas\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
 
@@ -87,6 +98,38 @@ class Module {
                     $model = new FhirValidateTypes();
                     return $model;
                 },
+                FhirQuestionnaireTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FhirQuestionnaire());
+                    $tableGateway = new TableGateway('fhir_questionnaire', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FhirQuestionnaireTable($tableGateway);
+                    return $table;
+                },
+                QuestionnaireResponseTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new QuestionnaireResponse());
+                    $tableGateway = new TableGateway('questionnaire_response', $dbAdapter, null, $resultSetPrototype);
+                    $table = new QuestionnaireResponseTable($tableGateway);
+                    return $table;
+                },
+                FhirServiceRequestTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FhirServiceRequest());
+                    $tableGateway = new TableGateway('fhir_service_request', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FhirServiceRequestTable($tableGateway);
+                    return $table;
+                },
+                FhirValidationSettingsTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FhirValidationSettings());
+                    $tableGateway = new TableGateway('fhir_validation_settings', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FhirValidationSettingsTable($tableGateway);
+                    return $table;
+                },
 
             ),
         );
@@ -115,9 +158,62 @@ class Module {
     public function addCustomGlobals(GlobalsInitializedEvent $event) {
 
         $event->getGlobalsService()->createSection("Fetch Files", "Connectors");
-
         $setting = new GlobalSetting( "Enable FHIR Type Validation", 'bool', 1, "When checked, run fhir native validation are active" );
         $event->getGlobalsService()->appendToSection( "Connectors", "fhir_type_validation", $setting );
+
+
+        /*******************************************************************/
+        $event->getGlobalsService()->createSection("clinikal settings", "Connectors");
+        $setting = new GlobalSetting( "clinkal - hide appointments in all the screens", 'bool', 0, "When checked, hide appointments in all the screens" );
+        $event->getGlobalsService()->appendToSection( "clinikal settings", "clinikal_hide_appoitments", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "clinkal - patient admission - enable commitment form", 'bool', 1, "When checked, Enable commitment form" );
+        $event->getGlobalsService()->appendToSection( "clinikal settings", "clinikal_pa_commitment_form", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "clinkal - patient admission - show arrival way", 'bool', 0, "When checked, Enable arrival way" );
+        $event->getGlobalsService()->appendToSection( "clinikal settings", "clinikal_pa_arrival_way", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "clinikal - patient admission - first status of the encounter", 'text', "arrived", "Define next status" );
+        $event->getGlobalsService()->appendToSection( "clinikal settings", "clinikal_pa_next_enc_status", $setting );
+        /*******************************************************************/
+
+
+
+        // ADD S3 STORAGE //
+        /*******************************************************************/
+        $event->getGlobalsService()->createSection("Clinikal Storage", "Connectors");
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "Clinikal storage method", array('1' => xl('CouchDB'), '10' => xl('S3')), "10", "Whether to store uploaded files in a Couchdb instance or an S3 instance" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "clinikal_storage_method", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "S3 API version", 'text', "2006-03-01", "Version of S3 API to use, e.g. 2006-03-01" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "s3_version", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "S3 bucket region", 'text', "eu-west-1", "Region of bucket with which we will be interacting" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "s3_region", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "S3 bucket name", 'text', "clinikal-dev", "Name of bucket where files will be stored" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "s3_bucket_name", $setting );
+        /*******************************************************************/
+
+        /*******************************************************************/
+        $setting = new GlobalSetting( "S3 files path", 'text', "", "Path inside bucket where files will be stored" );
+        $event->getGlobalsService()->appendToSection( "Clinikal Storage", "s3_path", $setting );
+        /*******************************************************************/
     }
 
 

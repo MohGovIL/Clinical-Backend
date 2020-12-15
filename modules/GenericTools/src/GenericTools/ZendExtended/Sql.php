@@ -8,16 +8,17 @@
 
 namespace GenericTools\ZendExtended;
 
-use Zend\Db\Sql\Sql as ZendSql;
-use Zend\Db\Adapter\AdapterInterface;
-use Zend\Db\Adapter\Driver\StatementInterface;
-use Zend\Db\Sql\PreparableSqlInterface;
+use Laminas\Db\Sql\Sql as ZendSql;
+use Laminas\Db\Adapter\AdapterInterface;
+use Laminas\Db\Adapter\Driver\StatementInterface;
+use Laminas\Db\Sql\PreparableSqlInterface;
 
 /**
- * Class Sql extend of Zend\Db\Sql\Sql
+ * Class Sql extend of Laminas\Db\Sql\Sql
  * This extend save into log table all the insert/update/delete queries.
  * @package GenericTools\ZendExtended
  */
+
 class Sql extends ZendSql
 {
     public function prepareStatementForSqlObject(
@@ -29,11 +30,10 @@ class Sql extends ZendSql
         $returnStatement = parent::prepareStatementForSqlObject($sqlObject, $statement, $adapter);
         $sqlClass = get_class($sqlObject);
         // log only insert/update/delete
-        if ($sqlClass !== 'Zend\Db\Sql\Select') {
+        if ($sqlClass !== 'Laminas\Db\Sql\Select') {
             $event = explode('\\', $sqlClass);
             $event = strtolower($event[count($event) -1]);
             $table  = $this->getTable();
-            if ($table === 'log') return;
             $sqlStatement = $this->buildSqlString($sqlObject);
             $category = 'general';
             //category name according table prefix

@@ -32,6 +32,8 @@ abstract class BaseSearch implements SearchInt
     const COLLECT_FHIR_OBJECT = "collect_fhir_object";
     const SUBJECT = "Subject";
     const COUNT = "Count";
+    const FHIR_ELM_PATH="FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\\";
+
     protected $_search;
     protected $type;
     protected $FHIRBundle;
@@ -105,7 +107,29 @@ abstract class BaseSearch implements SearchInt
 
             $searchArguments = $params['PARAMETERS_FOR_ALL_RESOURCES'];
             foreach ($searchArguments as $type => $valArr) {
-                $this->searchParams[$type] = $valArr[0]['value'];
+
+                if (strpos($valArr[0], ",") !== false) {   // support arg=x,y,z
+
+                        foreach (explode(",", $valArr[0]) as $k => $v) {
+                            $this->searchParams[$type][] = array('value'=> $v);
+                        }
+                } else{
+                    if(is_array($valArr[0])){   // special case
+                        $this->searchParams[$type] = $valArr[0][''];
+                    }else{
+                        if(is_array($valArr)){   // support arg=x&arg=y
+                            foreach ($valArr as $i => $j) {
+                                $this->searchParams[$type][] = array('value'=> $j);
+                            }
+                        }else{ // support single value
+                            $this->searchParams[$type] = $valArr[0];
+                        }
+
+                    }
+                }
+
+
+
                 unset($params['PARAMETERS_FOR_ALL_RESOURCES'][$type]);
             }
         }
@@ -166,6 +190,32 @@ abstract class BaseSearch implements SearchInt
     # Restructing of parameters
     /* ------------ */
 
+    public function addSortParams($fhir,$db)
+    {
+        $sortParam=$this->paramsAvaliable[self::_SORT];
+        $fhirPlaceCount= substr_count($sortParam['fhir_place'],",");
+        $openemrColumnCount=   substr_count($sortParam['openemr_column'],",");
+
+        /*
+         *  if both number of commas is zero add names without comma
+         *  if number of commas are equal add names with comma
+         *  if number of commas are not equal - add nothing - this should not happen
+         */
+
+        if( !empty($sortParam['fhir_place']) &&  $fhirPlaceCount === $openemrColumnCount) {
+            $fhir=",".$fhir;
+            $db=",".$db;
+
+        }elseif(!($openemrColumnCount===0 && $fhirPlaceCount===0)) {
+                $fhir="";
+                $db="";
+            }
+
+        $this->paramsAvaliable[self::_SORT]['fhir_place'].=$fhir;
+        $this->paramsAvaliable[self::_SORT]['openemr_column'].=$db;
+
+    }
+
     public function buildSortParams()
     {
         $sortMapping = array_combine(explode(",", $this->paramsAvaliable[self::_SORT]['fhir_place']), explode(",", $this->paramsAvaliable[self::_SORT]['openemr_column']));
@@ -175,19 +225,27 @@ abstract class BaseSearch implements SearchInt
 
         if (is_array($this->sortParams[self::_SORT])) {
             foreach ($this->sortParams[self::_SORT] as $key => $value) {
-                $this->orderParams[$key] = $sortMapping[$value[self::VALUE]] . " " . $value[self::OPERATOR];
+                $this->orderParams[$key] = $sortMapping[trim($value[self::VALUE])] . " " . $value[self::OPERATOR];
             }
         } else {
             $this->orderParams[self::_SORT] = $sortMapping[trim($this->sortParams[self::_SORT])];
         }
     }
 
-    public function paramHandler($fhirSearchParam, $tableParams, $dbTable = null)
+    public function paramHandler($fhirSearchParam, $tableParams, $dbTable = null,$conversion=array())
     {
         if (is_null($dbTable)) {
             $dbTable = $this->MAIN_TABLE;
         }
         if (isset($this->searchParams[$fhirSearchParam])) {
+
+            if(!empty($conversion)){
+                $originalVal=$this->searchParams[$fhirSearchParam][0]['value'];
+                if(!empty($conversion[$originalVal])){
+                    $this->searchParams[$fhirSearchParam][0]['value']=$conversion[$originalVal];
+                }
+            }
+
             $this->paramsToDB[$dbTable . '.' . $tableParams] = $this->searchParams[$fhirSearchParam];
         }
     }
@@ -420,13 +478,109 @@ abstract class BaseSearch implements SearchInt
     public function runMysqlQuery()
     {
         $dataFromDb = $this->searchThisTable->buildGenericSelect($this->searchParams, implode(",", $this->orderParams), array());
+        $includeFlag= !empty($this->includeParams);
+        $tempIncludeParams=array();
         foreach ($dataFromDb as $key => $data) {
+            if($includeFlag){  // if true collect the id for the include for later use
+                foreach ($this->includeParams as $index => $include){
+                    if(!empty($include[1]) && !empty($data[$include[1]]) ){
+                        $this->includeParams[$index][3]=$data[$include[1]];
+
+                        if(empty($tempIncludeParams[$include[0]])){
+                            $tempIncludeParams[$include[0]][0]= $this->includeParams[$index]; //new fhir include object
+                        }else{
+                            $tempIncludeParams[$include[0]][0][3] .=",". $data[$include[1]];  //add fhir include object
+                        }
+                    }
+                }
+            }
             $this->fhirObj->initFhirObject();
             $FHIRResourceContainer = new FHIRResourceContainer($this->fhirObj->DBToFhir($data));
             $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'match');
-            // $this->FHIRBundle->deletePatient();
+        }
+        $this->includeParams=$tempIncludeParams;
+        if($includeFlag){  //perform search() for each include element
+            foreach ($this->includeParams as $index => $include){
+                $FHIRElm=$include[0][2];
+                $idStringList= $include[0][3];
+                if(!empty($FHIRElm) && !empty($idStringList)){
+                    $class = self::FHIR_ELM_PATH.$FHIRElm."\\".$FHIRElm;
+                    if(class_exists($class)){
+                        $paramsFromBody=array_keys(array_flip(explode(',',$idStringList))); // remove duplicate values
+                        $initials=array();
+                        $initials['paramsFromUrl']=array();
+                        $initials['paramsFromBody']['PARAMETERS_FOR_ALL_RESOURCES']=array('_id'=>$paramsFromBody);
+                        $initials['container']=$this->container;
+                        $FHIRElmClass=new $class($initials);
+                        $searchRez=$FHIRElmClass->search();
+                        $entries = $searchRez->getEntry();
+                        foreach ($entries as $key => $value) {
+                            $FHIRElmOBJ=$value->getResource();
+                            if(is_object($FHIRElmOBJ) && $FHIRElmOBJ->get_fhirElementName()===$FHIRElm){
+                                $FHIRResourceContainer = new FHIRResourceContainer($FHIRElmOBJ);
+                                $this->FHIRBundle = $this->fhirObj->addResourceToBundle($this->FHIRBundle, $FHIRResourceContainer, 'include');
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
+
+    /**
+     * @param $fhirIncludeParam string include search param
+     * @param $IncludeParamMap string db name of include field
+     * @param $fhirType  string  FHIR object name
+     */
+
+    public function includeParamHandler($fhirIncludeParam,$IncludeParamMap,$fhirType )
+    {
+        if (is_array($this->includeParams)){
+            foreach ($this->includeParams as $index => $data){
+                if (is_array($data)){
+                        $includeName = $data[0];
+                        if ($fhirIncludeParam===$includeName){
+                            $this->includeParams[$index][1]=$IncludeParamMap;
+                            $this->includeParams[$index][2]=$fhirType;
+                        }
+                }
+            }
+        }
+    }
+
+
+    public function addShortDate($fieldPath)
+    {
+        if(isset($this->searchParams[$fieldPath])) {
+            //value is only date not datetime
+            if (strlen($this->searchParams[$fieldPath][0]['value']) === 10 ){
+
+                $operator= $this->searchParams[$fieldPath][0]['operator'];
+                if ($operator === 'eq') {
+                    $dayDate = $this->searchParams[$fieldPath][0]['value'];
+                    $this->searchParams[$fieldPath][0] = [
+                        'value' => $dayDate . ' 00:00:00|' .$dayDate . ' 23:59:59',
+                        //between operator
+                        'operator' => 'be',
+                        'modifier' => null
+                    ];
+                }
+
+                elseif ($operator === 'le') {
+                    $dayDate = $this->searchParams[$fieldPath][0]['value'];
+                    $this->searchParams[$fieldPath][0] = [
+                        'value' => $dayDate . ' 23:59:59',
+                        //between operator
+                        'operator' => 'le',
+                        'modifier' => null
+                    ];
+                }
+            }
+        }
+    }
+
+
+
 
 
 }

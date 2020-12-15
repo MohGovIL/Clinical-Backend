@@ -31,11 +31,11 @@ use GenericTools\Model\PostcalendarCategoriesTable;
 use GenericTools\Model\ListsOpenEmr;
 use GenericTools\Model\ListsOpenEmrTable;
 use GenericTools\Controller\GenericToolsExtended;
-use Zend\Db\ResultSet\ResultSet;
+use Laminas\Db\ResultSet\ResultSet;
 use GenericTools\ZendExtended\TableGateway;
-use Zend\ModuleManager\ModuleManager;
+use Laminas\ModuleManager\ModuleManager;
 use Application\Listener\Listener;
-use Zend\Mvc\MvcEvent;
+use Laminas\Mvc\MvcEvent;
 use Interop\Container\ContainerInterface;
 use GenericTools\Model\PostcalendarEvents;
 use GenericTools\Model\PostcalendarEventsTable;
@@ -60,14 +60,20 @@ use GenericTools\Model\Registry;
 use GenericTools\Model\LogServiceTable;
 use GenericTools\Model\LogService;
 
+use GenericTools\Model\PrescriptionsTable;
+use GenericTools\Model\Prescriptions;
+
+use GenericTools\Model\IssueEncounterTable;
+use GenericTools\Model\IssueEncounter;
 
 // todo: move the following to FHIR Module.php
-use GenericTools\Model\QuestionnaireResponseTable;
-use GenericTools\Model\QuestionnaireResponse;
 use GenericTools\Model\RelatedPerson;
 use GenericTools\Model\RelatedPersonTable;
 use GenericTools\Model\FormsGenericHandlerTable;
 //********************************************
+use GenericTools\Model\FormVitals;
+use GenericTools\Model\FormVitalsTable;
+
 
 
 
@@ -88,10 +94,10 @@ class Module
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
+            'Laminas\Loader\ClassMapAutoloader' => array(
                 __DIR__ . '/autoload_classmap.php',
             ),
-            'Zend\Loader\StandardAutoloader' => array(
+            'Laminas\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
 
@@ -115,7 +121,7 @@ class Module
         return array(
             'factories' => array(
                 PatientsTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Patients());
                     $tableGateway = new TableGateway('patient_data', $dbAdapter, null, $resultSetPrototype);
@@ -123,7 +129,7 @@ class Module
                     return $table;
                 },
                 ListsTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Lists());
                     $tableGateway = new TableGateway('list_options', $dbAdapter, null, $resultSetPrototype);
@@ -131,7 +137,7 @@ class Module
                     return $table;
                 },
                 UserTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new User());
                     $tableGateway = new TableGateway('users', $dbAdapter, null, $resultSetPrototype);
@@ -139,7 +145,7 @@ class Module
                     return $table;
                 },
                 FacilityTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Facility());
                     $tableGateway = new TableGateway('facility', $dbAdapter, null, $resultSetPrototype);
@@ -147,7 +153,7 @@ class Module
                     return $table;
                 },
                 LangLanguagesTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new LangLanguages());
                     $tableGateway = new TableGateway('lang_languages', $dbAdapter, null, $resultSetPrototype);
@@ -155,7 +161,7 @@ class Module
                     return $table;
                 },
                 ListsOpenEmrTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new ListsOpenEmr());
                     $tableGateway = new TableGateway('lists', $dbAdapter, null, $resultSetPrototype);
@@ -163,7 +169,7 @@ class Module
                     return $table;
                 },
                 PostcalendarEventsTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new PostcalendarEvents());
                     $tableGateway = new TableGateway('openemr_postcalendar_events', $dbAdapter, null, $resultSetPrototype);
@@ -199,7 +205,7 @@ class Module
                     return $helper;
                 },
                 PostcalendarCategoriesTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new PostcalendarCategories());
                     $tableGateway = new TableGateway('openemr_postcalendar_categories', $dbAdapter, null, $resultSetPrototype);
@@ -207,7 +213,7 @@ class Module
                     return $table;
                 },
                 HealthcareServicesTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new HealthcareServices());
                     $tableGateway = new TableGateway('fhir_healthcare_services', $dbAdapter, null, $resultSetPrototype);
@@ -215,11 +221,11 @@ class Module
                     return $table;
                 },
                 AclTables::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get('Zend\Db\Adapter\Adapter');
+                    $dbAdapter = $container->get('Laminas\Db\Adapter\Adapter');
                     return new AclTables($dbAdapter);
                 },
                 FormEncounterTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new FormEncounter());
                     $tableGateway = new TableGateway('form_encounter', $dbAdapter, null, $resultSetPrototype);
@@ -227,7 +233,7 @@ class Module
                     return $table;
                 },
                 FhirRestElements::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new FhirRestElements());
                     $tableGateway = new TableGateway('fhir_rest_elements', $dbAdapter, null, $resultSetPrototype);
@@ -235,7 +241,7 @@ class Module
                     return $table;
                 },
                 ValueSetsTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new ValueSets());
                     $tableGateway = new TableGateway('fhir_value_sets', $dbAdapter, null, $resultSetPrototype);
@@ -243,7 +249,7 @@ class Module
                     return $table;
                 },
                 EventCodeReasonMapTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new EventCodeReasonMap());
                     $tableGateway = new TableGateway('event_codeReason_map', $dbAdapter, null, $resultSetPrototype);
@@ -251,7 +257,7 @@ class Module
                     return $table;
                 },
                 DocumentsTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Documents());
                     $tableGateway = new TableGateway('documents', $dbAdapter, null, $resultSetPrototype);
@@ -259,7 +265,7 @@ class Module
                     return $table;
                 },
                 DocumentsCategoriesTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Documents());
                     $tableGateway = new TableGateway('categories_to_documents', $dbAdapter, null, $resultSetPrototype);
@@ -267,7 +273,7 @@ class Module
                     return $table;
                 },
                 RelatedPersonTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new RelatedPerson());
                     $tableGateway = new TableGateway('related_person', $dbAdapter, null, $resultSetPrototype);
@@ -275,7 +281,7 @@ class Module
                     return $table;
                 },
                 EncounterReasonCodeMapTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new EncounterReasonCodeMap());
                     $tableGateway = new TableGateway('encounter_reasoncode_map', $dbAdapter, null, $resultSetPrototype);
@@ -283,23 +289,15 @@ class Module
                     return $table;
                 },
                 RegistryTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Registry());
                     $tableGateway = new TableGateway('registry', $dbAdapter, null, $resultSetPrototype);
                     $table = new RegistryTable($tableGateway);
                     return $table;
                 },
-                QuestionnaireResponseTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
-                    $resultSetPrototype = new ResultSet();
-                    $resultSetPrototype->setArrayObjectPrototype(new QuestionnaireResponse());
-                    $tableGateway = new TableGateway('questionnaire_response', $dbAdapter, null, $resultSetPrototype);
-                    $table = new QuestionnaireResponseTable($tableGateway);
-                    return $table;
-                },
                 FormsGenericHandlerTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $table = new FormsGenericHandlerTable($dbAdapter);
                     return $table;
                 },
@@ -308,14 +306,37 @@ class Module
                     return $service;
                 },
                 LogServiceTable::class =>  function(ContainerInterface $container) {
-                    $dbAdapter = $container->get(\Zend\Db\Adapter\Adapter::class);
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new LogService());
                     $tableGateway = new TableGateway('log', $dbAdapter, null, $resultSetPrototype);
                     $table = new LogServiceTable($tableGateway);
                     return $table;
                 },
-
+                FormVitalsTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new FormVitals());
+                    $tableGateway = new TableGateway('form_vitals', $dbAdapter, null, $resultSetPrototype);
+                    $table = new FormVitalsTable($tableGateway);
+                    return $table;
+                },
+                PrescriptionsTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Prescriptions());
+                    $tableGateway = new TableGateway('prescriptions', $dbAdapter, null, $resultSetPrototype);
+                    $table = new PrescriptionsTable($tableGateway);
+                    return $table;
+                },
+                IssueEncounterTable::class =>  function(ContainerInterface $container) {
+                    $dbAdapter = $container->get(\Laminas\Db\Adapter\Adapter::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new IssueEncounter());
+                    $tableGateway = new TableGateway('issue_encounter', $dbAdapter, null, $resultSetPrototype);
+                    $table = new IssueEncounterTable($tableGateway);
+                    return $table;
+                },
 
 
 

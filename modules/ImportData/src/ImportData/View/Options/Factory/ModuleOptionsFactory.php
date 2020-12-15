@@ -2,8 +2,8 @@
 
 namespace ImportData\Options\Factory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use ImportData\Options\ModuleOptions;
 
 class ModuleOptionsFactory implements FactoryInterface

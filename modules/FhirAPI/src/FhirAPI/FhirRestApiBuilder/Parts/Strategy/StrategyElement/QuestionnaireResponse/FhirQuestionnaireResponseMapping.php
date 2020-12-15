@@ -12,6 +12,7 @@ use Exception;
 
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\MappingData;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\Questionnaire\Questionnaire;
+use FhirAPI\Model\QuestionnaireResponseTable;
 use FhirAPI\Service\FhirBaseMapping;
 use GenericTools\Model\RelatedPersonTable;
 use Interop\Container\ContainerInterface;
@@ -46,13 +47,22 @@ class FhirQuestionnaireResponseMapping extends FhirBaseMapping implements Mappin
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRQuestionnaireResponse = new FHIRQuestionnaireResponse;
     }
 
 
     public function setQuestionnaire($questionnaireId){
         $this->questionnaireId=intval($questionnaireId);
+        $parms=array (
+            'paramsFromUrl' => array($this->questionnaireId),
+            'paramsFromBody' => array(),
+            'container' => $this->container
+        );
+
+        $this->Questionnaire= new Questionnaire($parms);
+        $this->FHIRQuestionnaire = $this->Questionnaire->read();
+
     }
 
 
@@ -73,20 +83,13 @@ class FhirQuestionnaireResponseMapping extends FhirBaseMapping implements Mappin
         $FHIRDateTime=$this->createFHIRDateTime(null);
         $FHIRQuestionnaireResponse->setAuthored($FHIRDateTime);
 
-        $parms=array (
-            'paramsFromUrl' => array($this->questionnaireId),
-            'paramsFromBody' => array(),
-            'container' => $this->container
-        );
+        $FHIRQuestionnaire = $this->FHIRQuestionnaire;
 
         $FHIRQuestionnaireResponseStatus= new FHIRQuestionnaireResponseStatus;
         $FHIRQuestionnaireResponseStatus->setValue(null);
         $FHIRQuestionnaireResponse->setStatus($FHIRQuestionnaireResponseStatus);
 
-        $Questionnaire= new Questionnaire($parms);
-        $FHIRQuestionnaire=$Questionnaire->read();
-
-        $this->formQuestionMapping=$Questionnaire->getFormQuestionMapping();
+        $this->formQuestionMapping=$this->Questionnaire->getFormQuestionMapping();
         $items=$FHIRQuestionnaire->getItem();
         $this->formName=$FHIRQuestionnaire->getName()->getValue();
 
@@ -135,7 +138,8 @@ class FhirQuestionnaireResponseMapping extends FhirBaseMapping implements Mappin
             return null;
         }
         $FHIRQuestionnaireResponse=$this->FHIRQuestionnaireResponse;
-        $FHIRQuestionnaireResponse->setId($questionnaireResponseFromDb['id']);
+        $FHIRId=$this->createFHIRId($questionnaireResponseFromDb['id']);
+        $FHIRQuestionnaireResponse->setId($FHIRId);
 
         $FHIRDateTime=$this->createFHIRDateTime(null,null,$questionnaireResponseFromDb['update_date']);
         $FHIRQuestionnaireResponse->getAuthored()->setValue($FHIRDateTime->getValue());
@@ -237,8 +241,10 @@ class FhirQuestionnaireResponseMapping extends FhirBaseMapping implements Mappin
             $qid=$item->getLinkId()->getValue();
             $answerObj=$item->getAnswer()[0];
             $getFunc=$answersMapping[$qid];
-            $answer=$answerObj->$getFunc();
-            $answers[$qid]=$answer;
+            if(!is_null($getFunc)){
+                $answer=$answerObj->$getFunc();
+                $answers[$qid]=$answer;
+            }
         }
 
         return array(
@@ -279,19 +285,22 @@ class FhirQuestionnaireResponseMapping extends FhirBaseMapping implements Mappin
         //extract Questionnaire id same one that is sent in Questionnaire read request
         $qid=substr($data['questionnaire'],strlen(self::FHIR_QUESTIONNAIRE)+1,20);
         $this->setQuestionnaire($qid);
+
+        $data['item'] = $this->addEmptyAnswer($data['item'], $this->FHIRQuestionnaire);
         $this->initFhirObject();
         $this->arrayToFhirObject($this->FHIRQuestionnaireResponse,$data);
         $dBdata = $this->fhirToDb($this->FHIRQuestionnaireResponse);
         return $dBdata;
     }
 
-    public function updateDbData($data,$id)
+    public function updateDbData($dBdata,$id)
     {
-        $relatedPersonTable = $this->container->get(RelatedPersonTable::class);
         $primaryKey='id';
-        $updated=$relatedPersonTable->safeUpdate($data['related_person'],array($primaryKey=>$id));
-        $this->initFhirObject();
-        return $this->DBToFhir($updated);
+        $questionnaireResponseTable = $this->container->get(QuestionnaireResponseTable::class);
+        $updated=$questionnaireResponseTable->safeUpdate($dBdata['questionnaire_response'],array($primaryKey=>$id));
+        $this->saveAnswers($dBdata,$updated);
+
+        return true;
     }
 
     private function buildParams($QuestionnaireResponse)
@@ -317,6 +326,21 @@ class FhirQuestionnaireResponseMapping extends FhirBaseMapping implements Mappin
         $formAnswers=$formHandler->saveFormAnswers($data);
 
         return $QuestionnaireResponse['id'];
+    }
+
+    private function addEmptyAnswer($items,$FHIRQuestionnaire)
+    {
+        foreach ($items as $key => $item) {
+            if (!isset($item['answer'])) {
+                foreach ($FHIRQuestionnaire->getItem() as $Qitem) {
+                    if ($item['linkId'] === $Qitem->getLinkId()->getValue()) {
+                        $items[$key]['answer'] = [["value" .ucfirst($Qitem->getType()->getValue()) => null]];
+                        break;
+                    }
+                }
+            }
+        }
+        return $items;
     }
 
 }

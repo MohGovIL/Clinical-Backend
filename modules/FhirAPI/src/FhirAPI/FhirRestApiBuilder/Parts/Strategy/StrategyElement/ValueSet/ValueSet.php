@@ -35,7 +35,7 @@ class ValueSet Extends Restful implements  Strategy
     }
 
 
-    private function setMapping($container)
+    public function setMapping($container)
     {
         $this->mapping = new FhirValueSetMapping($container);
     }
@@ -44,13 +44,19 @@ class ValueSet Extends Restful implements  Strategy
     {
         $fhirValueSetMapping =$this->mapping;
         $valueSetsTable = $this->container->get(ValueSetsTable::class);
-        $ValueSetDataFromDb = $valueSetsTable->getValueSetById($this->paramsFromUrl[0]);
+        $where=$this->paramsFromBody['PARAMETERS_FOR_SEARCH_RESULT'];
+        $ValueSetDataFromDb = $valueSetsTable->getValueSetById($this->paramsFromUrl[0],$where);
         if(!$ValueSetDataFromDb)
         {
             //not found
             return self::$errorCodes::http_response_code(204);
         }
-        // pass codes, value set id, and operations, to method
-        return $fhirValueSetMapping->DBToFhir($ValueSetDataFromDb, $this->operations);
+
+        $this->mapping->initFhirObject();
+        $valueSet= $this->mapping->DBToFhir($ValueSetDataFromDb, $this->operations);
+        $this->mapping->initFhirObject();
+        return $valueSet;
+
+
     }
 }

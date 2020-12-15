@@ -1,7 +1,7 @@
 <?php
 /**
  * Date: 21/01/20
- * @author  Dror Golan <drorgo@matrix.co.il>
+ *  @author Eyal Wolanowski <eyalvo@matrix.co.il>
  * This class MAPPING FOR ORGANIZATION
  */
 
@@ -21,6 +21,8 @@ use OpenEMR\FHIR\R4\FHIRDomainResource\FHIRAppointment;
 use OpenEMR\FHIR\R4\FHIRElement\FHIRAppointmentStatus;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRBundle;
 use OpenEMR\FHIR\R4\FHIRResource\FHIRAppointment\FHIRAppointmentParticipant;
+use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
+use FhirAPI\FhirRestApiBuilder\Parts\Strategy\Traits\FHIRElementValidation;
 
 class FhirAppointmentMapping extends FhirBaseMapping implements MappingData
 {
@@ -31,11 +33,13 @@ class FhirAppointmentMapping extends FhirBaseMapping implements MappingData
     private $FHIRAppointment = null;
     private $postCalendarCategoriesList = null;
 
+    use FHIRElementValidation;
+
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
         $this->container = $container;
-        $this->adapter = $container->get('Zend\Db\Adapter\Adapter');
+        $this->adapter = $container->get('Laminas\Db\Adapter\Adapter');
         $this->FHIRAppointment = new FHIRAppointment;
         $categoriesListTable = $this->container->get(PostcalendarCategoriesTable::class);
         $this->postCalendarCategoriesList = $categoriesListTable->fetchAll(array(), true);
@@ -77,10 +81,10 @@ class FhirAppointmentMapping extends FhirBaseMapping implements MappingData
 
         $tempObject=$FhirObject->getEnd();
         $endDate=(is_object($tempObject)) ? $tempObject->getValue() : null;
-        $onlyDate=(!is_null($onlyDate)) ? $onlyDate : null;substr($endDate,0,10);
-        $time=(!is_null($onlyDate)) ? $onlyDate : null;substr($endDate,11,8);
-        $dbData['pc_endTime']=$onlyDate;
-        $dbData['pc_endDate']=$time;
+        $onlyDate=(!is_null($onlyDate)) ? substr($endDate,0,10) : null;
+        $time=(!is_null($endDate)) ? substr($endDate,11,8) : null;
+        $dbData['pc_endTime']=$time;
+        $dbData['pc_endDate']=$onlyDate;
 
 
         $tempObject=$FhirObject->getMinutesDuration();
@@ -358,34 +362,6 @@ class FhirAppointmentMapping extends FhirBaseMapping implements MappingData
         return $FHIRAppointmentParticipant;
     }
 
-    /**
-     * check if appointment data is valid
-     *
-     * @param array
-     * @return bool
-     */
-    public function validateDb($data)
-    {
-
-        $statuses = $this->getApptStatuses();
-        $statusIds = array_keys($statuses);
-        $postTable=$data['openemr_postcalendar_events'];
-        foreach ($data as $fieldName => $value) {
-
-            switch ($fieldName) {
-                case 'pc_apptstatus':
-                    if (!in_array($value, $statusIds)) {
-                        return false;
-                    }
-                    break;
-                default:
-                    return true;
-            }
-
-        }
-
-        return true;
-    }
 
     /**
      * return Appointment status list
@@ -555,6 +531,17 @@ class FhirAppointmentMapping extends FhirBaseMapping implements MappingData
         $data['openemr_postcalendar_events']['pc_eid']=$id;
         $eventCodeReasonMapTable = $this->container->get(EventCodeReasonMapTable::class);
         $eventCodeReasonMapTable->deleteValueSetsById($id);
+
+        /*********************************** validate *******************************/
+        $aptDataFromDb = $postcalendarEventsTable->buildGenericSelect(["id"=>$id]);
+        $alldata=array('new'=>$data,'old'=>$aptDataFromDb);
+        $mainTable=$postcalendarEventsTable->getTableName();
+        $isValid=$this->validateDb($alldata,$mainTable);
+        if(!$isValid){
+            ErrorCodes::http_response_code("406","failed validation");
+        }
+        /***************************************************************************/
+
         $updated=$postcalendarEventsTable->safeUpdateApt($data);
         $this->initFhirObject();
         return $this->DBToFhir($updated[0], true);
