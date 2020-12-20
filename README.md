@@ -13,7 +13,7 @@ This ability is caused by using a system of roles and privileges for each profes
 To get started and documentation at https://clinikal-documentation.readthedocs.io/
 
 ### Clinikal-beckend
-The product composed of a few component, Server-side modules and client-side application. 
+The product composed of a few component, Server-side modules and client-side application.   
 This repository is part of server-side components and contains several modules and configurations that common for all the medical fields in the system.    
 Main contents:  
 * API layer
