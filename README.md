@@ -14,8 +14,8 @@ To get started and documentation at https://clinikal-documentation.readthedocs.i
 
 ### Clinikal-beckend
 The product composed of a few component, Server-side modules and client-side application. 
-This repository contains several modules and configurations that common for all the medical fields in the system.  
-The repository contains:  
+This repository is part of server-side components and contains several modules and configurations that common for all the medical fields in the system.    
+Main contents:  
 * API layer
 * General functionality
 * Custom menus
