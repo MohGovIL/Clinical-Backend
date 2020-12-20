@@ -1,0 +1,35 @@
+<?php
+include("DataTableExtended.php");
+
+$table_id='my_fun_table';
+$table_col_names=array(
+                       '0'=>'first_col',
+                       '1'=>'second_col',
+                       '2'=>'second_col',
+                       );
+$table_handler= new DataTableExtended($table_id,$table_col_names);
+?>
+
+<html>
+<head>
+    <link href="./src/css/jquery.dataTables.min.css" media="screen" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="./src/js/jquery.min.js"></script>
+    <script type="text/javascript" src="./src/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="./src/js/dataTablesInit.js"></script>
+
+</head>
+<body>
+
+<h1>Test data table</h1>
+<div class="content">
+<?php $table_handler->echoBaseHTML(); ?>
+</div>
+
+<script>
+$( document ).ready(function() {
+    var table_id= '<?php echo $table_id ?>';
+    initDataTable(table_id);
+});
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <?php
-require_once $GLOBALS['fileroot'].'/clinikal/ui-components/Header/ClinikalHeaders.php';
+require_once $GLOBALS['fileroot'].'/vendor/clinikal/clinikal-backend/modules/GenericTools/src/GenericTools/Library/UiComponents/Header/ClinikalHeaders.php';
 $headers = new ClinikalHeaders();
 echo $headers->titleWithButtons($title);
 ?>
@@ -19,6 +19,7 @@ echo $headers->titleWithButtons($title);
      border: 1px solid #A2A2A2 !important;
  }
 
+
 </style>
 
 <div id="filters-container" class="sumoselectrtlfix">
@@ -29,7 +30,7 @@ echo $headers->titleWithButtons($title);
         </div>
         <div class="col-md-11 col-sm-10">
             <?php }?>
-                <div class="filter-box filter-box-<?php echo $elements->get($filter)->getAttribute('type'); ?>">
+                <div  class="filter-box filter-box-<?php echo $elements->get($filter)->getAttribute('type'); ?>">
                     <?php echo $this->formRow($elements->get($filter)); ?>
                 </div>
             <?php endforeach; ?>
@@ -120,7 +121,6 @@ echo $headers->titleWithButtons($title);
             contentAsHTML: true,
         });
     }
-
 
     function getAlerts(event){
         let element=event.target;
@@ -224,9 +224,6 @@ echo $headers->titleWithButtons($title);
         $("#filters-container #<?php echo $elements->get($filter)->getName();?>").val('<?php echo $elements->get($filter)->getValue();?>').trigger("change");
         <?php endforeach; ?>
     }
-
-
-
 
     $('#startFilter').on('click',function() {
         var from_date = $('#from_date').val();

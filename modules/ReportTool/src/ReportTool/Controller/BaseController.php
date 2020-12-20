@@ -9,10 +9,10 @@
 namespace ReportTool\Controller;
 
 use ReportTool\Model\CustomDB;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\AbstractActionController;
 use GenericTools\Controller\BaseController as GenericBaseController;
 use Application\Listener\Listener;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 use ReportTool\Form\FiltersForm;
 use GenericTools\Controller\GenericToolsController;
 use Interop\Container\ContainerInterface;
@@ -77,8 +77,8 @@ class BaseController extends GenericBaseController
 
     protected function normalizedGenericFilters($filters)
     {
-        $filters['from_date'] = "'" . DateToYYYYMMDD($filters['from_date']) . "'";
-        $filters['until_date'] = "'" . DateToYYYYMMDD($filters['until_date']) . "'";
+        $filters['from_date'] = "'" . DateToYYYYMMDD($filters['from_date']) . " 00:00:00'";
+        $filters['until_date'] = "'" . DateToYYYYMMDD($filters['until_date']) . " 23:59:59'";
         $filters['facility'] = "'" . $filters['facility'] . "'";
 
         return $filters;
@@ -123,18 +123,17 @@ class BaseController extends GenericBaseController
         ));
         $vm->setTemplate('report-tool/reports/header');
 
-        $renderer = $this->container->get('Zend\View\Renderer\PhpRenderer');
+        $renderer = $this->container->get('Laminas\View\Renderer\PhpRenderer');
         $this->header = $renderer->render($vm);
-
 
     }
 
-    protected function renderReport($helperType, $data = null, $view = null)
+    protected function renderReport($helperType, $data = null, $view = null,$viewPath='report-tool/reports/')
     {
         //return
         $viewModel = new ViewModel(array('header' => $this->header, 'helper' => $helperType, 'data' => $data));
         if (!is_null($view)) {
-            $viewModel->setTemplate('report-tool/reports/' . $view);
+            $viewModel->setTemplate($viewPath . $view);
         } else {
             $viewModel->setTemplate('report-tool/reports/index');
         }
@@ -221,7 +220,7 @@ class BaseController extends GenericBaseController
     }
 
 
-    protected function addLink($name, $title, $link = "javascript:;")
+    protected function addLink($name, $title, $link = "javascript:;",$selected=null, $newLine = false)
     {
         $this->filtersElements->add(array(
             'type' => 'url',
@@ -257,7 +256,7 @@ class BaseController extends GenericBaseController
     protected function GetCustomDB()
     {
 
-        $dbAdapter = $this->container->get('Zend\Db\Adapter\Adapter');
+        $dbAdapter = $this->container->get('Laminas\Db\Adapter\Adapter');
         $CustomDb = new CustomDB($dbAdapter);
         return $CustomDb;
     }
@@ -298,7 +297,7 @@ class BaseController extends GenericBaseController
 
         $result = $this->getData($dataToProcedure, $columns);
         //CV-2891
-        //die(var_dump($result)); -- check for array
+       // die(var_dump($result));
         // no need foer this it is already array
         //$data = json_decode($result, true)['data'];
         $data =  $result['data'] ;
@@ -477,7 +476,5 @@ class BaseController extends GenericBaseController
         //$draw = $this->params()->fromQuery('draw');
         //$data = $this->GetCustomDB()->CreateReportSql($dataToProcedure, $this->procedureName);
     }
-
-
 
 }
