@@ -90,3 +90,19 @@
 --    arguments: constant_name english hebrew
 --    behavior: can take a long time.
 
+REPLACE INTO `list_options` (`list_id`, `option_id`, `title`, `seq`,`mapping` ,`notes`, `activity`,`subtype`) VALUES
+('loinc_org', '8480-6', 'Systolic blood pressure', 10,'bps','{"mask": "___","label":"Blood pressure"}', 1,'mmHg'),
+('loinc_org', '8462-4', 'Diastolic blood pressure', 20,'bpd','{"mask": "___","label":"Blood pressure"}', 1,'mmHg'),
+('loinc_org', '8308-9', 'Body height --standing', 30,'height','{"label": "Height","mask":"___"}', 1,'cm'),
+('loinc_org', '8335-2', 'Body weight Estimated', 40,'weight','{"label": "Weight","mask":"___._"}', 1,'Kg'),
+('loinc_org', '69000-8','Heart rate --sitting', 50,'pulse','{"label": "Pulse","mask": "___"}', 1,'PRA'),
+('loinc_org', '8310-5', 'Body temperature', 60,'temperature','{"label": "Fever","mask": "__._"}', 1,'C'),
+('loinc_org', '8327-9', 'Body temperature measurement site', 70,'temp_method','', 1,''),
+('loinc_org', '20564-1', 'Oxygen saturation in Blood', 80,'oxygen_saturation','{"label": "Saturation","mask": "___%"}', 1,'%'),
+('loinc_org', '39156-5', 'Body mass index (BMI) [Ratio]', 90,'BMI','', 1,'kg/m2'),
+('loinc_org', '59574-4', 'Body mass index (BMI) [Percentile]', 100,'BMI_status','', 1,''),
+('loinc_org', '8280-0', 'Waist Circumference at umbilicus by Tape measure', 110,'waist_circ','', 1,'cm'),
+('loinc_org', '8287-5', 'Head Occipital-frontal circumference by Tape measure', 120,'head_circ','', 1,'cm'),
+('loinc_org', '9303-9', 'Respiratory rate --resting', 130,'respiration','{"label": "Breaths per minute","mask": "__"}', 1,'BPM'),
+('loinc_org', '72514-3', 'Pain severity - 0-10 verbal numeric rating [Score] - Reported', 140,'pain_severity','{"label": "Pain level","mask": "__"}', 1,''),
+('loinc_org', '74774-1', 'Glucose [Mass/volume] in Serum, Plasma or Blood', 150,'glucose','{"label": "Blood sugar","mask": "___"}', 1,'mg/dL');

@@ -279,6 +279,11 @@ class PdfBaseController extends GenericBaseController
                 foreach ($v as $key => $value) {
                     if ($key !== 'height' && $key !== 'weight') {
                         unset($vitals[$k][$key]);
+                    } else {
+                        $vitals[$k][$key][2] = (is_null($value[2]) || $value[2] == "" || $value[2] == 0 && $value[2] == "0.00") ?"-":$value[2];
+                        if ($key === 'weight' && $vitals[$k][$key][2] !== '-') {
+                            $vitals[$k][$key][2] =  number_format($value[2],1);
+                        }
                     }
                 }
             }
@@ -301,7 +306,7 @@ class PdfBaseController extends GenericBaseController
                     $vitals[$key]['pressure'][$k] = $vitals[$key]['bpd'][$k];
                 }
                 else {
-                    $vitals[$key]['pressure'][$k] = $vitals[$key]['bpd'][$k] . "/" . $vitals[$key]['bps'][$k];
+                    $vitals[$key]['pressure'][$k] = $vitals[$key]['bps'][$k] . "/" . $vitals[$key]['bpd'][$k];
                 }
             }
 
@@ -316,6 +321,12 @@ class PdfBaseController extends GenericBaseController
                     case 'head_circ':
                         unset($vitals[$key][$k]);
                         break;
+                    case 'temperature':
+                        $vitals[$key][$k][2] = number_format($vitals[$key][$k][2],1);
+                    case 'pulse':
+                    case 'respiration':
+                    case 'oxygen_saturation':
+                        $vitals[$key][$k][2] = number_format($vitals[$key][$k][2],0);
                     case 'date':
                         $time = explode(":",$vitals[$key][$k][1]);
                         unset($time[2]);
