@@ -188,8 +188,11 @@ class PdfBaseController extends GenericBaseController
         {
             foreach($bodyPath as $key=>$path) {
                 $bodyData=$bodyDataTemp[$key];
+                if ($key > 0) {
+                    $this->getPdfService()->pagebreak();
+                }
                 $this->getPdfService()->bodyBuilder($path, $bodyData);
-                $this->getPdfService()->pagebreak();
+
             }
         }
         else {
