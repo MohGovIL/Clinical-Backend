@@ -6,6 +6,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ServiceRequest\FhirServiceRequestMapping;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ServiceRequest\ServiceRequest;
 use FhirAPI\Model\FhirServiceRequestTable;
+use FhirAPI\Model\QuestionnaireResponseTable;
 use Formhandler\View\Helper\GenericTable;
 use GenericTools\Controller\BaseController as GenericBaseController;
 use GenericTools\Model\AclTables;
@@ -418,6 +419,12 @@ class PdfBaseController extends GenericBaseController
         $listsTable= $this->container->get(ListsTable::class);
         $list = $listsTable->getListForViewFormNoTranslation("drug_form");
         return $list;
+    }
+
+    public function getQuestionareUpdatedUser($encounter, $questionaireName)
+    {
+        $result = $this->container->get(QuestionnaireResponseTable::class)->buildGenericSelect(['encounter' => $encounter, 'form_name' => $questionaireName]);
+        return !empty($result) ? $result[0]['update_by'] : null;
     }
 
 }
