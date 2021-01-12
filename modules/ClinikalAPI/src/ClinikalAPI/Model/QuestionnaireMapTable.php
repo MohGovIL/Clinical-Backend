@@ -50,6 +50,7 @@ class QuestionnaireMapTable
         foreach ($rs as $r) {
             $rsArray[] = get_object_vars($r);
         }
+        print_r($rsArray);DIE;
         return $rsArray;
     }
 }
