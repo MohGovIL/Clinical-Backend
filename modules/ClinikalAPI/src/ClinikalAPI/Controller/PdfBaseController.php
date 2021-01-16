@@ -6,6 +6,7 @@ use FhirAPI\FhirRestApiBuilder\Parts\ErrorCodes;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ServiceRequest\FhirServiceRequestMapping;
 use FhirAPI\FhirRestApiBuilder\Parts\Strategy\StrategyElement\ServiceRequest\ServiceRequest;
 use FhirAPI\Model\FhirServiceRequestTable;
+use FhirAPI\Model\QuestionnaireResponseTable;
 use Formhandler\View\Helper\GenericTable;
 use GenericTools\Controller\BaseController as GenericBaseController;
 use GenericTools\Model\AclTables;
@@ -78,10 +79,10 @@ class PdfBaseController extends GenericBaseController
         }
     }
 
-    public function getListsOpenEMRInfo($type=null,$pid,$outcome)
+    public function getListsOpenEMRInfo($type=null,$pid,$encounter,$outcome)
     {
         if (!is_null($type)) {
-            $info = $this->container->get('GenericTools\Model\ListsOpenEmrTable')->getListWithTheType($type,$pid,$outcome);
+            $info = $this->container->get('GenericTools\Model\ListsOpenEmrTable')->getListWithTheType($type,$pid,$encounter,$outcome);
             return $info;
 
         } else {
@@ -250,13 +251,13 @@ class PdfBaseController extends GenericBaseController
     }
 
     public function getSensitivities(){
-        return $this->getListsOpenEMRInfo("sensitive",$this->postData['patient'],1);
+        return $this->getListsOpenEMRInfo("sensitive",$this->postData['patient'],$this->postData['encounter'],1);
     }
     public function getMedicalProblems(){
-        return $this->getListsOpenEMRInfo("medical_problem",$this->postData['patient'],1);
+        return $this->getListsOpenEMRInfo("medical_problem",$this->postData['patient'],$this->postData['encounter'],1);
     }
     public function getMedicine(){
-        return $this->getListsOpenEMRInfo("medication",$this->postData['patient'],1);
+        return $this->getListsOpenEMRInfo("medication",$this->postData['patient'],$this->postData['encounter'],1);
     }
     public function createTableJsonFromVitals($vitals){
         $arrTemp = [];
@@ -273,9 +274,9 @@ class PdfBaseController extends GenericBaseController
 
         return $arrTemp;
     }
-    public function getConstantVitals($pid,$category,$acitivity,$order)
+    public function getConstantVitals($encounter,$pid,$category,$acitivity,$order)
     {
-        $vitals = $this->getVitals($pid,$category,$acitivity,$order);
+        $vitals = $this->getVitals($encounter,$pid,$category,$acitivity,$order);
         foreach($vitals as $k=>$v)
         {
             if($k === 0) {
@@ -284,8 +285,8 @@ class PdfBaseController extends GenericBaseController
                         unset($vitals[$k][$key]);
                     } else {
                         $vitals[$k][$key][2] = (is_null($value[2]) || $value[2] == "" || $value[2] == 0 && $value[2] == "0.00") ?"-":$value[2];
-                        if ($key === 'weight' && $vitals[$k][$key][2] !== '-') {
-                            $vitals[$k][$key][2] =  number_format($value[2],1);
+                        if ($vitals[$k][$key][2] !== '-') {
+                            $vitals[$k][$key][2] = $key === 'weight' ? number_format($value[2],1) : number_format($value[2]);
                         }
                     }
                 }
@@ -296,9 +297,9 @@ class PdfBaseController extends GenericBaseController
         }
         return sizeof($vitals[0]) > 1 ? $this->createTableJsonFromVitals($vitals) : null;
     }
-    public function getVariantVitals($pid,$category,$acitivity,$order)
+    public function getVariantVitals($encounter,$pid,$category,$acitivity,$order)
     {
-        $vitals = $this->getVitals($pid,$category,$acitivity,$order);
+        $vitals = $this->getVitals($encounter,$pid,$category,$acitivity,$order);
 
 
 
@@ -325,11 +326,11 @@ class PdfBaseController extends GenericBaseController
                         unset($vitals[$key][$k]);
                         break;
                     case 'temperature':
-                        $vitals[$key][$k][2] = number_format($vitals[$key][$k][2],1);
+                        $vitals[$key][$k][2] = $vitals[$key][$k][2] !== '0.00' && $vitals[$key][$k][2] > 0 ? number_format($vitals[$key][$k][2],1) : '-';
                     case 'pulse':
                     case 'respiration':
                     case 'oxygen_saturation':
-                        $vitals[$key][$k][2] = number_format($vitals[$key][$k][2],0);
+                        $vitals[$key][$k][2] = $vitals[$key][$k][2] !== '0.00' && $vitals[$key][$k][2] > 0 ? number_format($vitals[$key][$k][2],0) : '-';
                     case 'date':
                         $time = explode(":",$vitals[$key][$k][1]);
                         unset($time[2]);
@@ -349,7 +350,7 @@ class PdfBaseController extends GenericBaseController
 
         return $this->createTableJsonFromVitals($vitals);
     }
-    public function getVitals($pid,$category,$acitivity,$order){
+    public function getVitals($encounter,$pid,$category,$acitivity,$order){
         $observationList =  $this->container->get('GenericTools\Model\ListsTable')->getList("loinc_org");
         $observationTitleList = [];
         foreach($observationList as $key=>$value)
@@ -357,7 +358,7 @@ class PdfBaseController extends GenericBaseController
             $notes = json_decode($value['notes']);
             $observationTitleList[$value['mapping']] = [xl($notes->label),xl($value['subtype'])];
         }
-        $observations = $this->container->get('GenericTools\Model\FormVitalsTable')->getVitals($pid,$category,$acitivity,$order);
+        $observations = $this->container->get('GenericTools\Model\FormVitalsTable')->getVitals($encounter,$pid,$category,$acitivity,$order);
         $observedArr = [];
 
         foreach($observations as $keyParent=>$valuesParent)
@@ -368,7 +369,7 @@ class PdfBaseController extends GenericBaseController
                     $observedArr[$keyParent][$key] = array_merge($observationTitleList[$key], [$value]);
                 }
                 if($key==="date"){
-                    $observedArr[$keyParent][$key]=[xlt("Hour"), explode(" ",$value)[1]];
+                    $observedArr[$keyParent][$key]=[xlt("Hour"), oeFormatDateTime($value)];
                 }
             }
 
@@ -418,6 +419,12 @@ class PdfBaseController extends GenericBaseController
         $listsTable= $this->container->get(ListsTable::class);
         $list = $listsTable->getListForViewFormNoTranslation("drug_form");
         return $list;
+    }
+
+    public function getQuestionareUpdatedUser($encounter, $questionaireName)
+    {
+        $result = $this->container->get(QuestionnaireResponseTable::class)->buildGenericSelect(['encounter' => $encounter, 'form_name' => $questionaireName]);
+        return !empty($result) ? $result[0]['update_by'] : null;
     }
 
 }
