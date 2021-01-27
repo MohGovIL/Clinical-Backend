@@ -15,6 +15,7 @@ use Laminas\Db\TableGateway\TableGateway;
 class GetTemplatesServiceTable
 {
     const LEFT_JOIN = "LEFT";
+    const ALL_REASON_CODE = 'ALL';
     protected $tableGateway;
     public function __construct(TableGateway $tableGateway)
     {
@@ -39,7 +40,10 @@ class GetTemplatesServiceTable
 
         if(!is_null($service_type)){
             $where->equalTo("service_type",$service_type)->AND->
-                    in("reason_code",explode(",",$reason_code))->AND->
+                    NEST->
+                        in("reason_code",explode(",",$reason_code))->OR->
+                        equalTo("reason_code",self::ALL_REASON_CODE)->
+                    UNNEST->AND->
                     equalTo("form_field",$form_field)->AND->
                     equalTo("form_id",$form_id);
         }
@@ -47,6 +51,7 @@ class GetTemplatesServiceTable
         $select->where($where);
         $select->order(array('clinikal_templates_map.seq ASC'));
         //$debug = $select->getSqlString();
+        //echo $debug;die;
         $rs = $this->tableGateway->selectWith($select);
         foreach ($rs as $r) {
             $rsArray[] = get_object_vars($r);
