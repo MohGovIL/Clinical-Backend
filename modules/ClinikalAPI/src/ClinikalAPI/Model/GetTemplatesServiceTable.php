@@ -46,7 +46,7 @@ class GetTemplatesServiceTable
 
         $select->where($where);
         $select->order(array('clinikal_templates_map.seq ASC'));
-        $debug = $select->getSqlString();
+        //$debug = $select->getSqlString();
         $rs = $this->tableGateway->selectWith($select);
         foreach ($rs as $r) {
             $rsArray[] = get_object_vars($r);
