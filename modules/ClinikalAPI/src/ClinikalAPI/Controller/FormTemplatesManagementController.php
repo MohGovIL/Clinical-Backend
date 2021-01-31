@@ -8,13 +8,22 @@
 
 namespace ClinikalApi\Controller;
 
+use GenericTools\Controller\BaseController;
+use GenericTools\Model\LangLanguagesTable;
+use GenericTools\Model\ListsTable;
 use Interop\Container\ContainerInterface;
+use ClinikalAPI\Model\GetTemplatesServiceTable;
+use GenericTools\Model\RegistryTable;
 
 class FormTemplatesManagementController extends BaseController
 
 {
-    const TITLE = "Managment of email address for serious side-effects";
-    const MAILS_LIST = "moh_vac_list_mails";
+    const TITLE = "templates Managment";
+    private $forms;
+    private $fileds;
+    private $serviceTypes;
+    private $reasonCodes;
+    private $templates;
 
     public function __construct(ContainerInterface $container)
     {
@@ -22,54 +31,134 @@ class FormTemplatesManagementController extends BaseController
         $this->container = $container;
     }
 
-    public function TempleteManagementIndexAction()
+    public function templatesManagementIndexAction()
     {
+
 //        if (!acl_check('modules', 'warnings_and_contraindications_management', '', 'write')) {
 //            $this->redirect()->toRoute('errors', array('action' => 'access-denied'));
 //        }
+        $this->loadClientSideForms();
+        $this->loadServiceTypes();
+        $this->loadtemplates();
 
-        /*$data            = $this->getVacListMailsTable()->fetchAll();
-        $facilities_list = $this->getFacilityTable()->getListWithSomeKeyValue("facility_code", "name");
-        $recipient_mail  = $this->getRecordsByField($data, "recipient_email");
-        $data            = $this->renderDataForDataTable($data, $facilities_list);
+        $langCode = ($this->container->get(LangLanguagesTable::class)->getLangCode($_SESSION['language_choice'] ? $_SESSION['language_choice'] : $this->container->get(LangLanguagesTable::class)->getLangIdByGlobals()));
+        $data = $this->normalizeDataForTable($this->container->get(GetTemplatesServiceTable::class)->fetch($langCode, ['active' => 1]));
+        //$this->die_r($data);
 
         $parameters = array(
-            'data'              => $data,
-            'title'             => xlt(self::TITLE),
-            'facilities_list'   => $facilities_list,
-            'recipient_mail'    => $recipient_mail,
-            'recipientType'     => Array(
-                                         "Permanent" => xlt("Permanent"),
-                                         "Variable" => xlt("Variable"),
-                                        ),
-        );*/
-        $parameters = [];
-        return $this->renderView($parameters, true);
+            'title' => xlt(self::TITLE),
+            'data'  => $data,
+            'forms' => $this->forms,
+            'serviceTypes' => $this->serviceTypes,
+            'templates' => $this->templates
+        );
+        $this->layout('clinikalApi/layout/layout');
+        return $parameters;
     }
+
+    private function loadClientSideForms()
+    {
+        $this->forms = $this->container->get(RegistryTable::class)->getFormsKeyDirectoryValueName(['category' => 'React form']);
+    }
+
+    private function loadFormFileds($formId = null)
+    {
+        $this->fileds = is_null($formId)
+            ?
+            $this->container->get(ListsTable::class)->getListForViewForm('clinikal_form_fields_templates', true)
+            :
+            $this->container->get(ListsTable::class)->getListForViewForm('clinikal_form_fields_templates', true, ['notes' => $formId]);
+    }
+
+    private function loadServiceTypes()
+    {
+        $this->serviceTypes = $this->container->get(ListsTable::class)->getListForViewForm('clinikal_service_types', true);
+    }
+
+    private function loadReasonCodes($serviceType = null)
+    {
+        $this->reasonCodes = is_null($serviceType)
+            ?
+            $this->container->get(ListsTable::class)->getListForViewForm('clinikal_reason_codes', true)
+            :
+            $this->container->get(ListsTable::class)->getListForViewForm('clinikal_reason_codes', true, ['notes' =>  $serviceType]);
+    }
+
+    private function loadtemplates()
+    {
+        $this->templates = $this->container->get(ListsTable::class)->getListForViewForm('clinikal_templates', true);
+    }
+
+    private function normalizeDataForTable($dbMapping)
+    {
+        $results = [];
+        foreach ($dbMapping as $item) {
+            $results[] = [
+                $item['form'],
+                $item['field'],
+                $item['service_type'],
+                $item['reason_code'],
+                $item['template'],
+                (intval($item['active']) === 1) ? "<i style='color: green;font-size: 1.7em;' class='fas fa-check-circle'></i>" : "<i style='color: red;  font-size: 1.7em;' class='fas fa-times-circle'></i>",
+                '<button onclick="gotoEdit(' . "'{$item['form']}','{$item['field']}',{$item['service_type']},{$item['reason_code']}" . ')">' . xlt('Edit') . '</button>'
+            ];
+        }
+        return $results;
+    }
+
 
     public function templatesManagementAjaxAction()
     {
-        /*if (isset($_GET['action'])) {
-            $recipient_email = ($this->params()->fromQuery('recipient_email') !== null) ? $this->params()->fromQuery('recipient_email') : 'all';
-            $recipient_type  = ($this->params()->fromQuery('recipient_type') !== null) ? $this->params()->fromQuery('recipient_type') : 'all';
-            $facility_id     = ($this->params()->fromQuery('facility_id') !== null) ? $this->params()->fromQuery('facility_id') : 'all';
-
-            $data = $this->getVacListMailsTable()->getAddresses($recipient_email, $recipient_type, $facility_id );
-        } else {
-            $data = $this->getVacListMailsTable()->fetchAll();
+        $queryFilters = [];
+        if ($this->params()->fromQuery('form_name') && $this->params()->fromQuery('form_name') !== 'all') {
+            $queryFilters['form_id'] = $this->params()->fromQuery('form_name');
+        }
+        if ($this->params()->fromQuery('field_name') && $this->params()->fromQuery('field_name') !== 'all') {
+            $queryFilters['form_field'] = $this->params()->fromQuery('field_name');
+        }
+        if ($this->params()->fromQuery('service_type') && $this->params()->fromQuery('service_type') !== 'all') {
+            $queryFilters['service_type'] = $this->params()->fromQuery('service_type');
+        }
+        if ($this->params()->fromQuery('reason_code') && $this->params()->fromQuery('reason_code') !== 'all') {
+            $queryFilters['reason_code'] = $this->params()->fromQuery('reason_code');
+        }
+        if ($this->params()->fromQuery('template') && $this->params()->fromQuery('template') !== 'all') {
+            $queryFilters['message_id'] = $this->params()->fromQuery('template');
+        }
+        if (!is_null($this->params()->fromQuery('active')) && $this->params()->fromQuery('active') !== 'all' && $this->params()->fromQuery('active') !== '') {
+            $queryFilters['active'] = $this->params()->fromQuery('active');
         }
 
-        $facilities_list = $this->getFacilityTable()->getListWithSomeKeyValue("facility_code", "name");
-
-        $data = $this->renderDataForDataTable($data, $facilities_list);*/
+        $langCode = ($this->container->get(LangLanguagesTable::class)->getLangCode($_SESSION['language_choice'] ? $_SESSION['language_choice'] : $this->container->get(LangLanguagesTable::class)->getLangIdByGlobals()));
+        $data = $this->normalizeDataForTable($this->container->get(GetTemplatesServiceTable::class)->fetch($langCode, $queryFilters));
         $parms = array('data' => $data);
         return $this->responseWithNoLayout($parms, true);
+    }
+
+    public function loadFiledsAction()
+    {
+        $form = $this->params()->fromQuery('filter');
+        if (empty($form)) {
+            throw new \Exception('Missing filter parameter');
+        }
+        $this->loadFormFileds($form);
+        return $this->responseWithNoLayout($this->fileds ? $this->fileds : []);
+    }
+
+    public function loadReasonCodesAction()
+    {
+        $serviceType = $this->params()->fromQuery('filter');
+        if (empty($serviceType)) {
+            throw new \Exception('Missing filter parameter');
+        }
+        $this->loadReasonCodes($serviceType);
+        return $this->responseWithNoLayout($this->reasonCodes ? $this->reasonCodes : []);
     }
 
     /**
      * @return \Zend\Stdlib\ResponseInterface
      */
-    public function checkIfTempletesExistAction()
+    public function checkIftemplatesExistAction()
     {
         /*$row_id          = intval($_POST['row_id']);
         $recipient_email = $_POST['recipient_email'];
@@ -176,26 +265,7 @@ class FormTemplatesManagementController extends BaseController
         }
     }
 
-    /**
-     * @param $dataArr
-     * @param $facilities_list
-     * @return array
-     */
-    private function renderDataForDataTable($dataArr,$facilities_list)
-    {
-        $resultAll = array();
 
-        $counter = 0;
-        foreach ($dataArr as $index => $temp_record) {
-            $resultAll[$counter][] = xlt($temp_record['id']);
-            $resultAll[$counter][] = "<span id='editRow_" . $temp_record['id'] . "' class='editRow' style='color:blue' ><u>" . attr($temp_record['recipient_email']) . "</u> </span>";
-            $resultAll[$counter][] = xlt($temp_record['recipient_type']);
-            $resultAll[$counter][] = (array_key_exists($temp_record["facility_id"], $facilities_list) ? xlt($facilities_list[$temp_record['facility_id']]) : "");
-            $counter++;
-        }
-
-        return $resultAll;
-    }
 
     function getRecordsByField($data, $field_name)
     {

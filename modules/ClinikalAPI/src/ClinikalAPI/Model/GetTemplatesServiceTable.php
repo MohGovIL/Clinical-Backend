@@ -59,4 +59,42 @@ class GetTemplatesServiceTable
 
         return $rsArray;
     }
+
+    /**
+     * @return array -   all of the facilities from facility table
+     */
+    public function fetch($langCode, $equalFilters = null)
+    {
+        $sql = "
+        SELECT
+            translateString(r.name, ?) as form,
+            translateString(GetOptionTitle('clinikal_form_fields_templates', ctm.form_field),?) as field,
+            translateString(GetOptionTitle('clinikal_service_types', ctm.service_type),?) as service_type,
+            translateString(GetOptionTitle('clinikal_reason_codes', ctm.reason_code),?) as reason_code,
+            translateString(GetOptionTitle('clinikal_templates', ctm.message_id),?) as template,
+            ctm.active as active
+        FROM  clinikal_templates_map AS ctm
+                  JOIN registry AS r ON ctm.form_id = r.directory
+        ";
+        $bindParams = [$langCode, $langCode, $langCode, $langCode, $langCode];
+
+        $where = [];
+        foreach ($equalFilters as $column => $value) {
+            $where[] = " ctm.$column = ? ";
+            $bindParams[] = $value;
+        }
+        if (!empty($equalFilters)) {
+            $sql .= " WHERE " . implode('AND', $where);
+        }
+
+        $sql .= " ORDER BY form, field, service_type, reason_code, seq";
+
+        $statement = $this->tableGateway->adapter->createStatement($sql, $bindParams);
+        $return = $statement->execute();
+        $results = array();
+        foreach ($return as $row) {
+            $results[] = $row;
+        }
+        return $results;
+    }
 }

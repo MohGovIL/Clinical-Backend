@@ -1,0 +1,380 @@
+<?php
+require_once $GLOBALS['fileroot'].'/clinikal/ui-components/Header/ClinikalHeaders.php';
+$headers = new ClinikalHeaders();
+?>
+<style>
+
+    #row_1 #commercial_name{
+        font-size: 12px;
+    }
+
+</style>
+<div id="add-edit-batch" class="container">
+
+    <?php echo $headers->titleWithButtons($is_edit? "Update manufacturer name" : "Add manufacturer name" , array(array('id' => 'save', 'title' => 'Save'), array('id' => 'go_back', 'title' => 'cancel')));  ?>
+
+    <div id="batch-form-container" class="">
+        <form>
+
+            <div id="row_1" class="row row_padded">
+
+                <div class="col-xs-12 col-md-4">
+                    <div class="col-xs-2 col-md-4">
+                        <label for="commercial_name" class="control-label"><?php echo xlt("Commercial name").":"; ?></label>
+                    </div>
+                    <div class="col-xs-2 col-md-8">
+                        <input   type='text'  class='input-sm form-control' name='form_commercial_name' id='commercial_name' value='<?php echo (isset($data['vac_commercial_name']))? $data['vac_commercial_name']: '' ?>' >
+                        <span id="error_commercial_name_empty" class="error-message" style="display: none"> <?php echo xlt("Value is required"); ?> </span>
+                        <span id="error_commercial_name_length" class="error-message" style="display: none"> <?php echo xlt("Value need to be less them 50 chars"); ?> </span>
+                        <span id="error_commercial_name_exist" class="error-message" style="display: none"> <?php echo xlt("Commercial name already exist"); ?> </span>
+                    </div>
+
+                </div>
+
+                <div class="col-xs-12 col-md-4">
+                    <div class="col-xs-2 col-md-4">
+                        <label><?php echo xlt("Vaccine name").":"; ?></label>
+                    </div>
+                    <div class="col-xs-10 col-md-8">
+                        <select class="selectpicker form-control" name='vaccine_name' id="vaccine_name" data-show-subtext="true" data-live-search="true">
+                            <option data-tokens="choose" value="choose"><?php echo xlt("Choose"); ?></option>
+                            <?php foreach ($vaccineNames as $vaccineId => $vaccineInfo): ?>
+                                <option data-tokens="" value="<?php echo attr($vaccineId)?>" <?php echo (isset($data["vaccine_id"])&&$data["vaccine_id"]==$vaccineId) ? "selected":""  ?> ><?php echo $vaccineInfo; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <span id="error_vaccine_name" class="error-message" style="display: none"> <?php echo xlt("Value is required"); ?> </span>
+                        <span id="alert-inactive-vaccine" class="error-message" style="display: <?php echo !isset($data["vaccine_active"]) || $data['vaccine_active'] ? 'none' : 'inline' ?>"> <?php echo xlt("Note, The vaccine is inactive"); ?>. </span>
+                    </div>
+                </div>
+
+
+            </div>
+            <br>
+            <div id="row_2" class="row row_padded">
+
+                <div class="col-xs-12 col-md-4">
+                    <div class="col-xs-2 col-md-4">
+                        <label><?php echo xlt("Manufacturer name").":"; ?></label>
+                    </div>
+                    <div class="col-xs-10 col-md-8">
+                        <select class="selectpicker form-control" name='manufacturer_name' id="manufacturer_name" data-show-subtext="true" data-live-search="true">
+                            <option data-tokens="choose" value="choose"><?php echo xlt("Choose"); ?></option>
+                            <?php foreach ($manufacturerNames as $manufacturerId => $manufacturerInfo): ?>
+                                <option data-tokens="" value="<?php echo attr($manufacturerId)?>" <?php echo (isset($data["vac_manufacturer_id"])&&$data["vac_manufacturer_id"]==$manufacturerId) ? "selected":""  ?> ><?php echo $manufacturerInfo; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <span id="error_manufacturer_name" class="error-message" style="display: none"> <?php echo xlt("Value is required"); ?> </span>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-4">
+                    <div class="col-xs-2 col-md-4">
+                        <label for="catalog_num" class="control-label"><?php echo xlt("Catalog number").":"; ?></label>
+                    </div>
+                    <div class="col-xs-2 col-md-8">
+                        <input   type='text'  class='input-sm form-control' name='catalog_num' id='catalog_num' value='<?php echo (isset($data['catalog_num']))? $data['catalog_num']: '' ?>' maxlength="20">
+                    </div>
+
+                </div>
+
+                <div class="col-xs-12 col-md-3">
+                    <div class="col-xs-2 col-md-5">
+                        <label for="active" class="control-label"><?php echo xlt("Active").":"; ?></label>
+                    </div>
+                    <div id="active" class="col-xs-2 col-md-7">
+                        <label class="radio-inline fix_inline_radio"><input type="radio" value="1" name="optradio" <?php echo (!$is_edit||isset($data['active'])&&$data['active']=="1")? "checked" : ""; ?>><?php echo xlt("Yes"); ?></label>
+                        <label class="radio-inline fix_inline_radio"><input type="radio" value="0"name="optradio" <?php echo (isset($data['active'])&&$data['active']=="0")? "checked" : ""; ?>><?php echo xlt("No"); ?></label>
+                    </div>
+
+                </div>
+            </div>
+            <br>
+            <div id="row_3" class="row row_padded">
+                <div class="col-xs-12 col-md-4">
+                    <div class="col-xs-2 col-md-4">
+                        <label><?php echo xlt("Updated by").":"; ?></label>
+                    </div>
+                    <div class="col-xs-10 col-md-8">
+                        <label id="updated_by"><?php echo (isset($data["user_name"])) ?   $data["user_name"] :  $currentUserName; ?></label>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <div class="col-xs-2 col-md-4">
+                        <label><?php echo xlt("Update date").":"; ?></label>
+                    </div>
+                    <div class="col-xs-10 col-md-8">
+                        <label id="update_date"><?php echo (isset($data["updated_date"])) ?   $data["updated_date"] :  oeFormatShortDate(date("Y-m-d")); ?></label>
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script>
+    function goBack(e) {
+        e.preventDefault();
+        var url=  '<?php echo $this->basePath()?>'+'/commercial-names-management/commercial-names-management-index';
+        top.restoreSession();
+        window.location=url;
+    }
+
+
+
+    function ValidateForm(commercial_name,vaccine_id,manufacturer_id, catalog_num, active,row_id){
+
+        var is_edit='<?php echo $is_edit?>';
+
+        var flag=true;
+
+        if (vaccine_id =="choose" ) {
+            flag=false;
+            $('#error_vaccine_name').css('display','block');
+            $('#select2-vaccine_name-container').parent().css('border', 'solid 1px red');
+        }
+
+        if ( manufacturer_id =="choose") {
+            flag=false;
+            $('#error_manufacturer_name').css('display','block');
+            $('#select2-manufacturer_name-container').parent().css('border', 'solid 1px red');
+        }
+
+        if ( commercial_name =="") {
+            flag=false;
+            $('#error_commercial_name_empty').css('display','block');
+            $('#commercial_name').css('border', 'solid 1px red');
+        }
+
+        if (commercial_name.length>50){
+            flag=false;
+            $('#error_commercial_name_length').css('display','block');
+            $('#commercial_name').css('border', 'solid 1px red');
+            return flag;
+        }
+
+        var commercial_check_url='<?php echo $this->basePath()?>/commercial-names-management';
+        var commercial_check_action="checkIfCommercialNameExist";
+
+        $.ajax({
+            url: commercial_check_url+"/"+commercial_check_action,
+            data: {
+                commercial_name: commercial_name,
+                active: active,
+                is_edit:is_edit
+
+            },
+            error: function() {
+
+                flag=false;
+                console.log("Server validation call failed");
+                return flag;
+            },
+            dataType: 'json',
+            success: function(data) {
+
+               var is_exist=data['data']['is_exist'];
+
+                if (is_exist=="1"){
+                    console.log("Active name already exist");
+                    flag=false;
+                    $('#error_commercial_name_exist').css('display','block');
+                    return flag;
+                }
+
+                if(flag) {
+
+                    sendToServer(commercial_name,vaccine_id,manufacturer_id, catalog_num, active,row_id);
+                }
+
+            },
+            type: 'POST'
+        });
+
+
+    }
+
+    function sendToServer(commercial_name,vaccine_id,manufacturer_id, catalog_num, active,row_id) {
+
+        var url= '<?php echo $this->basePath()?>/commercial-names-management';
+        var action="saveCommercial";
+        var is_edit='<?php echo $is_edit?>';
+
+        $.ajax({
+            url: url+"/"+action,
+            data: {
+                commercial_name: commercial_name,
+                vaccine_id: vaccine_id,
+                manufacturer_id:manufacturer_id,
+                catalog_num: catalog_num,
+                active: active,
+                row_id: row_id,
+                is_edit:is_edit
+
+            },
+            error: function() {
+                console.log("data was not saved");
+            },
+            dataType: 'json',
+            success: function(data) {
+
+                console.log("data was saved");
+                top.restoreSession();
+                window.location=url;
+
+            },
+            type: 'POST'
+        });
+    }
+
+    function saveRecord(e,is_edit,row_id) {
+
+        e.preventDefault();
+
+
+        /****************************/
+        var commercial_name =$("#commercial_name").val().trim();
+        var vaccine_id =$("#vaccine_name").val();
+        var manufacturer_id=$("#manufacturer_name").val();
+        var catalog_num=$("#catalog_num").val();
+        var active = $('#active input:radio:checked').val();
+
+        commercial_name=commercial_name.replace(/[\x0d\x0a]/g,/[\r\n]/g);
+
+        /****************************/
+
+        ValidateForm(commercial_name,vaccine_id,manufacturer_id, catalog_num, active,row_id);
+
+    }
+
+    function renderOptions(mySelect,myOptions){
+
+        var selected=mySelect.find(":selected").val();
+
+        mySelect.empty();
+        mySelect.append(
+            $('<option></option>').val("choose").html("<?php echo xlt('Choose')?>")
+        );
+
+        $.each(myOptions, function(val, text) {
+            mySelect.append(
+                $('<option></option>').val(val).html(text)
+            );
+        });
+
+        mySelect.val(selected);
+    }
+
+
+
+    function disableValidaionWarning(id){
+
+        $('#error_'+id).css('display','none');
+
+    }
+
+    /*
+    removes red validation border
+    parent - to toggle the element itself to which the id belongs or its parent.
+     */
+    function removeRedBorder(id, parent){
+        if(parent!==undefined && parent!==null ){
+            $('#select2-' + id + '-container').parent().css('border', '1px solid #aaa');
+        }
+        else{
+            $('#' + id).css('border', '1px solid #aaa');
+        }
+
+    }
+
+    function removeBOM($data) {
+        if (0 === strpos(bin2hex($data), 'efbbbf')) {
+            return substr($data, 3);
+        }
+        return $data;
+    }
+
+    $( document ).ready(function() {
+
+        $('#vaccine_name,#manufacturer_name').select2({
+            <?php require($GLOBALS['srcdir'] . '/js/xl/select2.js.php'); ?>
+        });
+
+
+
+        $("#tab_title").html('<?php echo $title ?>');
+
+        $( "#vaccine_name" ).change(function() {
+            disableValidaionWarning($(this)["0"]["id"]);
+            removeRedBorder($(this)["0"]["id"], 1);
+            //getCommercialnames();
+
+        });
+
+        $( "#manufacturer_name" ).change(function() {
+            disableValidaionWarning($(this)["0"]["id"]);
+            removeRedBorder($(this)["0"]["id"], 1);
+            //getCommercialnames();
+
+        });
+
+
+
+        $( "#commercial_name" ).change(function() {
+            disableValidaionWarning('commercial_name_empty');
+            disableValidaionWarning('commercial_name_length');
+            disableValidaionWarning('commercial_name_exist');
+            removeRedBorder($(this)["0"]["id"]);
+
+        });
+
+
+
+        $('.datepicker').datetimepicker({
+            <?php $datetimepicker_timepicker = false; ?>
+            <?php $datetimepicker_showseconds = false; ?>
+            <?php $datetimepicker_formatInput = true; ?>
+            <?php require($GLOBALS['srcdir'] . '/js/xl/jquery-datetimepicker-2-5-4.js.php'); ?>
+            <?php // can add any additional javascript settings to datetimepicker here; need to prepend first setting with a comma ?>
+        });
+
+        var is_edit='<?php echo $is_edit ?>';
+
+        var data={
+            "test_date":"<?php echo $data['test_date'] ?>",
+            "test_type":"<?php echo $data['test_type'] ?>",
+            "result":"<?php echo $data['result'] ?>",
+            "genotype":"<?php echo $data['genotype'] ?>",
+            "fibrotest":"<?php echo $data['fibrotest'] ?>",
+            "comment":"<?php echo str_replace("\"","\\\"",preg_replace("/[\x0d\x0a]/i","",$data['comment'])) ?>"
+        };
+        var row_id='<?php echo $row_id ?>';
+
+        $("#go_back").on( "click",function(e) {goBack(e)});
+        $("#save").on( "click",function(e) {saveRecord(e,is_edit,row_id)});
+
+        <?php if($is_edit): ?>
+        $('#vaccine_name').on('change', function () {
+           $.ajax({
+               url:'<?php echo $this->basePath()?>/vaccines-management/is-vaccine-active-ajax',
+               data:{vaccineId: $('#vaccine_name').val()},
+               method:'post',
+               dataType:'json'
+           }).done(function (data) {
+               if(data.output) {
+                   $('#alert-inactive-vaccine').hide();
+               } else {
+                   $('#alert-inactive-vaccine').show();
+               }
+           });
+        });
+        <?php endif; ?>
+
+
+    });
+
+</script>
+
+

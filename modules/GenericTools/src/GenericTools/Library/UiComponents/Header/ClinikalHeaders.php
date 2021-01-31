@@ -5,6 +5,7 @@
  * Date: 04/09/18
  * Time: 08:53
  */
+namespace GenericTools\Library\UiComponents\Header;
 
 class ClinikalHeaders
 {
