@@ -183,12 +183,35 @@ $headers = new ClinikalHeaders();
         return data;
     }
 
-    function goToAddNewBatch(e,row_id) {
-        e.preventDefault();
+    function goToAssignTemplate(e, queryParametersObj) {
         //console.log(document.URL);
-        var url= "<?php echo $this->basePath() ?>"+"/commercial-names-management/add-edit-commercial?row_id="+row_id;
+        var url= "<?php echo $this->basePath() ?>"+"/templates-management/assign-template";
+        if (typeof queryParametersObj !== 'undefined') {
+            url += '?edit=1&' + queryStringParameters(queryParametersObj)
+        }
         top.restoreSession();
         window.location=url;
+    }
+
+    function queryStringParameters(obj) {
+        var str = [];
+        for (var p in obj)
+            if (obj.hasOwnProperty(p)) {
+                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            }
+        return str.join("&");
+    }
+
+    function gotoEdit(form, field, serviceType, reasonCode, template) {
+
+        var recordDtails = {
+            form_id: form,
+            field_id: field,
+            service_type:serviceType,
+            reason_code: reasonCode,
+            template: template
+        }
+        return goToAssignTemplate(null, recordDtails);
     }
 
     $( document ).ready(function() {
@@ -244,6 +267,7 @@ $headers = new ClinikalHeaders();
         $("#filter").on( "click",filterData);
         $("#form_name").on( "change",loadFields);
         $("#service_type").on( "change",loadReasonCodes);
+        $("#assign_template").on( "click",goToAssignTemplate);
 
     });
 </script>

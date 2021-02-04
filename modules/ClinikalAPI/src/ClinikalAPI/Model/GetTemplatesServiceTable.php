@@ -15,7 +15,8 @@ use Laminas\Db\TableGateway\TableGateway;
 class GetTemplatesServiceTable
 {
     const LEFT_JOIN = "LEFT";
-    const ALL_REASON_CODE = 'ALL';
+    const ALL_REASON_CODE = 'all_reasons';
+    const ALL_REASON_CODE_STRING = 'All the reason codes';
     protected $tableGateway;
     public function __construct(TableGateway $tableGateway)
     {
@@ -63,14 +64,19 @@ class GetTemplatesServiceTable
     /**
      * @return array -   all of the facilities from facility table
      */
-    public function fetch($langCode, $equalFilters = null)
+    public function fetchNormalizedData($langCode, $equalFilters = null)
     {
         $sql = "
         SELECT
+            ctm.form_id as form_id,
             translateString(r.name, ?) as form,
+            ctm.form_field as field_id,
             translateString(GetOptionTitle('clinikal_form_fields_templates', ctm.form_field),?) as field,
+            ctm.service_type as service_type_id,
             translateString(GetOptionTitle('clinikal_service_types', ctm.service_type),?) as service_type,
-            translateString(GetOptionTitle('clinikal_reason_codes', ctm.reason_code),?) as reason_code,
+            ctm.reason_code as reason_code_id,
+            translateString(ifnull(GetOptionTitle('clinikal_reason_codes', ctm.reason_code),'" . self::ALL_REASON_CODE_STRING . "'),?) as reason_code,
+            ctm.message_id as template_id,
             translateString(GetOptionTitle('clinikal_templates', ctm.message_id),?) as template,
             ctm.active as active
         FROM  clinikal_templates_map AS ctm
@@ -96,5 +102,31 @@ class GetTemplatesServiceTable
             $results[] = $row;
         }
         return $results;
+    }
+
+    public function get($equalFilters)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $where = new Where();
+        foreach ($equalFilters as $column => $value) {
+            $where->equalTo($column, $value);
+        }
+        $select->where($where);
+        //$debug = $select->getSqlString();
+        //echo $debug;die;
+        $rs = $this->tableGateway->selectWith($select);
+        $rsArray = [];
+        foreach ($rs as $r) {
+            $rsArray[] = get_object_vars($r);
+        }
+        return $rsArray;
+    }
+
+    public function insert($data) {
+        return $this->tableGateway->insert($data) ? true : false;
+    }
+
+    public function delete($data) {
+        return $this->tableGateway->delete($data) ? true : false;
     }
 }

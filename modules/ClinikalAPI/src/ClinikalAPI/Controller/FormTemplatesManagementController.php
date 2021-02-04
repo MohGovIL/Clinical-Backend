@@ -42,7 +42,7 @@ class FormTemplatesManagementController extends BaseController
         $this->loadtemplates();
 
         $langCode = ($this->container->get(LangLanguagesTable::class)->getLangCode($_SESSION['language_choice'] ? $_SESSION['language_choice'] : $this->container->get(LangLanguagesTable::class)->getLangIdByGlobals()));
-        $data = $this->normalizeDataForTable($this->container->get(GetTemplatesServiceTable::class)->fetch($langCode, ['active' => 1]));
+        $data = $this->normalizeDataForTable($this->container->get(GetTemplatesServiceTable::class)->fetchNormalizedData($langCode, ['active' => 1]));
         //$this->die_r($data);
 
         $parameters = array(
@@ -100,7 +100,7 @@ class FormTemplatesManagementController extends BaseController
                 $item['reason_code'],
                 $item['template'],
                 (intval($item['active']) === 1) ? "<i style='color: green;font-size: 1.7em;' class='fas fa-check-circle'></i>" : "<i style='color: red;  font-size: 1.7em;' class='fas fa-times-circle'></i>",
-                '<button onclick="gotoEdit(' . "'{$item['form']}','{$item['field']}',{$item['service_type']},{$item['reason_code']}" . ')">' . xlt('Edit') . '</button>'
+                '<button onclick="gotoEdit(' . "'{$item['form_id']}','{$item['field_id']}','{$item['service_type_id']}','{$item['reason_code_id']}','{$item['template_id']}'" . ')">' . xlt('Edit') . '</button>'
             ];
         }
         return $results;
@@ -130,14 +130,50 @@ class FormTemplatesManagementController extends BaseController
         }
 
         $langCode = ($this->container->get(LangLanguagesTable::class)->getLangCode($_SESSION['language_choice'] ? $_SESSION['language_choice'] : $this->container->get(LangLanguagesTable::class)->getLangIdByGlobals()));
-        $data = $this->normalizeDataForTable($this->container->get(GetTemplatesServiceTable::class)->fetch($langCode, $queryFilters));
+        $data = $this->normalizeDataForTable($this->container->get(GetTemplatesServiceTable::class)->fetchNormalizedData($langCode, $queryFilters));
         $parms = array('data' => $data);
         return $this->responseWithNoLayout($parms, true);
     }
 
+    public function assignTemplateAction()
+    {
+        $this->loadClientSideForms();
+        $this->loadServiceTypes();
+        $this->loadtemplates();
+
+        $parameters = array(
+            'title' => xlt(self::TITLE),
+            'forms' => $this->forms,
+            'serviceTypes' => $this->serviceTypes,
+            'templates' => $this->templates,
+            'user' => $this->getUserNameById($this->getConnectedUserId())
+        );
+
+        if ($this->params()->fromQuery('edit')) {
+            $queryFilters = [];
+            $queryFilters['form_id'] = $this->params()->fromQuery('form_id');
+            $queryFilters['form_field'] = $this->params()->fromQuery('field_id');
+            $queryFilters['service_type'] = $this->params()->fromQuery('service_type');
+            $queryFilters['reason_code'] = $this->params()->fromQuery('reason_code');
+            $queryFilters['message_id'] = $this->params()->fromQuery('template');
+
+            $result = $this->container->get(GetTemplatesServiceTable::class)->get($queryFilters)[0];
+            $parameters['record'] = $result;
+            $this->loadFormFileds($result['form_id']);
+            $this->loadReasonCodes($result['service_type']);
+            $parameters['formFiles'] = $this->fileds;
+            $parameters['reasonCode'] = $this->reasonCodes;
+            $parameters['is_edit'] = true;
+        }
+
+        $this->layout('clinikalApi/layout/layout');
+        return $parameters;
+
+    }
+
     public function loadFiledsAction()
     {
-        $form = $this->params()->fromQuery('filter');
+         $form = $this->params()->fromQuery('filter');
         if (empty($form)) {
             throw new \Exception('Missing filter parameter');
         }
@@ -152,105 +188,68 @@ class FormTemplatesManagementController extends BaseController
             throw new \Exception('Missing filter parameter');
         }
         $this->loadReasonCodes($serviceType);
-        return $this->responseWithNoLayout($this->reasonCodes ? $this->reasonCodes : []);
+        $reasonCodes = $this->reasonCodes ? $this->reasonCodes : [];
+        $allReasonsOptions = [GetTemplatesServiceTable::ALL_REASON_CODE => xlt(GetTemplatesServiceTable::ALL_REASON_CODE_STRING)];
+
+        return $this->responseWithNoLayout(array_merge( $reasonCodes, $allReasonsOptions));
     }
 
     /**
      * @return \Zend\Stdlib\ResponseInterface
      */
-    public function checkIftemplatesExistAction()
+    public function saveAssignTemplateAction()
     {
-        /*$row_id          = intval($_POST['row_id']);
-        $recipient_email = $_POST['recipient_email'];
-        $recipient_type  = $_POST['recipient_type'];
-        $facility_id     = $_POST['facility_id'];
-        $isEdit          = $_POST['is_edit'];
+        $data = $this->params()->fromPost('data');
+        $isEdit = $this->params()->fromPost('is_edit');
+        $oldData = $isEdit ? $this->params()->fromPost('old_data') : null;
 
-        if ($isEdit == "0") {
-            $rez     = empty($this->getVacListMailsTable()->getAllActiveNames(array(
-                    'recipient_email' => $recipient_email,
-            )));
-            $isExist = ($rez) ? 0 : 1;
-            $data    = array(
-                'is_exist' => $isExist
-            );
-            $parms   = array(
-                'data' => $data
-            );
+        if ($this->validateData($data)) {
+            $isExistData = $data;
+            unset($isExistData['seq'], $isExistData['active']);
+            $isExist = !empty($this->container->get(GetTemplatesServiceTable::class)->get($isExistData)) ? true : false;
+            if(!$isExist && $isEdit) {
+                //delete old record
+                $this->container->get(GetTemplatesServiceTable::class)->delete($oldData);
+            }
+            if($isExist && $isEdit) {
+                if($this->primaryKeysNotChanged($data, $oldData)) {
+                    $this->container->get(GetTemplatesServiceTable::class)->delete($oldData);
+                } else {
+                    return $this->responseWithNoLayout('data_conflict', true, 409);
+                }
+            }
+            if ($isExist && !$isEdit) {
+                return $this->responseWithNoLayout('data_conflict', true, 409);
+            }
+
+            $data['update_by'] = $this->getConnectedUserId();
+            $result = $this->container->get(GetTemplatesServiceTable::class)->insert($data);
+            return $this->responseWithNoLayout(true, true);
+
         }
-        else {
-            $isExist = 0;
-            $data    = array(
-                'is_exist' => $isExist
-            );
-            $parms   = array(
-                'data' => $data
-            );
-        }*/
-        return $this->responseWithNoLayout($parms, true);
+        return $this->responseWithNoLayout(false, 500);
     }
 
-    /**
-     * @return \Zend\Stdlib\ResponseInterface
-     */
-    public function saveAssignTempleteAction()
+    private function validateData($data)
     {
-       /* $row_id          = intval($_POST['row_id']);
-        $recipient_email = $_POST['recipient_email'];
-        $recipient_type  = $_POST['recipient_type'];
-        $facility_id     = $_POST['facility_id'];
-        $isEdit          = $_POST['is_edit'];
-        $updateDate      = date("Y-m-d");
-        $updateBy        = $_SESSION['authUserID'];
-
-        if ($isEdit == 1) {
-            $this->getVacListMailsTable()->updateRow($row_id, $recipient_email, $recipient_type, $facility_id, $updateDate, $updateBy);
-        } else {
-            $this->getVacListMailsTable()->insertRow($recipient_email, $recipient_type, $facility_id, $updateDate, $updateBy);
+        $requiredFileds = ['form_id','form_field','service_type','reason_code','message_id','seq','active'];
+        foreach ($requiredFileds as $name) {
+           if(!isset($data[$name]) || is_null($data[$name]) || $data[$name] == '') {
+               return false;
+           }
         }
-        $data       = "";
-        $parameters = array(
-            'data' => $data
-        );*/
-        return $this->responseWithNoLayout($parameters, true);
+        return true;
     }
 
-    /**
-     * @return \Zend\View\Model\ViewModel
-     */
-    public function addEditEmailsVaccinesManagementAction()
+    private function primaryKeysNotChanged($data, $oldData)
     {
-       /* $id              = $this->params()->fromQuery('row_id');
-        $object          = $this->getVacListMailsTable()->fetchRow($id);
-        $facilities_list = $this->getFacilityTable()->getListWithSomeKeyValue("facility_code", "name");
-        $list = array(
-                        "facilities_list" => $facilities_list,
-                     );
-
-        if (!empty($id)) {
-            $is_edit    = 1;
-            $row_id     = $id;
-            $date       = $object['updated_date'];
-            $userName   = $this->getUserNameById($object['updated_by']);
-            $form       = new EmailsVaccinesAddEditForm($list);
-            $form->setData($object);
-        } else {
-            $is_edit    = 0;
-            $row_id     = 0;
-            $date       = "";
-            $userName   = "";
-            $form       = new EmailsVaccinesAddEditForm($list);
-        }*/
-
-        return $this->renderView(array(
-            'title'     => xlt(self::TITLE),
-            'form'      => $form,
-            'userName'  => $userName,
-            'date'      => $date,
-            'is_edit'   => $is_edit,
-            'row_id'    => $row_id,
-        ));
+        $requiredFileds = ['form_id','form_field','service_type','reason_code','message_id'];
+        foreach ($requiredFileds as $name) {
+            if($data[$name] !== $oldData[$name]) return false;
+        }
+        return true;
     }
+
 
     /**
      * @return \Zend\Stdlib\ResponseInterface
