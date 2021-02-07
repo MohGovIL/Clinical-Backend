@@ -49,6 +49,12 @@ CREATE TABLE `clinikal_templates_map` (
 ALTER TABLE `clinikal_templates_map`
   ADD PRIMARY KEY (`form_id`,`form_field`,`service_type`,`reason_code`,`message_id`);
 
+ALTER TABLE `clinikal_templates_map` ADD `active` tinyint(1) NOT NULL DEFAULT 1;
+ALTER TABLE `clinikal_templates_map` ADD `update_by` int(11)  NOT NULL;
+ALTER TABLE `clinikal_templates_map` ADD `update_date` datetime NOT NULL DEFAULT current_timestamp;
+
+
+
 
 CREATE TABLE `form_context_map` (
     `form_id`           INT NOT NULL,
@@ -150,3 +156,9 @@ CREATE TABLE manage_templates_letters(
     `letter_post_json` mediumtext DEFAULT NULL,
     PRIMARY KEY (`id`)
 );
+
+
+
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`) VALUES
+('lists', 'clinikal_form_fields_templates', 'Form fields that use templates', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
+

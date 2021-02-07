@@ -90,3 +90,14 @@
 --    arguments: constant_name english hebrew
 --    behavior: can take a long time.
 
+#IfMissingColumn clinikal_templates_map active
+ALTER TABLE `clinikal_templates_map` ADD `active` tinyint(1) NOT NULL DEFAULT 1;
+#EndIf
+
+#IfMissingColumn clinikal_templates_map update_by
+ALTER TABLE `clinikal_templates_map` ADD `update_by` int(11)  NOT NULL;
+#EndIf
+
+#IfMissingColumn clinikal_templates_map update_date
+ALTER TABLE `clinikal_templates_map` ADD `update_date` datetime NOT NULL DEFAULT current_timestamp;
+#EndIf
