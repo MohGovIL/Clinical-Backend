@@ -37,7 +37,7 @@ class GetTemplatesServiceTable
         $joinExp= new Expression("clinikal_templates_map.message_id = list.option_id AND list.list_id = 'clinikal_templates' ");
         $select->join(array ("list"=>"list_options") , $joinExp, $this->listArr, self::LEFT_JOIN);
         $where = new Where();
-
+        $where->equalTo("active", 1);
 
         if(!is_null($service_type)){
             $where->equalTo("service_type",$service_type)->AND->
@@ -51,7 +51,7 @@ class GetTemplatesServiceTable
 
         $select->where($where);
         $select->order(array('clinikal_templates_map.seq ASC'));
-        //$debug = $select->getSqlString();
+       // $debug = $select->getSqlString();
         //echo $debug;die;
         $rs = $this->tableGateway->selectWith($select);
         foreach ($rs as $r) {
@@ -128,5 +128,10 @@ class GetTemplatesServiceTable
 
     public function delete($data) {
         return $this->tableGateway->delete($data) ? true : false;
+    }
+
+    public function update($set, $where)
+    {
+        return $this->tableGateway->update($set, $where) ? true : false;
     }
 }

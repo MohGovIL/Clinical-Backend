@@ -3,6 +3,11 @@
 use ClinikalAPI\Model\GetTemplatesServiceTable;
 use GenericTools\Library\UiComponents\Header\ClinikalHeaders;
 $headers = new ClinikalHeaders();
+$menuBottons[] = array('id' => 'save', 'title' => 'Save');
+if ($is_edit) {
+    $menuBottons[] = array('id' => 'delete', 'title' => 'Delete assigned');
+}
+$menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
 ?>
 <style>
 
@@ -19,13 +24,13 @@ $headers = new ClinikalHeaders();
 </style>
 <div id="add-edit-batch" class="container">
 
-    <?php echo $headers->titleWithButtons($is_edit? "Update assignment" : "Assign template" , array(array('id' => 'save', 'title' => 'Save'), array('id' => 'go_back', 'title' => 'cancel')));  ?>
+    <?php echo $headers->titleWithButtons($is_edit? "Update assigned" : "Assign template" , $menuBottons);  ?>
 
     <div id="template-form-container" class="">
         <div class="row">
             <div class="col-md-6 text-center">
                 <div id="alredy-exists" class="alert alert-danger" role="alert">
-                    <?php echo xlt('This assigment already exists')?>
+                    <?php echo xlt('This assigned already exists')?>
                 </div>
                 <div id="general-error" class="alert alert-danger" role="alert">
                     <?php echo xlt('Error ouccored')?>
@@ -77,7 +82,7 @@ $headers = new ClinikalHeaders();
                 <label for="reason_code" class="control-label"><?php echo xlt("Reason code").":"; ?></label>
                 <select class="selectpicker form-control" id="reason_code" data-show-subtext="true" data-live-search="true" <?php if (!$is_edit) echo 'disabled';?>>
                     <?php if($is_edit): ?>
-                        <option value="all" <?php if ($record['reason_code'] == GetTemplatesServiceTable::ALL_REASON_CODE) echo 'selected';?>><?php echo xlt(GetTemplatesServiceTable::ALL_REASON_CODE_STRING); ?></option>
+                        <option value="<?php echo attr(GetTemplatesServiceTable::ALL_REASON_CODE) ?>" <?php if ($record['reason_code'] == GetTemplatesServiceTable::ALL_REASON_CODE) echo 'selected';?>><?php echo xlt(GetTemplatesServiceTable::ALL_REASON_CODE_STRING); ?></option>
                         <?php foreach ($reasonCode as $reasonCodeId => $reasonCodeName): ?>
                             <option value="<?php echo attr($reasonCodeId)?>" <?php if ($reasonCodeId == $record['reason_code']) echo 'selected';?>><?php echo xlt($reasonCodeName); ?></option>
                         <?php endforeach; ?>
@@ -116,7 +121,7 @@ $headers = new ClinikalHeaders();
                 </div>
                 <div id="active" class="col-xs-2 col-md-7">
                     <label class="radio-inline fix_inline_radio"><input type="radio" value="1" name="optradio" <?php echo (!$is_edit||isset($record['active'])&&$record['active']=="1")? "checked" : ""; ?>><?php echo xlt("Yes"); ?></label>
-                    <label class="radio-inline fix_inline_radio"><input type="radio" value="0"name="optradio" <?php echo (isset($record['active'])&&$record['active']=="0")? "checked" : ""; ?>><?php echo xlt("No"); ?></label>
+                    <label class="radio-inline fix_inline_radio"><input type="radio" value="0"name="optradio" <?php echo ($is_edit && empty($record['active']))? "checked" : ""; ?>><?php echo xlt("No"); ?></label>
                 </div>
 
             </div>
@@ -178,23 +183,6 @@ $headers = new ClinikalHeaders();
         window.location=url;
     }
 
-    /*function renderOptions(mySelect,myOptions){
-
-
-        var selected=mySelect.find(":selected").val();
-
-        mySelect.empty();
-        mySelect.append(
-            $('<option></option>').val("").html("<?php echo xlt('ALL')?>")
-        );
-
-        $.each(myOptions, function(val, text) {
-            mySelect.append(
-                $('<option></option>').val(val).html(text)
-            );
-        });
-
-    }*/
 
     function loadList(action, filter, selectElement)
     {
@@ -281,10 +269,7 @@ $headers = new ClinikalHeaders();
             showSelect2Error('templates')
         }
 
-        if(flag) {
-
-            sendToServer(formData);
-        }
+        return flag;
 
     }
 
@@ -341,13 +326,55 @@ $headers = new ClinikalHeaders();
         });
     }
 
+    function deleteInServer(formData) {
+
+        var url= '<?php echo $this->basePath()?>/templates-management';
+        var action="delete-assign-template";
+        $.ajax({
+            url: url+"/"+action,
+            data: {
+                data:formData,
+            },
+            error: function(data) {
+                $('#general-error').show();
+            },
+            dataType: 'json',
+            success: function(data) {
+
+                top.restoreSession();
+                window.location=url;
+
+            },
+            type: 'POST'
+        });
+    }
+
     function saveRecord(e,is_edit) {
 
         e.preventDefault();
+        var collectedData = collectData();
+        var valid = ValidateForm(collectedData);
 
+        if(valid) {
+            sendToServer(collectedData);
+        }
 
-        /****************************/
-        collectedData = {
+    }
+
+    function deleteRecord(e,is_edit) {
+        if (is_edit) {
+            e.preventDefault();
+            var collectedData = collectData();
+            var valid = ValidateForm(collectedData);
+
+            if(valid) {
+                deleteInServer(collectedData);
+            }
+        }
+    }
+
+    function collectData() {
+        return {
             form_id :$("#form_name").val().trim(),
             form_field :$("#field_name").val(),
             service_type:$("#service_type").val(),
@@ -356,11 +383,6 @@ $headers = new ClinikalHeaders();
             seq:$("#seq").val(),
             active : $('#active input:radio:checked').val()
         }
-
-        /****************************/
-
-        ValidateForm(collectedData);
-
     }
 
     function renderOptions(mySelect,myOptions){
@@ -412,70 +434,12 @@ $headers = new ClinikalHeaders();
 
     $( document ).ready(function() {
 
-        $('#vaccine_name,#manufacturer_name').select2({
-            <?php require($GLOBALS['srcdir'] . '/js/xl/select2.js.php'); ?>
-        });
-
-
-
         $("#tab_title").html('<?php echo $title ?>');
-
-        $( "#vaccine_name" ).change(function() {
-            disableValidaionWarning($(this)["0"]["id"]);
-            removeRedBorder($(this)["0"]["id"], 1);
-            //getCommercialnames();
-
-        });
-
-        $( "#manufacturer_name" ).change(function() {
-            disableValidaionWarning($(this)["0"]["id"]);
-            removeRedBorder($(this)["0"]["id"], 1);
-            //getCommercialnames();
-
-        });
-
-
-
-        $( "#commercial_name" ).change(function() {
-            disableValidaionWarning('commercial_name_empty');
-            disableValidaionWarning('commercial_name_length');
-            disableValidaionWarning('commercial_name_exist');
-            removeRedBorder($(this)["0"]["id"]);
-
-        });
-
-
-
-        $('.datepicker').datetimepicker({
-            <?php $datetimepicker_timepicker = false; ?>
-            <?php $datetimepicker_showseconds = false; ?>
-            <?php $datetimepicker_formatInput = true; ?>
-            <?php require($GLOBALS['srcdir'] . '/js/xl/jquery-datetimepicker-2-5-4.js.php'); ?>
-            <?php // can add any additional javascript settings to datetimepicker here; need to prepend first setting with a comma ?>
-        });
-
-
 
 
         $("#go_back").on( "click",function(e) {goBack(e)});
         $("#save").on( "click",function(e) {saveRecord(e,is_edit)});
-
-        <?php if($is_edit): ?>
-        $('#vaccine_name').on('change', function () {
-           $.ajax({
-               url:'<?php echo $this->basePath()?>/vaccines-management/is-vaccine-active-ajax',
-               data:{vaccineId: $('#vaccine_name').val()},
-               method:'post',
-               dataType:'json'
-           }).done(function (data) {
-               if(data.output) {
-                   $('#alert-inactive-vaccine').hide();
-               } else {
-                   $('#alert-inactive-vaccine').show();
-               }
-           });
-        });
-        <?php endif; ?>
+        $("#delete").on( "click",function(e) {deleteRecord(e,is_edit)});
 
 
     });

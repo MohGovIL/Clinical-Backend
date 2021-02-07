@@ -24,7 +24,7 @@ $headers = new ClinikalHeaders();
 
     <?php echo $headers->titleWithButtons('Templates management', array(
         array('id' => 'assign_template', 'title' => 'Assign template' ),
-        array('id' => 'add_template', 'title' => 'add/edit template' ),
+        array('id' => 'add_template', 'title' => 'Add/edit template' ),
         )); ?>
 
     <div id="filters-container">
@@ -193,6 +193,13 @@ $headers = new ClinikalHeaders();
         window.location=url;
     }
 
+    function goToAddTemplate()
+    {
+        var url= "<?php echo $this->basePath() ?>"+"/templates-management/add-edit-template";
+        top.restoreSession();
+        window.location=url;
+    }
+
     function queryStringParameters(obj) {
         var str = [];
         for (var p in obj)
@@ -268,6 +275,7 @@ $headers = new ClinikalHeaders();
         $("#form_name").on( "change",loadFields);
         $("#service_type").on( "change",loadReasonCodes);
         $("#assign_template").on( "click",goToAssignTemplate);
+        $("#add_template").on( "click",goToAddTemplate);
 
     });
 </script>
