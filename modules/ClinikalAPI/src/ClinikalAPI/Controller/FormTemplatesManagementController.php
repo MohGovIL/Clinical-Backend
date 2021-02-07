@@ -117,6 +117,10 @@ class FormTemplatesManagementController extends BaseController
             $parameters['is_edit'] = true;
         }
 
+        if ($this->params()->fromQuery('success_msg')) {
+            $parameters['showSuccessMsg'] = true;
+        }
+
         $this->layout('clinikalApi/layout/layout');
         return $parameters;
 
@@ -199,7 +203,11 @@ class FormTemplatesManagementController extends BaseController
     {
         $templates = $this->container->get(ListsTable::class)->getAllList('clinikal_templates', 'title');;
         $this->layout('clinikalApi/layout/layout');
-        return ['templates' => $templates];
+        return [
+            'templates' => $templates,
+            'title' => xlt(self::TITLE),
+            'showSuccessMsg' => ($this->params()->fromQuery('success_msg')) ? true : false
+            ];
     }
 
      public function saveNewTemplateAction()

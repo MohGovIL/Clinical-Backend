@@ -31,7 +31,7 @@ class DataTableExtended
             exit();
         }
 
-        $table_html_string='<table id="'.$tableId.'" class="table">';
+        $table_html_string='<table style="width:100%" id="'.$tableId.'" class="table">';
         $table_html_string.='<thead>';
         //$table_html_string.='<tr>';
 

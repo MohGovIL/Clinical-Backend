@@ -227,7 +227,7 @@ $headers = new ClinikalHeaders();
             <?php require($GLOBALS['srcdir'] . '/js/xl/select2.js.php'); ?>
         });
 
-        $("#tab_title").html('<?php echo $title ?>');
+        $("#tab_title").html(<?php echo js_escape($title) ?>);
 
        /* DATATABLE */
         <?php $table_handler->setUiSettings(false, false);?>

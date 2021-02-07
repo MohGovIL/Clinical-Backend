@@ -29,6 +29,11 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
     <div id="template-form-container" class="">
         <div class="row">
             <div class="col-md-6 text-center">
+                <?php if($showSuccessMsg): ?>
+                <div id="success-msg" class="alert alert-success" role="alert">
+                    <?php echo xlt('The action completed successfully')?>
+                </div>
+                <?php endif; ?>
                 <div id="alredy-exists" class="alert alert-danger" role="alert">
                     <?php echo xlt('This assigned already exists')?>
                 </div>
@@ -199,7 +204,6 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
                 renderOptions(selectElement,data);
                 selectElement.prop('disabled', false);
 
-
             },
             type: 'GET'
         });
@@ -292,6 +296,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
         $('[id$="_error"]').css('display','none');
         $('#alredy-exists').hide();
         $('#general-error').hide();
+        $('#success-msg').hide();
     }
 
     function sendToServer(formData) {
@@ -299,7 +304,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
         var url= '<?php echo $this->basePath()?>/templates-management';
         var action="saveAssignTemplate";
         var is_edit='<?php echo $is_edit?>';
-
+        var success_redirect=url+'/assign-template?success_msg=1';
         $.ajax({
             url: url+"/"+action,
             data: {
@@ -319,7 +324,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
 
                 console.log(data);
                 top.restoreSession();
-                window.location=url;
+                window.location=success_redirect;
 
             },
             type: 'POST'
@@ -330,6 +335,8 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
 
         var url= '<?php echo $this->basePath()?>/templates-management';
         var action="delete-assign-template";
+        var success_redirect=url+'/assign-template?success_msg=1';
+
         $.ajax({
             url: url+"/"+action,
             data: {
@@ -342,7 +349,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
             success: function(data) {
 
                 top.restoreSession();
-                window.location=url;
+                window.location=success_redirect;
 
             },
             type: 'POST'
@@ -443,7 +450,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
 
 
     });
-
+    $("#tab_title").html(<?php echo js_escape($title) ?>);
 </script>
 
 

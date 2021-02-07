@@ -19,6 +19,11 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
     <?php echo $headers->titleWithButtons("Add/edit template" , $menuBottons);  ?>
     <div class="row">
         <div class="col-md-6 text-center">
+            <?php if($showSuccessMsg): ?>
+                <div id="success-msg" class="alert alert-success" role="alert">
+                    <?php echo xlt('The action completed successfully')?>
+                </div>
+            <?php endif; ?>
             <div id="alredy-exists" class="alert alert-danger" role="alert">
                 <?php echo xlt('This template already exists')?>
             </div>
@@ -35,7 +40,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
             <textarea id="new-template" class="form-control"></textarea>
         </div>
         <div class="col-xs-12 col-md-4">
-            <button class="btn btn-secondary btn-sm btn-edit" id="save-new"><?php echo xlt('Save'); ?></button>
+            <button class="btn btn-secondary btn-sm btn-save" id="save-new"><?php echo xlt('Save'); ?></button>
         </div>
     </div>
     <hr />
@@ -70,7 +75,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
         </div>
         <div class="col-xs-12 col-md-2">
             <button class="btn btn-secondary btn-sm btn-edit" id="update-template" disabled ><?php echo xlt('update'); ?></button>
-            <button class="btn btn-secondary btn-sm btn-edit" id="delete-template" disabled ><?php echo xlt('Delete'); ?></button>
+            <button class="btn btn-secondary btn-sm btn-cancel" id="delete-template" disabled ><?php echo xlt('Delete'); ?></button>
         </div>
     </div>
 </div>
@@ -147,6 +152,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
 
         var url= '<?php echo $this->basePath()?>/templates-management';
         var action="save-new-template";
+        var success_redirect=url+'/add-edit-template?success_msg=1';
 
         $.ajax({
             url: url+"/"+action,
@@ -165,7 +171,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
 
                 console.log(data);
                 top.restoreSession();
-                window.location=url;
+                window.location=success_redirect;
 
             },
             type: 'POST'
@@ -197,6 +203,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
 
         var url= '<?php echo $this->basePath()?>/templates-management';
         var action="update-template";
+        var success_redirect=url+'/add-edit-template?success_msg=1';
 
         $.ajax({
             url: url+"/"+action,
@@ -211,7 +218,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
             dataType: 'json',
             success: function(data) {
                 top.restoreSession();
-                window.location=url;
+                window.location=success_redirect;
             },
             type: 'POST'
         });
@@ -225,6 +232,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
 
         var url= '<?php echo $this->basePath()?>/templates-management';
         var action="delete-template";
+        var success_redirect=url+'/add-edit-template?success_msg=1';
 
         $.ajax({
             url: url+"/"+action,
@@ -235,7 +243,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
             dataType: 'json',
             success: function(data) {
                 top.restoreSession();
-                window.location=url;
+                window.location=success_redirect;
             },
             type: 'POST'
         });
@@ -261,6 +269,7 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
         $('[id$="_error"]').css('display','none');
         $('#alredy-exists').hide();
         $('#general-error').hide();
+        $('#success-msg').hide();
     }
 
     function goBack(e) {
@@ -284,4 +293,5 @@ $menuBottons[] = array('id' => 'go_back', 'title' => 'cancel');
     })
     $("#go_back").on( "click",function(e) {goBack(e)});
 
+    $("#tab_title").html(<?php echo js_escape($title) ?>);
 </script>

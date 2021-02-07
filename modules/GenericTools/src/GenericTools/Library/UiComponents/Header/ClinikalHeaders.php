@@ -17,7 +17,7 @@ class ClinikalHeaders
     public function titleWithButtons($title, array $buttons = array(),array $leftButtons = array())
     {
         $html = $this->openTags();
-        $html .= '<li role="presentation" class="active"><a class="oe-bold-black fa-lg ">' . xlt($title) . '</a></li>';
+        $html .= '<li role="presentation" class="active"><p style="margin-top: 18px;" class="oe-bold-black fa-lg ">' . xlt($title) . '</p></li>';
         if (!empty($buttons)) {
         $html .= '<li class="center-buttons">';
                 foreach ($buttons as $button) {
