@@ -34,7 +34,7 @@ BEGIN
 
    DECLARE v_title varchar(255);
 
-    select ifnull(d.definition,v_title)
+    select d.definition
     INTO v_title
 	from lang_constants c
 	join lang_definitions d on d.cons_id = c.cons_id and lang_id= (select lang_id from lang_languages where lang_code = 'he')

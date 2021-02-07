@@ -174,10 +174,6 @@ class Module {
             //global variable of language direction
             $controller->layout()->setVariable('language_direction', $_SESSION['language_direction']);
 
-            // autoloader for ui-components from clinikal folder.
-            /*spl_autoload_register(function ($class) {
-                require_once $GLOBALS['fileroot'].'/clinikal/ui-components/' . str_replace("\\", '/', $class) . '.php';
-            });*/
         }, 100);
     }
 

@@ -40,9 +40,6 @@ class FormTemplatesManagementController extends BaseController
     public function templatesManagementIndexAction()
     {
 
-//        if (!acl_check('modules', 'warnings_and_contraindications_management', '', 'write')) {
-//            $this->redirect()->toRoute('errors', array('action' => 'access-denied'));
-//        }
         $this->loadClientSideForms();
         $this->loadServiceTypes();
         $this->loadtemplates();
