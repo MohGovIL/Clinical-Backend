@@ -15,6 +15,7 @@ use GenericTools\Model\ListsTable;
 use Interop\Container\ContainerInterface;
 use ClinikalAPI\Model\GetTemplatesServiceTable;
 use GenericTools\Model\RegistryTable;
+use OpenEMR\Common\Acl\AclMain;
 
 class FormTemplatesManagementController extends BaseController
 
@@ -31,6 +32,9 @@ class FormTemplatesManagementController extends BaseController
     {
         parent::__construct($container);
         $this->container = $container;
+        if(!AclMain::aclCheckCore('client_app', 'ManageTemplates')){
+            exit('Access denied');
+        }
     }
 
     public function templatesManagementIndexAction()
