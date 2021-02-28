@@ -101,3 +101,28 @@ ALTER TABLE `clinikal_templates_map` ADD `update_by` int(11)  NOT NULL;
 #IfMissingColumn clinikal_templates_map update_date
 ALTER TABLE `clinikal_templates_map` ADD `update_date` datetime NOT NULL DEFAULT current_timestamp;
 #EndIf
+
+
+#IfNotRow2D questionnaires_schemas form_name commitment_questionnaire qid 9
+INSERT INTO `questionnaires_schemas` (`qid`, `form_name`,`form_table`, `column_type`, `question`)
+VALUES
+('9', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Exemption reason'),
+('10', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Comment');
+#EndIf
+
+#IfNotRow2D list_options list_id lists option_id clinikal_no_payment_reason
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
+('lists', 'clinikal_no_payment_reason', 'Reasons for encounter without payment', 0, 1),
+('clinikal_no_payment_reason', 'personal', 'Personal', 20, 1),
+('clinikal_no_payment_reason', 'followup_encounter', 'Follow up encounter', 30, 1);
+#EndIf
+
+#IfNotRow fhir_value_sets id no_payment_reasons
+INSERT INTO `fhir_value_sets` (`id`, `title`)
+VALUES ('no_payment_reasons', 'Reasons for encounter without payment');
+#EndIf
+
+#IfNotRow2D fhir_value_set_systems vs_id no_payment_reasons system clinikal_no_payment_reason
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`,`filter`)
+VALUES ('no_payment_reasons', 'clinikal_no_payment_reason', 'All', NULL);
+#EndIf
