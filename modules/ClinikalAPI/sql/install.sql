@@ -137,7 +137,9 @@ VALUES
 ('5', 'commitment_questionnaire','form_commitment_questionnaire', 'integer', 'doctor license number'),
 ('6', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment amount'),
 ('7', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Payment method'),
-('8', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Receipt number');
+('8', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Receipt number'),
+('9', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Exemption reason'),
+('10', 'commitment_questionnaire','form_commitment_questionnaire', 'string', 'Comment');
 
 
 INSERT INTO `fhir_value_sets` (`id`, `title`)
@@ -162,3 +164,13 @@ CREATE TABLE manage_templates_letters(
 INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`, `codes`, `toggle_setting_1`, `toggle_setting_2`, `activity`, `subtype`, `edit_options`) VALUES
 ('lists', 'clinikal_form_fields_templates', 'Form fields that use templates', 0, 0, 0, '', '', '', 0, 0, 1, '', 1);
 
+INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`, `activity`) VALUES
+('lists', 'clinikal_no_payment_reason', 'Reasons for encounter without payment', 0, 1),
+('clinikal_no_payment_reason', 'personal', 'Personal', 20, 1),
+('clinikal_no_payment_reason', 'followup_encounter', 'Follow up encounter', 30, 1);
+
+INSERT INTO `fhir_value_sets` (`id`, `title`)
+VALUES ('no_payment_reasons', 'Reasons for encounter without payment');
+
+INSERT INTO `fhir_value_set_systems` (`vs_id`, `system`, `type`,`filter`)
+VALUES ('no_payment_reasons', 'clinikal_no_payment_reason', 'All', NULL);
