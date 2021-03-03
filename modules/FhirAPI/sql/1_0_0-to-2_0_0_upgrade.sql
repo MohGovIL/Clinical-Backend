@@ -106,3 +106,7 @@ REPLACE INTO `list_options` (`list_id`, `option_id`, `title`, `seq`,`mapping` ,`
 ('loinc_org', '9303-9', 'Respiratory rate --resting', 130,'respiration','{"label": "Breaths per minute","mask": "__"}', 1,'BPM'),
 ('loinc_org', '72514-3', 'Pain severity - 0-10 verbal numeric rating [Score] - Reported', 140,'pain_severity','{"label": "Pain level","mask": "__"}', 1,''),
 ('loinc_org', '74774-1', 'Glucose [Mass/volume] in Serum, Plasma or Blood', 150,'glucose','{"label": "Blood sugar","mask": "___"}', 1,'mg/dL');
+
+#IfMissingColumn fhir_value_sets language
+ALTER TABLE fhir_value_sets ADD `language` VARCHAR(3) NOT NULL DEFAULT 'en';
+#EndIf
