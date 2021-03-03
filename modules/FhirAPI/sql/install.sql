@@ -69,6 +69,7 @@ CREATE TABLE `fhir_value_sets` (
     `id` VARCHAR(125) NOT NULL,
     `title` VARCHAR(125) NOT NULL,
     `status` ENUM('active', 'retired') NOT NULL DEFAULT 'active',
+    `language` VARCHAR(3) NOT NULL DEFAULT 'en',
     PRIMARY KEY(`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=UTF8;
 

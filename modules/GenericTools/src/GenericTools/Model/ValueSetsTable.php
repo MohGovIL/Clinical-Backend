@@ -24,10 +24,11 @@ class ValueSetsTable
 
         $type = $this->getValueSetType($id);
         if ($type !== 'Codes') {
-            $sql = "SELECT  
+            $sql = "SELECT
                     fvs.id AS vs_id,
                     fvs.title AS vs_title,
                     fvs.status AS vs_status,
+                    fvs.language AS vs_lang,
                     fvss.system AS system,
                     lo.option_id AS code,
                     lo.title AS display
@@ -54,10 +55,11 @@ class ValueSetsTable
                 WHERE
                     fvs.id = ? ";
         } else {
-            $sql = "SELECT 
+            $sql = "SELECT
                     fvs.id AS vs_id,
                     fvs.title AS vs_title,
                     fvs.status AS vs_status,
+                    fvs.language AS vs_lang,
                     fvss.system AS system,
                     co.code AS code,
                     co.code_text AS display
