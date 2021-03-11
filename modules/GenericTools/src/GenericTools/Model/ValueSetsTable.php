@@ -193,4 +193,14 @@ class ValueSetsTable
         }
     }
 
+    public function getValueSetInfo($valueSetId)
+    {
+        $rsArray=array();
+        $rs =$this->tableGateway->select(['id' => $valueSetId]);
+        foreach($rs as $r) {
+            $rsArray[]=get_object_vars($r);
+        }
+        return $rsArray;
+    }
+
 }
