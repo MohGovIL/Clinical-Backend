@@ -83,7 +83,13 @@ class PdfBaseController extends GenericBaseController
     {
         if (!is_null($type)) {
             $info = $this->container->get('GenericTools\Model\ListsOpenEmrTable')->getListWithTheType($type,$pid,$encounter,$outcome);
-            return $info;
+            $result = [];
+            foreach ($info as $item) {
+                if(!in_array($item, $result)) {
+                    $result[] = $item;
+                }
+            }
+            return $result;
 
         } else {
             return array();
