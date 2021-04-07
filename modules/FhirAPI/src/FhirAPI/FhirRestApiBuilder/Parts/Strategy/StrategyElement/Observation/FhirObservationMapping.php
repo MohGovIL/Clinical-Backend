@@ -190,7 +190,7 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
                 $dbObservation[$LonicToDbMappig[$lonicCode]]=$codeVal;
             }
 
-            $Quantity=$comp->getValueQuantity()->getValue();q
+            $Quantity=$comp->getValueQuantity()->getValue();
             $QuantityVal=$Quantity->getValue();
             if(!is_null($QuantityVal)){
                 $lonicCode=$comp->getValueQuantity()->getCode()->getValue();
