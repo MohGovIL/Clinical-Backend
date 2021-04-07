@@ -190,8 +190,8 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
                 $dbObservation[$LonicToDbMappig[$lonicCode]]=$codeVal;
             }
 
-            $Quantity=$comp->getValueQuantity()->getValue();
-            $QuantityVal=str_replace('_', '', $Quantity->getValue());
+            $Quantity=$comp->getValueQuantity()->getValue();q
+            $QuantityVal=$Quantity->getValue();
             if(!is_null($QuantityVal)){
                 $lonicCode=$comp->getValueQuantity()->getCode()->getValue();
                 $dbObservation[$LonicToDbMappig[$lonicCode]]=$QuantityVal;
@@ -305,8 +305,8 @@ class FhirObservationMapping extends FhirBaseMapping  implements MappingData
 
             $firstComp=true;
             foreach ($DbToLonicMappig as $dbField => $code){
-                if(is_numeric($observationDataFromDb[$dbField])){
-                    $FHIRElm=$this->createFHIRQuantity(array("code"=>$code,"value"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM));
+                if(is_numeric($observationDataFromDb[$dbField]) ){                 // 0.00 is default empty for several columns in openemr db
+                    $FHIRElm=$this->createFHIRQuantity(array("code"=>$code,"value"=> $observationDataFromDb[$dbField] !== '0.00' ? $observationDataFromDb[$dbField] : null,"system"=>self::LONIC_SYSTEM));
                 }else{
                     $FHIRElm=$this->createFHIRCodeableConcept(array("code"=>$observationDataFromDb[$dbField],"system"=>self::LONIC_SYSTEM."/".$code));
                 }
