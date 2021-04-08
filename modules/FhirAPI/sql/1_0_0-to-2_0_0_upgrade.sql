@@ -91,8 +91,8 @@
 --    behavior: can take a long time.
 
 REPLACE INTO `list_options` (`list_id`, `option_id`, `title`, `seq`,`mapping` ,`notes`, `activity`,`subtype`) VALUES
-('loinc_org', '8480-6', 'Systolic blood pressure', 10,'bps','{"placeholder": "___" ,"label":"Blood pressure"}', 1,'mmHg'),
-('loinc_org', '8462-4', 'Diastolic blood pressure', 20,'bpd','{"placeholder": "___","label":"Blood pressure"}', 1,'mmHg'),
+('loinc_org', '8480-6', 'Systolic blood pressure', 10,'bps','{"placeholder": "___" ,"label":"Blood pressure", "mask": "###/###"}', 1,'mmHg'),
+('loinc_org', '8462-4', 'Diastolic blood pressure', 20,'bpd','{"placeholder": "___","label":"Blood pressure", "mask": "###/###"}', 1,'mmHg'),
 ('loinc_org', '8308-9', 'Body height --standing', 30,'height','{"label": "Height","placeholder":"___"}', 1,'cm'),
 ('loinc_org', '8335-2', 'Body weight Estimated', 40,'weight','{"label": "Weight","placeholder":"___._"}', 1,'Kg'),
 ('loinc_org', '69000-8','Heart rate --sitting', 50,'pulse','{"label": "Pulse","placeholder": "___"}', 1,'PRA'),
