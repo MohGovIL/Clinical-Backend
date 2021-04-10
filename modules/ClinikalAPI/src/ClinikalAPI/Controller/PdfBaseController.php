@@ -311,12 +311,12 @@ class PdfBaseController extends GenericBaseController
 
         foreach($vitals as $key=>$value){
             foreach($value['bpd'] as $k=>$v) {
-                if($k==0)
+                if($k!==2)
                 {
                     $vitals[$key]['pressure'][$k] = $vitals[$key]['bpd'][$k];
                 }
                 else {
-                    $vitals[$key]['pressure'][$k] = $vitals[$key]['bps'][$k] . "/" . $vitals[$key]['bpd'][$k];
+                    $vitals[$key]['pressure'][$k] = !is_null($vitals[$key]['bps'][$k] ) ? $vitals[$key]['bps'][$k] . "/" . $vitals[$key]['bpd'][$k] : '-';
                 }
             }
 
@@ -333,10 +333,15 @@ class PdfBaseController extends GenericBaseController
                         break;
                     case 'temperature':
                         $vitals[$key][$k][2] = $vitals[$key][$k][2] !== '0.00' && $vitals[$key][$k][2] > 0 ? number_format($vitals[$key][$k][2],1) : '-';
+                        break;
                     case 'pulse':
                     case 'respiration':
                     case 'oxygen_saturation':
                         $vitals[$key][$k][2] = $vitals[$key][$k][2] !== '0.00' && $vitals[$key][$k][2] > 0 ? number_format($vitals[$key][$k][2],0) : '-';
+                        break;
+                    case 'pain_severity':
+                        $vitals[$key][$k][2] = is_null($v[2]) ? "-":$v[2];
+                        break;
                     case 'date':
                         $time = explode(":",$vitals[$key][$k][1]);
                         unset($time[2]);
