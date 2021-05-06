@@ -29,6 +29,8 @@ class PdfBaseController extends GenericBaseController
     const FOOTER_PATH = 'clinikal-api/pdf/default-footer';
     const DOC_TYPE = "file_url";
     const PDF_MINE_TYPE = "application/pdf";
+    const CITIES_LIST = 'mh_cities';
+    const STREETS_LIST = 'mh_streets';
 
     private $container;
     public $postData = array();
@@ -72,11 +74,27 @@ class PdfBaseController extends GenericBaseController
             $data['age'] = $info['age'];
             $data['phone'] = ($info['phone_cell'] ? $info['phone_cell']  : ($info['phone_home'] ? $info['phone_home'] : ($info['phone_contact'] ? $info['phone_contact'] :""))) ;
             $data['HMO'] = $info['insurance_organiz_name'];
+            $data['address'] = $this->patientAddress($info);
             return $data;
 
         } else {
             return array();
         }
+    }
+
+    public function patientAddress($patientInfo)
+    {
+        $city = !empty($patientInfo['city']) ? xlt($this->container->get(ListsTable::class)->getSpecificTitle(self::CITIES_LIST, $patientInfo['city'])) : '';
+        $street = !empty($patientInfo['street']) ? xlt($this->container->get(ListsTable::class)->getSpecificTitle(self::STREETS_LIST, $patientInfo['street'])) : '';
+        $numberHouse = !empty($patientInfo['mh_house_no']) ? $patientInfo['mh_house_no'] : '';
+
+        $address = '';
+        if ($street !== '') {
+          $address .= $street . ' ' . $numberHouse . ' ';
+        }
+        $address .= $city;
+
+        return $address;
     }
 
     public function getListsOpenEMRInfo($type=null,$pid,$encounter,$outcome)
@@ -94,6 +112,12 @@ class PdfBaseController extends GenericBaseController
         } else {
             return array();
         }
+    }
+
+    public function getEncounterStartDate($encId)
+    {
+        $info = $this->container->get(FormEncounterTable::class)->fetchById($encId);
+        return $info['date'];
     }
 
     public function getUserInfo($id = null)

@@ -34,6 +34,7 @@
         text-align: right;
         color: #000b40;
     }
+
 </style>
     <table class="Rectangle" dir="<?php echo text($langDir); ?>"  lang="<?php echo text($langCode); ?>">
         <tbody>
@@ -69,8 +70,8 @@
                 <p class="Input-text"><?php echo($HMO);?></p>
             </td>
             <td>
-                <p class="Label-Text"></p>
-                <p class="Input-text"></p>
+                <p class="Label-Text"><?php echo(xlt("Address"));?></p>
+                <p class="Input-text"><?php echo text($address);?></p>
             </td>
         </tr>
         </tbody>
