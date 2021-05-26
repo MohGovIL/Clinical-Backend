@@ -87,10 +87,14 @@ class PdfBaseController extends GenericBaseController
         $city = !empty($patientInfo['city']) ? xlt($this->container->get(ListsTable::class)->getSpecificTitle(self::CITIES_LIST, $patientInfo['city'])) : '';
         $street = !empty($patientInfo['street']) ? xlt($this->container->get(ListsTable::class)->getSpecificTitle(self::STREETS_LIST, $patientInfo['street'])) : '';
         $numberHouse = !empty($patientInfo['mh_house_no']) ? $patientInfo['mh_house_no'] : '';
+        $pobox = !empty($patientInfo['mh_pobox']) ? $patientInfo['mh_pobox'] : '';
 
         $address = '';
         if ($street !== '') {
-          $address .= $street . ' ' . $numberHouse . ' ';
+          $address .= $street . ' ' . $numberHouse . ', ';
+        }
+        if ($pobox !== '') {
+            $address .= xlt('PO Box') . ' ' . $pobox .', ';
         }
         $address .= $city;
 
